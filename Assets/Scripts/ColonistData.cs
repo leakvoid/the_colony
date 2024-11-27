@@ -5,6 +5,7 @@ using UnityEngine;
 public class ColonistData : MonoBehaviour
 {
     // 0-100 
+    int sleepNeedMeter = 100;
     int foodNeedMeter = 0;
     int waterNeedMeter = 0;
     int clothesNeedMeter = 0;
