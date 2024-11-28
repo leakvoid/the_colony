@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f374ff36175f466492e1b25eedd1069, type: 3}
+  m_Name: SawmillBT
+  m_EditorClassIdentifier: 
+  buildingName: Sawmill
+  gridLength: 2
+  gridWidth: 4
+  maxNumberOfWorkers: 3
+  salary: 7
+  timeInterval: 10
+  amountProducedPerInterval: 5
+  producedResource: 4
+  groundResource: 1
+  minDistanceToResource: 1
+  captureGatheringArea: 20

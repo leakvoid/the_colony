@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Service BT", fileName = "New Service Building Template")]
-public class ServiceBT : ScriptableObject
+public class ServiceBT : WorkableBT
 {
-
+    [SerializeField] public int coverArea;
 }

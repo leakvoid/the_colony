@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameParameters : MonoBehaviour
+public class Globals : MonoBehaviour
 {
     [Header("General colonist data")]
     [SerializeField] public float colonistMovementSpeed = 3f;
     [SerializeField] public float sleepDuration = 10f;
 
     // Singleton
-    static GameParameters instance = null;
+    static Globals instance = null;
 
     void Start() {
         if(instance != null)
@@ -22,6 +22,36 @@ public class GameParameters : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+    }
+
+    // Common types
+    public enum ResourceType
+    {
+        None,
+        Stone,
+        Iron,
+        Salt,
+        Wood,
+        Cotton,
+        Wheat,
+        Hops,
+        Meat,
+        Fish,
+        Tools,
+        Cloth,
+        Flour,
+        Bread,
+        Beer
+    }
+
+    public enum GroundResource
+    {
+        None,
+        Forest,
+        Water,
+        IronDeposit,
+        SaltDeposit,
+        StoneDeposit
     }
 }
 

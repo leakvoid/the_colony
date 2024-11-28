@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Processing BT", fileName = "New Processing Building Template")]
-public class ProcessingBT : ScriptableObject
+public class ProcessingBT : WorkableBT
 {
-    int gridLength = 2;
-    int gridWidth = 2;
+    [SerializeField] public int amountConsumedPerInterval;
+    [SerializeField] public int amountProducedPerInterval;
+    [SerializeField] public Globals.ResourceType consumedResource;
+    [SerializeField] public Globals.ResourceType producedResource;
 }

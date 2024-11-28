@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ComputerAI : MonoBehaviour
 {
-    GameParameters gameParameters;
+    Globals globals;
 
     void Awake()
     {
-        gameParameters = FindObjectOfType<GameParameters>();
-        print(gameParameters.colonistMovementSpeed);
+        globals = FindObjectOfType<Globals>();
+        print(globals.colonistMovementSpeed);
     }
 }
