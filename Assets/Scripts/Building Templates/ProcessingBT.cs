@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Processing BT", fileName = "New Processing Building Template")]
+[CreateAssetMenu(menuName = "Building Template/Processing BT", fileName = "New Processing Building Template")]
 public class ProcessingBT : WorkableBT
 {
     [SerializeField] public int amountConsumedPerInterval;
