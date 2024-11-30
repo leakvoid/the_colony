@@ -27,6 +27,11 @@ public class AbstractMapGenerator : MonoBehaviour
 
     void Start()
     {
+        GenerateNewMap();
+    }
+
+    void GenerateNewMap()
+    {
         grid = new Globals.TileType[gridX, gridY];
 
         GenerateTerrainClusters(forestPercentage, numberOfForests, Globals.TileType.Forest);
@@ -79,8 +84,6 @@ public class AbstractMapGenerator : MonoBehaviour
         grid[startingPos.x, startingPos.y] = tileType;
         edges.Enqueue(startingPos);
 
-        print("Tile count start: " + tileCount);
-
         while (tileCount > 0 && edges.Count > 0)
         {
             int potentialEdgeCount = 0;
@@ -101,6 +104,7 @@ public class AbstractMapGenerator : MonoBehaviour
                 tilesToGenerate = 1;
             if (tilesToGenerate > tileCount)
                 tilesToGenerate = tileCount;
+            tileCount -= tilesToGenerate;
 
             int edgesCount = edges.Count;
             for (int i = 0; i < edgesCount; i++)
@@ -116,11 +120,7 @@ public class AbstractMapGenerator : MonoBehaviour
                 if (IsValidDown(pos))
                     TryAddingTile((pos.x, pos.y - 1), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
             }
-
-            tileCount -= tilesToGenerate;
         }
-
-        print("Tile count end: " + tileCount);
     }
 
     void TryAddingTile((int x, int y) pos, Globals.TileType tileType, Queue<(int x, int y)> edges, ref int tilesToGenerate, ref int potentialEdgeCount)
