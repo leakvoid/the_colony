@@ -23,7 +23,12 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] int saltDepositPercentage = 2;
     [SerializeField] int numberOfSaltDeposits = 5;
 
-    Globals.TileType[,] grid;
+    Globals.TerrainType[,] grid;
+
+    public Globals.TerrainType[,] GetTerrainGrid()
+    {
+        return grid;
+    }
 
     void Start()
     {
@@ -32,16 +37,16 @@ public class AbstractMapGenerator : MonoBehaviour
 
     void GenerateNewMap()
     {
-        grid = new Globals.TileType[gridX, gridY];
+        grid = new Globals.TerrainType[gridX, gridY];
 
-        GenerateTerrainClusters(forestPercentage, numberOfForests, Globals.TileType.Forest);
-        GenerateTerrainClusters(lakePercentage, numberOfLakes, Globals.TileType.Water);
-        GenerateTerrainClusters(ironDepositPercentage, numberOfIronDeposits, Globals.TileType.IronDeposit);
-        GenerateTerrainClusters(stoneDepositPercentage, numberOfStoneDeposits, Globals.TileType.StoneDeposit);
-        GenerateTerrainClusters(saltDepositPercentage, numberOfSaltDeposits, Globals.TileType.SaltDeposit);
+        GenerateTerrainClusters(forestPercentage, numberOfForests, Globals.TerrainType.Forest);
+        GenerateTerrainClusters(lakePercentage, numberOfLakes, Globals.TerrainType.Water);
+        GenerateTerrainClusters(ironDepositPercentage, numberOfIronDeposits, Globals.TerrainType.IronDeposit);
+        GenerateTerrainClusters(stoneDepositPercentage, numberOfStoneDeposits, Globals.TerrainType.StoneDeposit);
+        GenerateTerrainClusters(saltDepositPercentage, numberOfSaltDeposits, Globals.TerrainType.SaltDeposit);
     }
 
-    void GenerateTerrainClusters(int tilePercentage, int numberOfClusters, Globals.TileType tileType)
+    void GenerateTerrainClusters(int tilePercentage, int numberOfClusters, Globals.TerrainType tileType)
     {
         // get clusters of randomized size
         int totalTileCount = gridX * gridY * tilePercentage / 100;
@@ -63,7 +68,7 @@ public class AbstractMapGenerator : MonoBehaviour
             while (true)
             {
                 startingPos = (Random.Range(0, gridX), Random.Range(0, gridY));
-                if (grid[startingPos.x, startingPos.y] == Globals.TileType.Ground)
+                if (grid[startingPos.x, startingPos.y] == Globals.TerrainType.Ground)
                     break;
             }
 
@@ -76,7 +81,7 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] int tilePropagationChance = 70;
 
     // TODO issues: 1. tileCount not always exhausted within enclosed areas / circular random paths 2. can still create closed off spaces
-    void GenerateCluster((int x,int y) startingPos, int tileCount, Globals.TileType tileType)
+    void GenerateCluster((int x,int y) startingPos, int tileCount, Globals.TerrainType tileType)
     {
         var edges = new Queue<(int x, int y)>();
 
@@ -123,7 +128,7 @@ public class AbstractMapGenerator : MonoBehaviour
         }
     }
 
-    void TryAddingTile((int x, int y) pos, Globals.TileType tileType, Queue<(int x, int y)> edges, ref int tilesToGenerate, ref int potentialEdgeCount)
+    void TryAddingTile((int x, int y) pos, Globals.TerrainType tileType, Queue<(int x, int y)> edges, ref int tilesToGenerate, ref int potentialEdgeCount)
     {
         potentialEdgeCount -= 1;
 
@@ -151,22 +156,22 @@ public class AbstractMapGenerator : MonoBehaviour
         }
     }
 
-    bool IsValidLeft((int x, int y) pos, Globals.TileType tileType = Globals.TileType.Ground)
+    bool IsValidLeft((int x, int y) pos, Globals.TerrainType tileType = Globals.TerrainType.Ground)
     {
         return (pos.x - 1 >= 0 && grid[pos.x - 1, pos.y] == tileType);
     }
 
-    bool IsValidRight((int x, int y) pos, Globals.TileType tileType = Globals.TileType.Ground)
+    bool IsValidRight((int x, int y) pos, Globals.TerrainType tileType = Globals.TerrainType.Ground)
     {
         return (pos.x + 1 < gridX && grid[pos.x + 1, pos.y] == tileType);
     }
 
-    bool IsValidUp((int x, int y) pos, Globals.TileType tileType = Globals.TileType.Ground)
+    bool IsValidUp((int x, int y) pos, Globals.TerrainType tileType = Globals.TerrainType.Ground)
     {
         return (pos.y + 1 < gridY && grid[pos.x, pos.y + 1] == tileType);
     }
 
-    bool IsValidDown((int x, int y) pos, Globals.TileType tileType = Globals.TileType.Ground)
+    bool IsValidDown((int x, int y) pos, Globals.TerrainType tileType = Globals.TerrainType.Ground)
     {
         return (pos.y - 1 >= 0 && grid[pos.x, pos.y - 1] == tileType);
     }

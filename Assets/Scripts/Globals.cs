@@ -28,7 +28,7 @@ public class Globals : MonoBehaviour
         Beer
     }
 
-    public enum TileType
+    public enum TerrainType
     {
         Ground,
         Forest,
@@ -37,6 +37,8 @@ public class Globals : MonoBehaviour
         SaltDeposit,
         StoneDeposit
     }
+
+    // TODO starting strategic resources
 
     // Singleton
     static Globals instance = null;

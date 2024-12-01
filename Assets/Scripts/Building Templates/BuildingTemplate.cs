@@ -7,4 +7,5 @@ public class BuildingTemplate : ScriptableObject
     [SerializeField] public string buildingName;
     [SerializeField] public int gridLength;
     [SerializeField] public int gridWidth;
+    // TODO add material cost and time to build
 }
