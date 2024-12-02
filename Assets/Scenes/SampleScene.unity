@@ -437,6 +437,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26af30f2b3854f9c93cc6fcc323d520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  houseTemplate: {fileID: 11400000, guid: 226ff6d6c0b3950c78adce9872464a38, type: 2}
+  marketTemplate: {fileID: 11400000, guid: 59d0e301a045d4fbab3c8f2c938dd6ba, type: 2}
+  churchTemplate: {fileID: 11400000, guid: 1f75968ab1df57f91aaeec9cf8be2dbb, type: 2}
+  innTemplate: {fileID: 11400000, guid: 99305cdd500be7b37879d5d2cf7d3918, type: 2}
+  wellTemplate: {fileID: 11400000, guid: 998751906a40ecce48fcae1192552225, type: 2}
+  cottonPlantationTemplate: {fileID: 11400000, guid: 084bcf6304529480cb58f21d00367673, type: 2}
+  hopsFarmTemplate: {fileID: 11400000, guid: 38447bcf8a0b228d0ae68f29c6450f10, type: 2}
+  wheatFarmTemplate: {fileID: 11400000, guid: 71c8de4b786eb2a47962a929084b42f6, type: 2}
+  bakeryTemplate: {fileID: 11400000, guid: 22dc2692ef0f18680a32cca044643a86, type: 2}
+  breweryTemplate: {fileID: 11400000, guid: 0f918bb0bbea1ce8ab74a905d789d8bc, type: 2}
+  clothierTemplate: {fileID: 11400000, guid: c80c2ff6e751339d99536d98ce1b1ed7, type: 2}
+  forgeTemplate: {fileID: 11400000, guid: ed2a86d692f9c2147a0da23e124e9549, type: 2}
+  windmillTemplate: {fileID: 11400000, guid: 85e18b55ad3dcab5ca52bbf59c4c15cf, type: 2}
+  fishingHutTemplate: {fileID: 11400000, guid: d1399b0ea95c75382924fbb034f997b5, type: 2}
+  huntersCabinTemplate: {fileID: 11400000, guid: 82191e2018f984cb6b153150cb948633, type: 2}
+  ironMineTemplate: {fileID: 11400000, guid: 7d5b943c7bd9b9af699613086b3a1d65, type: 2}
+  saltMineTemplate: {fileID: 11400000, guid: d65fbcb6527cc7a079d6d8b1d3ba52ac, type: 2}
+  sawmillTemplate: {fileID: 11400000, guid: 862d403a6826c84989792bdb97971c1c, type: 2}
+  stoneMineTemplate: {fileID: 11400000, guid: ca56520b869b266fe944f56f1bb29a8d, type: 2}
 --- !u!1 &2009708453
 GameObject:
   m_ObjectHideFlags: 0

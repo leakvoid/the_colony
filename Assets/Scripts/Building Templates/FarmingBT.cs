@@ -6,5 +6,5 @@ using UnityEngine;
 public class FarmingBT : WorkableBT
 {
     [SerializeField] public int amountProducedPerInterval;
-    [SerializeField] public Globals.ResourceType producedResource;
+    [SerializeField] public ResourceType producedResource;
 }

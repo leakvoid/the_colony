@@ -1,25 +1,69 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingPlacement : MonoBehaviour
 {
+    // housing
+    [SerializeField] HousingBT houseTemplate;
+
+    // service
+    [SerializeField] ServiceBT marketTemplate;
+    [SerializeField] ServiceBT churchTemplate;
+    [SerializeField] ServiceBT innTemplate;
+    [SerializeField] ServiceBT wellTemplate;
+
+    // farming
+    [SerializeField] FarmingBT cottonPlantationTemplate;
+    [SerializeField] FarmingBT hopsFarmTemplate;
+    [SerializeField] FarmingBT wheatFarmTemplate;
+
+    // processing
+    [SerializeField] ProcessingBT bakeryTemplate;
+    [SerializeField] ProcessingBT breweryTemplate;
+    [SerializeField] ProcessingBT clothierTemplate;
+    [SerializeField] ProcessingBT forgeTemplate;
+    [SerializeField] ProcessingBT windmillTemplate;
+
+    // gathering
+    [SerializeField] ResourceGatheringBT fishingHutTemplate;
+    [SerializeField] ResourceGatheringBT huntersCabinTemplate;
+    [SerializeField] ResourceGatheringBT ironMineTemplate;
+    [SerializeField] ResourceGatheringBT saltMineTemplate;
+    [SerializeField] ResourceGatheringBT sawmillTemplate;
+    [SerializeField] ResourceGatheringBT stoneMineTemplate;
+
     AbstractMapGenerator mapGenerator;
 
+    // arrays for placing houses
     bool[,] marketCoverArea;
     bool[,] churchCoverArea;
     bool[,] innCoverArea;
     bool[,] wellCoverArea;
 
+    // uncovered houses (for placing service buildings)
     bool[,] uncoveredByMarket;
     bool[,] uncoveredByChurch;
     bool[,] uncoveredByInn;
     bool[,] uncoveredByWell;
 
-    bool[,] availableSpaces;
+    // arrays for placing gathering buildings
+    bool[,] fishingHutCaptureArea;
+    bool[,] huntersCabinCaptureArea;
+    bool[,] sawmillCaptureArea;
+    bool[,] ironMineCaptureArea;
+    bool[,] saltMineCaptureArea;
+    bool[,] stoneMineCaptureArea;
 
-    // TODO resource capture area
+    // already taken spaces
+    bool[,] availableSpace;
 
+    TerrainType[,] terrainGrid;
+    int gridX;
+    int gridY;
+
+    // initialization
     void Awake()
     {
         mapGenerator = FindObjectOfType<AbstractMapGenerator>();
@@ -27,10 +71,151 @@ public class BuildingPlacement : MonoBehaviour
 
     void Start()
     {
-        Globals.TerrainType[,] terrainGrid = mapGenerator.GetTerrainGrid();
+        terrainGrid = mapGenerator.GetTerrainGrid();
+        gridX = terrainGrid.GetLength(0);
+        gridY = terrainGrid.GetLength(1);
+
+        marketCoverArea = new bool[gridX, gridY];
+        churchCoverArea = new bool[gridX, gridY];
+        innCoverArea = new bool[gridX, gridY];
+        wellCoverArea = new bool[gridX, gridY];
+
+        uncoveredByMarket = new bool[gridX, gridY];
+        uncoveredByChurch = new bool[gridX, gridY];
+        uncoveredByInn = new bool[gridX, gridY];
+        uncoveredByWell = new bool[gridX, gridY];
+
+        fishingHutCaptureArea = new bool[gridX, gridY];
+        huntersCabinCaptureArea = new bool[gridX, gridY];
+        sawmillCaptureArea = new bool[gridX, gridY];
+        ironMineCaptureArea = new bool[gridX, gridY];
+        saltMineCaptureArea = new bool[gridX, gridY];
+        stoneMineCaptureArea = new bool[gridX, gridY];
+
+        availableSpace = new bool[gridX, gridY];
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                if (terrainGrid[i,j] != TerrainType.Ground)
+                {
+                    availableSpace[i,j] = true;
+                }
+            }
+        }
     }
 
+    public bool Build(BuildingTag buildingTag)
+    {
+        BuildingTemplate buildingTemplate = NameToTemplate(buildingTag);
 
+        (int x, int y) location;
+        switch (buildingTemplate.buildingType)
+        {
+            case BuildingType.Housing:
+                location = PickBestHousingLocation(buildingTag);
+                break;
+            case BuildingType.Service:
+                location = PickBestServiceLocation(buildingTag);
+                break;
+            case BuildingType.ResourceGathering:
+                location = PickLocationNearResource(buildingTag);
+                break;
+            default:
+                location = PickRandomBuildingLocation(buildingTag);
+                break;
+        }
+
+        if (location == (-1, -1))
+        {
+            print("Building space run out for " + nameof(buildingTag));
+            return false;
+        }
+
+        PlaceBuildingAt(location, buildingTemplate);
+        // TODO instantiate building
+
+        // TODO update arrays
+        return true;
+    }
+
+    (int, int) PickBestHousingLocation(BuildingTag buildingTag)
+    {
+        return (0,0);
+    }
+
+    (int, int) PickBestServiceLocation(BuildingTag buildingTag)
+    {
+        return (0,0);
+    }
+
+    (int, int) PickRandomBuildingLocation(BuildingTag buildingTag)
+    {
+        return (0,0);
+    }
+
+    (int, int) PickLocationNearResource(BuildingTag buildingTag)
+    {
+        return (0,0);
+    }
+
+    BuildingTemplate NameToTemplate(BuildingTag buildingTag)
+    {
+        switch (buildingTag)
+        {
+            case BuildingTag.House:
+                return houseTemplate;
+            case BuildingTag.Market:
+                return marketTemplate;
+            case BuildingTag.Church:
+                return churchTemplate;
+            case BuildingTag.Inn:
+                return innTemplate;
+            case BuildingTag.Well:
+                return wellTemplate;
+            case BuildingTag.CottonPlantation:
+                return cottonPlantationTemplate;
+            case BuildingTag.HopsFarm:
+                return hopsFarmTemplate;
+            case BuildingTag.WheatFarm:
+                return wheatFarmTemplate;
+            case BuildingTag.Bakery:
+                return bakeryTemplate;
+            case BuildingTag.Brewery:
+                return breweryTemplate;
+            case BuildingTag.Clothier:
+                return clothierTemplate;
+            case BuildingTag.Forge:
+                return forgeTemplate;
+            case BuildingTag.Windmill:
+                return windmillTemplate;
+            case BuildingTag.FishingHut:
+                return fishingHutTemplate;
+            case BuildingTag.HuntersCabin:
+                return huntersCabinTemplate;
+            case BuildingTag.IronMine:
+                return ironMineTemplate;
+            case BuildingTag.SaltMine:
+                return saltMineTemplate;
+            case BuildingTag.Sawmill:
+                return sawmillTemplate;
+            case BuildingTag.StoneMine:
+                return stoneMineTemplate;
+            default:
+                throw new ArgumentException("building " + nameof(buildingTag) + " is missing");
+        }
+    }
+
+    void PlaceBuildingAt((int x, int y) location, BuildingTemplate buildingTemplate)
+    {
+        for (int i = location.x; i < location.x + buildingTemplate.gridLength; i++)
+        {
+            for (int j = location.y; j < location.y + buildingTemplate.gridWidth; j++)
+            {
+                availableSpace[i,j] = true;
+            }
+        }
+    }
 
     /*
     What is the right approach for building placement?

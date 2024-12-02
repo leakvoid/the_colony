@@ -7,6 +7,6 @@ public class ProcessingBT : WorkableBT
 {
     [SerializeField] public int amountConsumedPerInterval;
     [SerializeField] public int amountProducedPerInterval;
-    [SerializeField] public Globals.ResourceType consumedResource;
-    [SerializeField] public Globals.ResourceType producedResource;
+    [SerializeField] public ResourceType consumedResource;
+    [SerializeField] public ResourceType producedResource;
 }

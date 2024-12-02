@@ -8,36 +8,6 @@ public class Globals : MonoBehaviour
     [SerializeField] public float colonistMovementSpeed = 3f;
     [SerializeField] public float sleepDuration = 10f;
 
-    // Common types
-    public enum ResourceType
-    {
-        None,
-        Stone,
-        Iron,
-        Salt,
-        Wood,
-        Cotton,
-        Wheat,
-        Hops,
-        Meat,
-        Fish,
-        Tools,
-        Cloth,
-        Flour,
-        Bread,
-        Beer
-    }
-
-    public enum TerrainType
-    {
-        Ground,
-        Forest,
-        Water,
-        IronDeposit,
-        SaltDeposit,
-        StoneDeposit
-    }
-
     // TODO starting strategic resources
 
     // Singleton
@@ -58,6 +28,69 @@ public class Globals : MonoBehaviour
     }
 }
 
+// Common types
+public enum BuildingTag
+{
+    House,
+    Market,
+    Church,
+    Inn,
+    Well,
+    CottonPlantation,
+    HopsFarm,
+    WheatFarm,
+    Bakery,
+    Brewery,
+    Clothier,
+    Forge,
+    Windmill,
+    FishingHut,
+    HuntersCabin,
+    IronMine,
+    SaltMine,
+    Sawmill,
+    StoneMine
+}
+
+public enum BuildingType
+{
+    Housing,
+    Service,
+    Processing,
+    Farming,
+    ResourceGathering
+}
+
+public enum ResourceType
+{
+    None,
+    Stone,
+    Iron,
+    Salt,
+    Wood,
+    Cotton,
+    Wheat,
+    Hops,
+    Meat,
+    Fish,
+    Tools,
+    Cloth,
+    Flour,
+    Bread,
+    Beer
+}
+
+public enum TerrainType
+{
+    Ground,
+    Forest,
+    Water,
+    IronDeposit,
+    SaltDeposit,
+    StoneDeposit
+}
+
+// instances
 class House
 {
     // instance
