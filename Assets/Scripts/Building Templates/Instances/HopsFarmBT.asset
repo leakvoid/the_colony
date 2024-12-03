@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HopsFarmBT
   m_EditorClassIdentifier: 
   buildingName: Hops farm
+  buildingTag: 6
+  buildingType: 3
   gridLength: 12
   gridWidth: 12
   maxNumberOfWorkers: 4

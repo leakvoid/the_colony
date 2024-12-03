@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: WindmillBT
   m_EditorClassIdentifier: 
   buildingName: Windmill
+  buildingTag: 12
+  buildingType: 2
   gridLength: 3
   gridWidth: 3
   maxNumberOfWorkers: 3

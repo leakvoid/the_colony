@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ForgeBT
   m_EditorClassIdentifier: 
   buildingName: Forge
+  buildingTag: 11
+  buildingType: 2
   gridLength: 3
   gridWidth: 3
   maxNumberOfWorkers: 2

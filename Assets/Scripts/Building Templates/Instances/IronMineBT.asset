@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: IronMineBT
   m_EditorClassIdentifier: 
   buildingName: Iron mine
+  buildingTag: 15
+  buildingType: 4
   gridLength: 3
   gridWidth: 3
   maxNumberOfWorkers: 2

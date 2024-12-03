@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AbstractMapGenerator : MonoBehaviour
 {
-    [SerializeField] int gridX = 1000;
-    [SerializeField] int gridY = 1000;
+    [SerializeField] int gridX = 500;
+    [SerializeField] int gridY = 500;
 
     // resources
     [SerializeField] int forestPercentage = 15;

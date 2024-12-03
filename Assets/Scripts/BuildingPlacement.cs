@@ -36,7 +36,7 @@ public class BuildingPlacement : MonoBehaviour
 
     AbstractMapGenerator mapGenerator;
 
-    // arrays for placing houses
+    // data for placing houses
     bool[,] marketCoverArea;
     bool[,] churchCoverArea;
     bool[,] innCoverArea;
@@ -48,7 +48,7 @@ public class BuildingPlacement : MonoBehaviour
     bool[,] uncoveredByInn;
     bool[,] uncoveredByWell;
 
-    // arrays for placing gathering buildings
+    // data for placing gathering buildings
     bool[,] fishingHutCaptureArea;
     bool[,] huntersCabinCaptureArea;
     bool[,] sawmillCaptureArea;
@@ -92,15 +92,16 @@ public class BuildingPlacement : MonoBehaviour
         saltMineCaptureArea = new bool[gridX, gridY];
         stoneMineCaptureArea = new bool[gridX, gridY];
 
+        // TODO add surrounding resource space as unavailable
         availableSpace = new bool[gridX, gridY];
         for (int i = 0; i < gridX; i++)
         {
             for (int j = 0; j < gridY; j++)
             {
-                if (terrainGrid[i,j] != TerrainType.Ground)
-                {
+                if (terrainGrid[i,j] == TerrainType.Ground)
                     availableSpace[i,j] = true;
-                }
+                else
+                    availableSpace[i,j] = false;
             }
         }
     }
@@ -109,20 +110,21 @@ public class BuildingPlacement : MonoBehaviour
     {
         BuildingTemplate buildingTemplate = NameToTemplate(buildingTag);
 
+        // pick location
         (int x, int y) location;
         switch (buildingTemplate.buildingType)
         {
             case BuildingType.Housing:
-                location = PickBestHousingLocation(buildingTag);
+                location = PickBestHousingLocation(buildingTemplate);
                 break;
             case BuildingType.Service:
-                location = PickBestServiceLocation(buildingTag);
+                location = PickBestServiceLocation(buildingTemplate);
                 break;
             case BuildingType.ResourceGathering:
-                location = PickLocationNearResource(buildingTag);
+                location = PickLocationNearResource(buildingTemplate);
                 break;
             default:
-                location = PickRandomBuildingLocation(buildingTag);
+                location = PickRandomBuildingLocation(buildingTemplate);
                 break;
         }
 
@@ -132,31 +134,215 @@ public class BuildingPlacement : MonoBehaviour
             return false;
         }
 
-        PlaceBuildingAt(location, buildingTemplate);
-        // TODO instantiate building
+        // place building
+        // TODO instantiate building and place prefab onto scene
 
-        // TODO update arrays
+        // update building affected areas
+        UpdateAvailableSpace(location, buildingTemplate);
+        switch (buildingTemplate.buildingType)
+        {
+            case BuildingType.Housing:
+                UpdateHouseCoverage(location, buildingTemplate);
+                break;
+            case BuildingType.Service:
+                UpdateServiceCoverArea(location, buildingTemplate);
+                break;
+            case BuildingType.ResourceGathering:
+                UpdateResourceCaptureArea(location, buildingTemplate);
+                break;
+            default:
+                break;
+        }
+        
         return true;
     }
 
-    (int, int) PickBestHousingLocation(BuildingTag buildingTag)
+    bool[,] GetAvailableBuildingSpots(BuildingTemplate bt)
+    {
+        // TODO O(x^4) can be optimized
+        var availableForBuilding = new bool[gridX - bt.sizeX + 1, gridY - bt.sizeY + 1];
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                availableForBuilding[i,j] = true;
+                for (int k = 0; k < bt.sizeX; k++)
+                {
+                    for (int l = 0; l < bt.sizeY; l++)
+                    {
+                        if (!availableSpace[i + k,j + l])
+                        {
+                            availableForBuilding[i,j] = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return availableForBuilding;
+    }
+
+    (int, int) PickBestHousingLocation(BuildingTemplate bt)
+    {
+        var availableForBuilding = GetAvailableBuildingSpots(bt);
+
+        const int MAXIMUM_VALUE = 5;
+        var numberOfSpots = new int[MAXIMUM_VALUE];
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (!availableForBuilding[i,j])
+                    continue;
+                
+                int tileValue = 0;
+                if (marketCoverArea[i,j])
+                    tileValue += 1;
+                if (churchCoverArea[i,j])
+                    tileValue += 1;
+                if (innCoverArea[i,j])
+                    tileValue += 1;
+                if (wellCoverArea[i,j])
+                    tileValue += 1;
+                
+                numberOfSpots[tileValue] += 1;
+            }
+        }
+
+        int bestValue = MAXIMUM_VALUE - 1; // TODO REWRITE with max
+        while (bestValue >= 0 && numberOfSpots[bestValue] == 0)
+            bestValue--;
+        
+        // out of space
+        if (numberOfSpots[0] == 0)
+            return (-1, -1);
+        
+        int chosenPos = UnityEngine.Random.Range(0, numberOfSpots[bestValue]);
+        int currentPos = 0;
+
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (!availableForBuilding[i,j])
+                    continue;
+                
+                int tileValue = 0;
+                if (marketCoverArea[i,j])
+                    tileValue += 1;
+                if (churchCoverArea[i,j])
+                    tileValue += 1;
+                if (innCoverArea[i,j])
+                    tileValue += 1;
+                if (wellCoverArea[i,j])
+                    tileValue += 1;
+                
+                if(tileValue == bestValue)
+                {
+                    currentPos++;
+                    if (currentPos == chosenPos)
+                        return (i, j);
+                }
+            }
+        }
+
+        throw new Exception("Should never happen. Picked random position not found");
+    }
+
+    (int, int) PickBestServiceLocation(BuildingTemplate buildingTemplate)
+    {
+        ServiceBT bt = (ServiceBT)buildingTemplate;
+
+        var availableForBuilding = GetAvailableBuildingSpots(bt);
+
+        bool[,] uncoveredHouses;
+        switch (bt.buildingTag)
+        {
+            case BuildingTag.Market:
+                uncoveredHouses = uncoveredByMarket;
+                break;
+            case BuildingTag.Church:
+                uncoveredHouses = uncoveredByChurch;
+                break;
+            case BuildingTag.Inn:
+                uncoveredHouses = uncoveredByInn;
+                break;
+            case BuildingTag.Well:
+                uncoveredHouses = uncoveredByWell;
+                break;
+            default:
+                throw new Exception("Unknown service building.");
+        }
+
+        int bestCoverValue = 0;
+        int numberOfBestSpots = 0;
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (!availableForBuilding[i,j])
+                    continue;
+                
+                int coverValue = GetServiceCoverAreaValue(i, j, bt);
+                if (coverValue > bestCoverValue)
+                {
+                    bestCoverValue = coverValue;
+                    numberOfBestSpots = 1;
+                }
+                else if (coverValue == bestCoverValue)
+                {
+                    numberOfBestSpots++;
+                }
+            }
+        }
+
+        if (numberOfBestSpots == 0)
+            return (-1, -1);
+
+        return (0,0);
+    }
+
+    int GetServiceCoverAreaValue(int x, int y, ServiceBT bt)
+    {
+        return 0;
+    }
+
+    (int, int) PickLocationNearResource(BuildingTemplate buildingTemplate)
+    {
+        ResourceGatheringBT bt = (ResourceGatheringBT)buildingTemplate;
+
+        return (0,0);
+    }
+
+    (int, int) PickRandomBuildingLocation(BuildingTemplate buildingTemplate)
     {
         return (0,0);
     }
 
-    (int, int) PickBestServiceLocation(BuildingTag buildingTag)
+    void UpdateAvailableSpace((int x, int y) location, BuildingTemplate buildingTemplate)
     {
-        return (0,0);
+        for (int i = location.x; i < location.x + buildingTemplate.sizeX; i++)
+        {
+            for (int j = location.y; j < location.y + buildingTemplate.sizeY; j++)
+            {
+                availableSpace[i,j] = true;
+            }
+        }
     }
 
-    (int, int) PickRandomBuildingLocation(BuildingTag buildingTag)
+    void UpdateHouseCoverage((int x, int y) location,BuildingTemplate buildingTemplate)
     {
-        return (0,0);
+
     }
 
-    (int, int) PickLocationNearResource(BuildingTag buildingTag)
+    void UpdateServiceCoverArea((int x, int y) location,BuildingTemplate buildingTemplate)
     {
-        return (0,0);
+        
+    }
+
+    void UpdateResourceCaptureArea((int x, int y) location,BuildingTemplate buildingTemplate)
+    {
+        
     }
 
     BuildingTemplate NameToTemplate(BuildingTag buildingTag)
@@ -203,17 +389,6 @@ public class BuildingPlacement : MonoBehaviour
                 return stoneMineTemplate;
             default:
                 throw new ArgumentException("building " + nameof(buildingTag) + " is missing");
-        }
-    }
-
-    void PlaceBuildingAt((int x, int y) location, BuildingTemplate buildingTemplate)
-    {
-        for (int i = location.x; i < location.x + buildingTemplate.gridLength; i++)
-        {
-            for (int j = location.y; j < location.y + buildingTemplate.gridWidth; j++)
-            {
-                availableSpace[i,j] = true;
-            }
         }
     }
 

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ChurchBT
   m_EditorClassIdentifier: 
   buildingName: Church
+  buildingTag: 2
+  buildingType: 1
   gridLength: 5
   gridWidth: 5
   maxNumberOfWorkers: 3

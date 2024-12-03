@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: WellBT
   m_EditorClassIdentifier: 
   buildingName: Well
+  buildingTag: 4
+  buildingType: 1
   gridLength: 1
   gridWidth: 1
   maxNumberOfWorkers: 0

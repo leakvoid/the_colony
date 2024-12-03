@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HuntersCabinBT
   m_EditorClassIdentifier: 
   buildingName: Hunters cabin
+  buildingTag: 14
+  buildingType: 4
   gridLength: 2
   gridWidth: 2
   maxNumberOfWorkers: 1

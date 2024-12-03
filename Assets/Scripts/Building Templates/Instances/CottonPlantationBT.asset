@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CottonPlantationBT
   m_EditorClassIdentifier: 
   buildingName: Cotton plantation
+  buildingTag: 5
+  buildingType: 3
   gridLength: 12
   gridWidth: 12
   maxNumberOfWorkers: 4

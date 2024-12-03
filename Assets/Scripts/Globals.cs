@@ -15,6 +15,8 @@ public class Globals : MonoBehaviour
 
     void Start()
     {
+        int[] i = new int[3];
+        print("IIII: " + i[0]);
         if(instance != null)
         {
             gameObject.SetActive(false);

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: WheatFarmBT
   m_EditorClassIdentifier: 
   buildingName: Wheat farm
+  buildingTag: 7
+  buildingType: 3
   gridLength: 12
   gridWidth: 12
   maxNumberOfWorkers: 4

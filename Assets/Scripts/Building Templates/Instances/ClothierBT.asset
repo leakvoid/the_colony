@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ClothierBT
   m_EditorClassIdentifier: 
   buildingName: Clothier
+  buildingTag: 10
+  buildingType: 2
   gridLength: 3
   gridWidth: 3
   maxNumberOfWorkers: 2

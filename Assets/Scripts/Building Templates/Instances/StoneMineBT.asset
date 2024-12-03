@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: StoneMineBT
   m_EditorClassIdentifier: 
   buildingName: Stone mine
+  buildingTag: 18
+  buildingType: 4
   gridLength: 3
   gridWidth: 3
   maxNumberOfWorkers: 2

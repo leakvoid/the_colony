@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: FishingHutBT
   m_EditorClassIdentifier: 
   buildingName: Fishing hut
+  buildingTag: 13
+  buildingType: 4
   gridLength: 2
   gridWidth: 2
   maxNumberOfWorkers: 1
