@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Cotton plantation
   buildingTag: 5
   buildingType: 3
-  gridLength: 12
-  gridWidth: 12
+  sizeX: 12
+  sizeY: 12
   maxNumberOfWorkers: 4
   salary: 8
   timeInterval: 10

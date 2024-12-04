@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HouseBT
   m_EditorClassIdentifier: 
   buildingName: House
-  gridLength: 2
-  gridWidth: 2
+  buildingTag: 0
+  buildingType: 0
+  sizeX: 2
+  sizeY: 2
   colonistCapacity: 10

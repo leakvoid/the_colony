@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Wheat farm
   buildingTag: 7
   buildingType: 3
-  gridLength: 12
-  gridWidth: 12
+  sizeX: 12
+  sizeY: 12
   maxNumberOfWorkers: 4
   salary: 9
   timeInterval: 10

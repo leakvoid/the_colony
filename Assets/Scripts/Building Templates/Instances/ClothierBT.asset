@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Clothier
   buildingTag: 10
   buildingType: 2
-  gridLength: 3
-  gridWidth: 3
+  sizeX: 2
+  sizeY: 3
   maxNumberOfWorkers: 2
   salary: 12
   timeInterval: 10

@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Inn
   buildingTag: 3
   buildingType: 1
-  gridLength: 4
-  gridWidth: 4
+  sizeX: 4
+  sizeY: 4
   maxNumberOfWorkers: 3
   salary: 12
   timeInterval: 10

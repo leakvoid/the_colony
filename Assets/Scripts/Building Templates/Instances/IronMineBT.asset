@@ -15,13 +15,13 @@ MonoBehaviour:
   buildingName: Iron mine
   buildingTag: 15
   buildingType: 4
-  gridLength: 3
-  gridWidth: 3
+  sizeX: 3
+  sizeY: 3
   maxNumberOfWorkers: 2
   salary: 8
   timeInterval: 10
   amountProducedPerInterval: 4
   producedResource: 2
   groundResource: 3
-  minDistanceToResource: 3
+  minDistanceToResource: 5
   captureGatheringArea: 20

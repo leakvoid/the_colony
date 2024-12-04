@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Bakery
   buildingTag: 8
   buildingType: 2
-  gridLength: 2
-  gridWidth: 2
+  sizeX: 2
+  sizeY: 4
   maxNumberOfWorkers: 2
   salary: 8
   timeInterval: 10

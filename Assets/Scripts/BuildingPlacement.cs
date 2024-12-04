@@ -186,8 +186,8 @@ public class BuildingPlacement : MonoBehaviour
     {
         var availableForBuilding = GetAvailableBuildingSpots(bt);
 
-        const int MAXIMUM_VALUE = 5;
-        var numberOfSpots = new int[MAXIMUM_VALUE];
+        var maxTileValue = 0;
+        var maxTileValueCount = 0;
         for (int i = 0; i < gridX - bt.sizeX + 1; i++)
         {
             for (int j = 0; j < gridY - bt.sizeY + 1; j++)
@@ -205,20 +205,23 @@ public class BuildingPlacement : MonoBehaviour
                 if (wellCoverArea[i,j])
                     tileValue += 1;
                 
-                numberOfSpots[tileValue] += 1;
+                if (tileValue > maxTileValue)
+                {
+                    maxTileValue = tileValue;
+                    maxTileValueCount = 1;
+                }
+                else if (tileValue == maxTileValue)
+                {
+                    maxTileValueCount++;
+                }
             }
         }
-
-        int bestValue = MAXIMUM_VALUE - 1; // TODO REWRITE with max
-        while (bestValue >= 0 && numberOfSpots[bestValue] == 0)
-            bestValue--;
         
-        // out of space
-        if (numberOfSpots[0] == 0)
+        if (maxTileValueCount == 0)
             return (-1, -1);
         
-        int chosenPos = UnityEngine.Random.Range(0, numberOfSpots[bestValue]);
-        int currentPos = 0;
+        int chosenPos = UnityEngine.Random.Range(0, maxTileValueCount);
+        int currentPos = -1;
 
         for (int i = 0; i < gridX - bt.sizeX + 1; i++)
         {
@@ -237,7 +240,7 @@ public class BuildingPlacement : MonoBehaviour
                 if (wellCoverArea[i,j])
                     tileValue += 1;
                 
-                if(tileValue == bestValue)
+                if(tileValue == maxTileValue)
                 {
                     currentPos++;
                     if (currentPos == chosenPos)
@@ -246,7 +249,7 @@ public class BuildingPlacement : MonoBehaviour
             }
         }
 
-        throw new Exception("Should never happen. Picked random position not found");
+        throw new Exception("Should never happen. Picked random housing position not found");
     }
 
     (int, int) PickBestServiceLocation(BuildingTemplate buildingTemplate)
@@ -274,6 +277,7 @@ public class BuildingPlacement : MonoBehaviour
                 throw new Exception("Unknown service building.");
         }
 
+        var coverValueGrid = new int[gridX - bt.sizeX + 1, gridY - bt.sizeY + 1];
         int bestCoverValue = 0;
         int numberOfBestSpots = 0;
         for (int i = 0; i < gridX - bt.sizeX + 1; i++)
@@ -283,7 +287,7 @@ public class BuildingPlacement : MonoBehaviour
                 if (!availableForBuilding[i,j])
                     continue;
                 
-                int coverValue = GetServiceCoverAreaValue(i, j, bt);
+                int coverValue = GetServiceCoverAreaValue(i, j, uncoveredHouses, bt);
                 if (coverValue > bestCoverValue)
                 {
                     bestCoverValue = coverValue;
@@ -293,26 +297,152 @@ public class BuildingPlacement : MonoBehaviour
                 {
                     numberOfBestSpots++;
                 }
+                coverValueGrid[i,j] = coverValue;
             }
         }
 
         if (numberOfBestSpots == 0)
             return (-1, -1);
 
-        return (0,0);
+        int chosenPos = UnityEngine.Random.Range(0, numberOfBestSpots);
+
+        int currentPos = -1;
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (!availableForBuilding[i,j])
+                    continue;
+
+                if(coverValueGrid[i,j] == bestCoverValue)
+                {
+                    currentPos++;
+                    if (currentPos == chosenPos)
+                        return (i, j);
+                }
+            }
+        }
+
+        throw new Exception("Should never happen. Picked random service position not found");
     }
 
-    int GetServiceCoverAreaValue(int x, int y, ServiceBT bt)
+    int GetServiceCoverAreaValue(int x, int y, bool[,] uncoveredHouses, ServiceBT bt)
     {
-        return 0;
+        // TODO center around entire building
+        // TODO O(x^4) can be optimized
+        int count = 0;
+        for (int i = Math.Min(x - bt.coverArea, 0); i < Math.Max(x + bt.coverArea, gridX); i++)
+        {
+            for (int j = Math.Min(y - bt.coverArea, 0); j < Math.Max(y + bt.coverArea, gridY); j++)
+            {
+                if (uncoveredHouses[i,j])
+                    count++;
+            }
+        }
+        return count;
     }
 
+    // TODO logic is wrong, any building space, not just top left corner; similar problem in other cases
     (int, int) PickLocationNearResource(BuildingTemplate buildingTemplate)
     {
         ResourceGatheringBT bt = (ResourceGatheringBT)buildingTemplate;
 
+        var availableForBuilding = GetAvailableBuildingSpots(bt);
+        var resourceCoverGrid = CreateResourceCoverGrid(bt.groundResource, bt.minDistanceToResource);
+        bool[,] captureArea;
+        switch (bt.buildingTag)
+        {
+            case BuildingTag.FishingHut:
+                captureArea = fishingHutCaptureArea;
+                break;
+            case BuildingTag.HuntersCabin:
+                captureArea = huntersCabinCaptureArea;
+                break;
+            case BuildingTag.Sawmill:
+                captureArea = sawmillCaptureArea;
+                break;
+            case BuildingTag.IronMine:
+                captureArea = ironMineCaptureArea;
+                break;
+            case BuildingTag.SaltMine:
+                captureArea = saltMineCaptureArea;
+                break;
+            case BuildingTag.StoneMine:
+                captureArea = stoneMineCaptureArea;
+                break;
+            default:
+                throw new Exception("Resource gathering building " + bt.buildingName + " is missing");
+        }
+
+        int availableLocations = 0;
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (availableForBuilding[i,j] && !captureArea[i,j] && resourceCoverGrid[i,j])
+                    availableLocations++;
+            }
+        }
+
+        if (availableLocations == 0)
+            return (-1, -1);
+
+        int chosenPos = UnityEngine.Random.Range(0, availableLocations);
+        int currentPos = -1;
+
+        for (int i = 0; i < gridX - bt.sizeX + 1; i++)
+        {
+            for (int j = 0; j < gridY - bt.sizeY + 1; j++)
+            {
+                if (availableForBuilding[i,j] && !captureArea[i,j] && resourceCoverGrid[i,j])
+                {
+                    currentPos++;
+                    if(currentPos == chosenPos)
+                        return (i, j);
+                }
+            }
+        }
+
         return (0,0);
     }
+
+    bool[,] CreateResourceCoverGrid(TerrainType groundResource, int range)
+    {
+        void FillGrid(int x1, int x2, int y1, int y2, bool[,] resourceCoverGrid)
+        {
+            for (int i = Math.Min(x1, 0); i < Math.Max(x2 + 1, gridX); i++)
+            {
+                for (int j = Math.Min(y1, 0); j < Math.Max(y2 + 1, gridY); j++)
+                {
+                    resourceCoverGrid[i,j] = true;
+                }
+            }
+        }
+
+        var resourceCoverGrid = new bool[gridX, gridY];
+
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                if (terrainGrid[i,j] == groundResource)
+                {
+                    if (i + 1 < gridX && terrainGrid[i + 1, j] != groundResource)
+                        FillGrid(i + 1, i + range, j - range, j + range, resourceCoverGrid);
+                    if (i - 1 >= 0 && terrainGrid[i - 1, j] != groundResource)
+                        FillGrid(i - range, i - 1, j - range, j + range, resourceCoverGrid);
+                    if (j + 1 < gridY && terrainGrid[i, j + 1] != groundResource)
+                        FillGrid(i - range, i + range, j + 1, j + range, resourceCoverGrid);
+                    if (j - 1 >= 0 && terrainGrid[i, j - 1] != groundResource)
+                        FillGrid(i - range, i + range, j - range, j - 1, resourceCoverGrid);
+                }
+            }
+        }
+
+        return resourceCoverGrid;
+    }
+
+
 
     (int, int) PickRandomBuildingLocation(BuildingTemplate buildingTemplate)
     {
@@ -347,49 +477,29 @@ public class BuildingPlacement : MonoBehaviour
 
     BuildingTemplate NameToTemplate(BuildingTag buildingTag)
     {
-        switch (buildingTag)
+        return buildingTag switch
         {
-            case BuildingTag.House:
-                return houseTemplate;
-            case BuildingTag.Market:
-                return marketTemplate;
-            case BuildingTag.Church:
-                return churchTemplate;
-            case BuildingTag.Inn:
-                return innTemplate;
-            case BuildingTag.Well:
-                return wellTemplate;
-            case BuildingTag.CottonPlantation:
-                return cottonPlantationTemplate;
-            case BuildingTag.HopsFarm:
-                return hopsFarmTemplate;
-            case BuildingTag.WheatFarm:
-                return wheatFarmTemplate;
-            case BuildingTag.Bakery:
-                return bakeryTemplate;
-            case BuildingTag.Brewery:
-                return breweryTemplate;
-            case BuildingTag.Clothier:
-                return clothierTemplate;
-            case BuildingTag.Forge:
-                return forgeTemplate;
-            case BuildingTag.Windmill:
-                return windmillTemplate;
-            case BuildingTag.FishingHut:
-                return fishingHutTemplate;
-            case BuildingTag.HuntersCabin:
-                return huntersCabinTemplate;
-            case BuildingTag.IronMine:
-                return ironMineTemplate;
-            case BuildingTag.SaltMine:
-                return saltMineTemplate;
-            case BuildingTag.Sawmill:
-                return sawmillTemplate;
-            case BuildingTag.StoneMine:
-                return stoneMineTemplate;
-            default:
-                throw new ArgumentException("building " + nameof(buildingTag) + " is missing");
-        }
+            BuildingTag.House => houseTemplate,
+            BuildingTag.Market => marketTemplate,
+            BuildingTag.Church => churchTemplate,
+            BuildingTag.Inn => innTemplate,
+            BuildingTag.Well => wellTemplate,
+            BuildingTag.CottonPlantation => cottonPlantationTemplate,
+            BuildingTag.HopsFarm => hopsFarmTemplate,
+            BuildingTag.WheatFarm => wheatFarmTemplate,
+            BuildingTag.Bakery => bakeryTemplate,
+            BuildingTag.Brewery => breweryTemplate,
+            BuildingTag.Clothier => clothierTemplate,
+            BuildingTag.Forge => forgeTemplate,
+            BuildingTag.Windmill => windmillTemplate,
+            BuildingTag.FishingHut => fishingHutTemplate,
+            BuildingTag.HuntersCabin => huntersCabinTemplate,
+            BuildingTag.IronMine => ironMineTemplate,
+            BuildingTag.SaltMine => saltMineTemplate,
+            BuildingTag.Sawmill => sawmillTemplate,
+            BuildingTag.StoneMine => stoneMineTemplate,
+            _ => throw new ArgumentException("building " + nameof(buildingTag) + " is missing"),
+        };
     }
 
     /*

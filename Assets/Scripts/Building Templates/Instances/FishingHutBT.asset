@@ -15,13 +15,13 @@ MonoBehaviour:
   buildingName: Fishing hut
   buildingTag: 13
   buildingType: 4
-  gridLength: 2
-  gridWidth: 2
+  sizeX: 2
+  sizeY: 2
   maxNumberOfWorkers: 1
   salary: 5
   timeInterval: 10
   amountProducedPerInterval: 5
   producedResource: 9
   groundResource: 2
-  minDistanceToResource: 1
+  minDistanceToResource: 2
   captureGatheringArea: 10

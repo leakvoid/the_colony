@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Market
   buildingTag: 1
   buildingType: 1
-  gridLength: 4
-  gridWidth: 4
+  sizeX: 4
+  sizeY: 4
   maxNumberOfWorkers: 2
   salary: 8
   timeInterval: 10

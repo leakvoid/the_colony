@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Well
   buildingTag: 4
   buildingType: 1
-  gridLength: 1
-  gridWidth: 1
+  sizeX: 1
+  sizeY: 1
   maxNumberOfWorkers: 0
   salary: 0
   timeInterval: 10

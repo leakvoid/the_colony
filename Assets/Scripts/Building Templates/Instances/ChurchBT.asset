@@ -15,8 +15,8 @@ MonoBehaviour:
   buildingName: Church
   buildingTag: 2
   buildingType: 1
-  gridLength: 5
-  gridWidth: 5
+  sizeX: 5
+  sizeY: 5
   maxNumberOfWorkers: 3
   salary: 8
   timeInterval: 10
