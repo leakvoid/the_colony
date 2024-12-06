@@ -621,4 +621,16 @@ public class BuildingPlacement : MonoBehaviour
 
     gathering nearby resources 4. get flagMap for each already mined resource
      */
+
+    /*
+    1. computer AI logic
+
+    2. road generation
+
+    3. citizen logic
+
+    4. temporal logic
+
+    5. graphics
+    */
 }
