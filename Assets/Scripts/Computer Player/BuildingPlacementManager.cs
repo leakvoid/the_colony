@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class BuildingPlacement : MonoBehaviour
+public class BuildingPlacementManager : MonoBehaviour
 {
     // housing
     [SerializeField] HousingBT houseTemplate;
@@ -623,14 +623,41 @@ public class BuildingPlacement : MonoBehaviour
      */
 
     /*
-    1. computer AI logic
 
-    2. road generation
+    1. citizen logic
+        if need low -> check service availability (via house) -> is building constructed ->
+         -> (check resource availability) -> (reserve resource purchase) -> go to service building
+        go to work -> start working
 
-    3. citizen logic
+    2. computer AI logic
+        houses rather than workers should generate pressure to build services
 
-    4. temporal logic
+        (house)
+
+        (resource gathering)
+
+        (processing)
+
+        (service)
+        check service availability -> pressure to build
+        pressure to build reaches threshold -> construct building
+
+        building construction available -> allocate builders and send workers
+        building finished -> send workers
+
+    3. temporal logic
+
+        citizens:
+        idle (default)
+        walking (time is varied, cannot be precomputed)
+        working (fixed duration)
+        consuming (fixed duration)
+
+    4. road generation
 
     5. graphics
+
+
+    what is the interplay between needs fulfillment and worker growth?
     */
 }

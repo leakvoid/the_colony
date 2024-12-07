@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ColonistData : MonoBehaviour
@@ -7,9 +8,9 @@ public class ColonistData : MonoBehaviour
     // 0-100 
     int sleepNeedMeter = 100;
     int foodNeedMeter = 0;
-    int waterNeedMeter = 0;
     int clothesNeedMeter = 0;
     int saltNeedMeter = 0;
+    int waterNeedMeter = 0;
     int beerNeedMeter = 0;
     int religionNeedMeter = 0;
 
@@ -50,4 +51,49 @@ public class ColonistData : MonoBehaviour
     GameObject worksAt;
 
     GameObject modelReference;
+
+    void QueueActions()
+    {
+        if (sleepNeedMeter <= 0)
+        {
+            // enqueue goToLocation home
+            // enqueue sleep
+        }
+        if (foodNeedMeter <= 0)
+        {
+            // check market availability
+            // if constructed
+            // check if available food
+            // reserve purchase
+            // enqueue goToLocation market
+            // enqueue purchase food
+        }
+        if (clothesNeedMeter <= 0)
+        {
+            // same as food
+        }
+        if (saltNeedMeter <= 0)
+        {
+            // same as food
+        }
+        if (waterNeedMeter <= 0)
+        {
+            // check well availability
+            // if constructed
+            // enqueue goToLocation well
+            // enqueue get water
+        }
+        if (beerNeedMeter <= 0)
+        {
+            // same as food
+        }
+        if (religionNeedMeter <= 0)
+        {
+            // same as well
+        }
+        
+        // if has work
+        // enqueue goToLocation work
+        // enqueue startWorking
+    }
 }
