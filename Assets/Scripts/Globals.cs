@@ -65,21 +65,25 @@ public enum BuildingType
 
 public enum ResourceType
 {
-    None,
-    Stone,
-    Iron,
-    Salt,
+    // 
     Wood,
+    Stone,
+    Tools,
+    //
+    Iron,
     Cotton,
     Wheat,
     Hops,
+    Flour,
+    //
+    Salt,
+    Cloth,
     Meat,
     Fish,
-    Tools,
-    Cloth,
-    Flour,
     Bread,
-    Beer
+    Beer,
+    //
+    Food
 }
 
 public enum TerrainType

@@ -21,4 +21,4 @@ MonoBehaviour:
   salary: 9
   timeInterval: 10
   amountProducedPerInterval: 5
-  producedResource: 6
+  producedResource: 5

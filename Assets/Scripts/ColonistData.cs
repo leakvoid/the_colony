@@ -14,6 +14,8 @@ public class ColonistData : MonoBehaviour
     int beerNeedMeter = 0;
     int religionNeedMeter = 0;
 
+    // TODO money earned, money spent
+
     enum Occupation
     {
         Jobless,

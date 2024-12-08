@@ -22,5 +22,5 @@ MonoBehaviour:
   timeInterval: 10
   amountConsumedPerInterval: 2
   amountProducedPerInterval: 4
-  consumedResource: 12
-  producedResource: 13
+  consumedResource: 7
+  producedResource: 12

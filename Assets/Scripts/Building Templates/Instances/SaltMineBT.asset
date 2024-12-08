@@ -21,7 +21,7 @@ MonoBehaviour:
   salary: 10
   timeInterval: 10
   amountProducedPerInterval: 4
-  producedResource: 3
+  producedResource: 8
   groundResource: 4
   minDistanceToResource: 5
   captureGatheringArea: 20
