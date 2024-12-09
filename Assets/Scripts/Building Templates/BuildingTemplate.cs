@@ -9,6 +9,9 @@ public class BuildingTemplate : ScriptableObject
     [SerializeField] public BuildingType buildingType;
     [SerializeField] public int sizeX;
     [SerializeField] public int sizeY;
-    // TODO add material cost and time blocks to build
-    // is constructed (instance)
+    [SerializeField] public int WoodCost;
+    [SerializeField] public int StoneCost;
+    [SerializeField] public int ToolsCost;
+    [SerializeField] public int GoldCost;
+    [SerializeField] public int constructionTime;
 }

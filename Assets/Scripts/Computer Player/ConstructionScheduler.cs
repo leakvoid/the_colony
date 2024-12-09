@@ -34,25 +34,18 @@ public class ConstructionScheduler : MonoBehaviour
     [SerializeField] ResourceGatheringBT sawmillTemplate;
     [SerializeField] ResourceGatheringBT stoneMineTemplate;
 
+    int[] pressure;
+
     void Start()
     {
         int buildingTagNumber = Enum.GetValues(typeof(BuildingTag)).Length;
+
+        pressure = new int[buildingTagNumber];
     }
 
     public void AddBuildingPressure(BuildingTag buildingTag, int amount = 1)
     {
-        switch (buildingTag)
-        {
-            // service
-            case BuildingTag.Market:
-                break;
-            case BuildingTag.Church:
-                break;
-            case BuildingTag.Inn:
-                break;
-            case BuildingTag.Well:
-                break;
-        }
+        pressure[(int)buildingTag] += amount;
     }
 
     public void AddResourcePressure(ResourceType resourceType, int amount = 1)
@@ -92,13 +85,9 @@ public class ConstructionScheduler : MonoBehaviour
             case ResourceType.Cloth:
                 AddBuildingPressure(BuildingTag.Clothier, amount);
                 break;
-            case ResourceType.Meat:
+            case ResourceType.Food:
                 AddBuildingPressure(BuildingTag.HuntersCabin, amount);
-                break;
-            case ResourceType.Fish:
                 AddBuildingPressure(BuildingTag.FishingHut, amount);
-                break;
-            case ResourceType.Bread:
                 AddBuildingPressure(BuildingTag.Bakery, amount);
                 break;
             case ResourceType.Beer:
@@ -111,10 +100,27 @@ public class ConstructionScheduler : MonoBehaviour
 
     public void MakeBuildings()
     {
-        // always try to build houses
+        // if 1 house
+        // build market
+        // if 5 house
+        // build well
+        // if 15 houses
+        // build church
+        // if 20 houses
+        // build inn
 
-        // low income -> push services, needs production
-        // high income -> push construction resource production
-        // low population -> increase population
+        // if idle citizens < 20
+        // build house
+
+        // if ? (gold is also needed -> don't increase; increase construction resource pressure if enough gold)
+        // build wood, stone, tools
+
+        // if raw needed
+        // build raw
+
+        // if consumption need
+        // build consumption
+        // else
+        // build or upgrade house (up to limit ?)
     }
 }

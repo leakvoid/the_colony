@@ -17,10 +17,15 @@ MonoBehaviour:
   buildingType: 4
   sizeX: 3
   sizeY: 3
-  maxNumberOfWorkers: 2
+  WoodCost: 30
+  StoneCost: 0
+  ToolsCost: 0
+  GoldCost: 400
+  constructionTime: 10
+  maxNumberOfWorkers: 3
   salary: 7
   timeInterval: 10
-  amountProducedPerInterval: 4
+  amountProducedPerInterval: 10
   producedResource: 1
   groundResource: 5
   minDistanceToResource: 5

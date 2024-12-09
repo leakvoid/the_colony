@@ -17,6 +17,11 @@ MonoBehaviour:
   buildingType: 1
   sizeX: 4
   sizeY: 4
+  WoodCost: 20
+  StoneCost: 20
+  ToolsCost: 0
+  GoldCost: 400
+  constructionTime: 0
   maxNumberOfWorkers: 2
   salary: 8
   timeInterval: 10

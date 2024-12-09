@@ -17,4 +17,15 @@ MonoBehaviour:
   buildingType: 0
   sizeX: 2
   sizeY: 2
-  colonistCapacity: 10
+  WoodCost: 0
+  StoneCost: 0
+  ToolsCost: 0
+  GoldCost: 50
+  constructionTime: 5
+  tier0ColonistCapacity: 5
+  tier1ColonistCapacity: 10
+  tier2ColonistCapacity: 15
+  tier1UpgradeWoodCost: 10
+  tier1UpgradeGoldCost: 100
+  tier2UpgradeStoneCost: 10
+  tier2UpgradeGoldCost: 200

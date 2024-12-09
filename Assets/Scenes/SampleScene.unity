@@ -122,6 +122,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &517736887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 517736889}
+  - component: {fileID: 517736888}
+  m_Layer: 0
+  m_Name: Building
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &517736888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517736887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f2761beb6461aeb4901c49a27e68b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &517736889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517736887}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,6 +456,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colonistMovementSpeed: 3
   sleepDuration: 10
+  goldAmount: 2000
+  woodAmount: 20
+  stoneAmount: 20
+  toolsAmount: 0
+  IronAmount: 0
+  CottonAmount: 0
+  WheatAmount: 0
+  HopsAmount: 0
+  FlourAmount: 0
+  SaltAmount: 0
+  ClothAmount: 0
+  MeatAmount: 0
+  FishAmount: 0
+  BreadAmount: 0
+  BeerAmount: 0
+  foodPrice: 20
+  saltPrice: 30
+  clothPrice: 40
+  beerPrice: 50
+  churchDonation: 10
 --- !u!114 &1607651227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,5 +558,6 @@ SceneRoots:
   - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 2009708454}
+  - {fileID: 517736889}
   - {fileID: 1607651224}
   - {fileID: 915405256}

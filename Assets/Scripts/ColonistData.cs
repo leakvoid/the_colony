@@ -5,16 +5,27 @@ using UnityEngine;
 
 public class ColonistData : MonoBehaviour
 {
-    // 0-100 
+    // peasant needs
     int sleepNeedMeter = 100;
     int foodNeedMeter = 0;
-    int clothesNeedMeter = 0;
-    int saltNeedMeter = 0;
     int waterNeedMeter = 0;
-    int beerNeedMeter = 0;
+    // citizen needs
+    int clothesNeedMeter = 0;
     int religionNeedMeter = 0;
+    // nobleman needs
+    int beerNeedMeter = 0;
+    int saltNeedMeter = 0;
 
     // TODO money earned, money spent
+
+    enum ColonistType
+    {
+        Peasant,
+        Citizen,
+        Nobleman
+    }
+
+    ColonistType colonistType = ColonistType.Peasant;
 
     enum Occupation
     {
@@ -49,8 +60,8 @@ public class ColonistData : MonoBehaviour
 
     Status status = Status.Idle;
 
-    GameObject livesAt;
-    GameObject worksAt;
+    BuildingData livesAt;
+    BuildingData worksAt;
 
     GameObject modelReference;
 
