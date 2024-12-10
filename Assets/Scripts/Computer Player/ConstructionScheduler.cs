@@ -5,54 +5,76 @@ using UnityEngine;
 
 public class ConstructionScheduler : MonoBehaviour
 {
-    // housing
-    [SerializeField] HousingBT houseTemplate;
-
-    // service
-    [SerializeField] ServiceBT marketTemplate;
-    [SerializeField] ServiceBT churchTemplate;
-    [SerializeField] ServiceBT innTemplate;
-    [SerializeField] ServiceBT wellTemplate;
-
-    // farming
-    [SerializeField] FarmingBT cottonPlantationTemplate;
-    [SerializeField] FarmingBT hopsFarmTemplate;
-    [SerializeField] FarmingBT wheatFarmTemplate;
-
-    // processing
-    [SerializeField] ProcessingBT bakeryTemplate;
-    [SerializeField] ProcessingBT breweryTemplate;
-    [SerializeField] ProcessingBT clothierTemplate;
-    [SerializeField] ProcessingBT forgeTemplate;
-    [SerializeField] ProcessingBT windmillTemplate;
-
-    // gathering
-    [SerializeField] ResourceGatheringBT fishingHutTemplate;
-    [SerializeField] ResourceGatheringBT huntersCabinTemplate;
-    [SerializeField] ResourceGatheringBT ironMineTemplate;
-    [SerializeField] ResourceGatheringBT saltMineTemplate;
-    [SerializeField] ResourceGatheringBT sawmillTemplate;
-    [SerializeField] ResourceGatheringBT stoneMineTemplate;
+    Globals globals;
+    BuildingPlacementManager bpm;
 
     int[] pressure;
+    bool[] canBuild;
+    int[] buildingCount;
+
+    void Awake()
+    {
+        globals = FindObjectOfType<Globals>();
+        bpm = FindObjectOfType<BuildingPlacementManager>();
+    }
 
     void Start()
     {
-        int buildingTagNumber = Enum.GetValues(typeof(BuildingTag)).Length;
+        int count = Enum.GetValues(typeof(BuildingTag)).Length;
 
-        pressure = new int[buildingTagNumber];
+        pressure = new int[count];
+        canBuild = new bool[count];
+        buildingCount = new int[count];
+
+        for (int i = 0; i < count; i++)
+            canBuild[i] = true;
     }
 
-    public void AddBuildingPressure(BuildingTag buildingTag, int amount = 1)
+    void AddBuildingPressure(BuildingTag buildingTag, int amount = 1)
     {
         pressure[(int)buildingTag] += amount;
+    }
+
+    void ReduceBuildingPressure(BuildingTag buildingTag)
+    {
+        ProductionBT bt = (ProcessingBT)globals.NameToTemplate(buildingTag);
+        switch (buildingTag)
+        {
+            // Construction
+            case BuildingTag.Sawmill:
+            case BuildingTag.StoneMine:
+            case BuildingTag.Forge:
+                float grace = (bt.constructionTime + 30) * bt.amountProducedPerInterval;
+                pressure[(int)buildingTag] -= (int)(grace / globals.engineConstructionInterval);
+                break;
+            // Raw
+            case BuildingTag.IronMine:
+            case BuildingTag.CottonPlantation:
+            case BuildingTag.WheatFarm:
+            case BuildingTag.HopsFarm:
+            case BuildingTag.Windmill:
+                grace = (bt.constructionTime + 30) / bt.timeInterval * bt.amountProducedPerInterval;
+                pressure[(int)buildingTag] -= (int)grace; // TODO timeInterval from requesting building ?
+                break;
+            // Consumption
+            case BuildingTag.SaltMine:
+            case BuildingTag.Clothier:
+            case BuildingTag.HuntersCabin:
+            case BuildingTag.FishingHut:
+            case BuildingTag.Bakery:
+            case BuildingTag.Brewery:
+                float consumptionPeriod = 100 * globals.needsConsumptionInterval / globals.needsAmountDecreased;
+                grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
+                pressure[(int)buildingTag] -= (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
+                break;
+        }
     }
 
     public void AddResourcePressure(ResourceType resourceType, int amount = 1)
     {
         switch (resourceType)
         {
-            // construction
+            // Construction
             case ResourceType.Wood:
                 AddBuildingPressure(BuildingTag.Sawmill, amount);
                 break;
@@ -62,7 +84,7 @@ public class ConstructionScheduler : MonoBehaviour
             case ResourceType.Tools:
                 AddBuildingPressure(BuildingTag.Forge, amount);
                 break;
-            // raw
+            // Raw
             case ResourceType.Iron:
                 AddBuildingPressure(BuildingTag.IronMine, amount);
                 break;
@@ -78,7 +100,7 @@ public class ConstructionScheduler : MonoBehaviour
             case ResourceType.Flour:
                 AddBuildingPressure(BuildingTag.Windmill, amount);
                 break;
-            // consumption
+            // Consumption
             case ResourceType.Salt:
                 AddBuildingPressure(BuildingTag.SaltMine, amount);
                 break;
@@ -98,17 +120,80 @@ public class ConstructionScheduler : MonoBehaviour
         }
     }
 
+    enum ConstructionState
+    {
+        NotNeeded,
+        InsufficientGold,
+        InsufficientMaterials,
+        Success
+    }
+
+    int GetThreshold(BuildingTag buildingTag)
+    {
+        if (buildingTag == BuildingTag.Well)
+            return 5;
+        if (buildingTag == BuildingTag.Church)
+            return 15;
+        if (buildingTag == BuildingTag.Inn)
+            return 20;
+        return 1;
+    }
+
+    ConstructionState TryBuilding(BuildingTag buildingTag)
+    {
+        if (!canBuild[(int)buildingTag] || pressure[(int)buildingTag] < GetThreshold(buildingTag))
+            return ConstructionState.NotNeeded;
+
+        BuildingTemplate bt = globals.NameToTemplate(buildingTag);
+        if (bt.goldCost > globals.goldAmount)
+            return ConstructionState.InsufficientGold;
+        if (bt.woodCost > globals.woodAmount)
+        {
+            AddResourcePressure(ResourceType.Wood, bt.woodCost);
+            return ConstructionState.InsufficientMaterials;
+        }
+        if (bt.stoneCost > globals.stoneAmount)
+        {
+            AddResourcePressure(ResourceType.Stone, bt.stoneCost);
+            return ConstructionState.InsufficientMaterials;
+        }
+        if (bt.toolsCost > globals.toolsAmount)
+        {
+            AddResourcePressure(ResourceType.Tools, bt.toolsCost);
+            return ConstructionState.InsufficientMaterials;
+        }
+        
+        canBuild[(int)buildingTag] = bpm.Build(buildingTag);
+        if (!canBuild[(int)buildingTag])
+            return ConstructionState.NotNeeded;
+
+        switch (bt.buildingType)
+        {
+            case BuildingType.Housing:
+                break;
+            case BuildingType.Service:
+                break;
+            case BuildingType.Processing:
+            case BuildingType.Farming:
+            case BuildingType.ResourceGathering:
+                ReduceBuildingPressure(buildingTag);
+                break;
+            default:
+                throw new Exception("Unknown building type");
+        }
+
+        return ConstructionState.Success;
+    }
+
     public void MakeBuildings()
     {
-        // if 1 house
-        // build market
-        // if 5 house
-        // build well
-        // if 15 houses
-        // build church
-        // if 20 houses
-        // build inn
+        // Services
+        TryBuilding(BuildingTag.Market);
+        TryBuilding(BuildingTag.Well);
+        TryBuilding(BuildingTag.Church);
+        TryBuilding(BuildingTag.Inn);
 
+        // Houses when worker shortage
         // if idle citizens < 20
         // build house
 

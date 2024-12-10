@@ -6,35 +6,7 @@ using UnityEngine;
 
 public class BuildingPlacementManager : MonoBehaviour
 {
-    // housing
-    [SerializeField] HousingBT houseTemplate;
-
-    // service
-    [SerializeField] ServiceBT marketTemplate;
-    [SerializeField] ServiceBT churchTemplate;
-    [SerializeField] ServiceBT innTemplate;
-    [SerializeField] ServiceBT wellTemplate;
-
-    // farming
-    [SerializeField] FarmingBT cottonPlantationTemplate;
-    [SerializeField] FarmingBT hopsFarmTemplate;
-    [SerializeField] FarmingBT wheatFarmTemplate;
-
-    // processing
-    [SerializeField] ProcessingBT bakeryTemplate;
-    [SerializeField] ProcessingBT breweryTemplate;
-    [SerializeField] ProcessingBT clothierTemplate;
-    [SerializeField] ProcessingBT forgeTemplate;
-    [SerializeField] ProcessingBT windmillTemplate;
-
-    // gathering
-    [SerializeField] ResourceGatheringBT fishingHutTemplate;
-    [SerializeField] ResourceGatheringBT huntersCabinTemplate;
-    [SerializeField] ResourceGatheringBT ironMineTemplate;
-    [SerializeField] ResourceGatheringBT saltMineTemplate;
-    [SerializeField] ResourceGatheringBT sawmillTemplate;
-    [SerializeField] ResourceGatheringBT stoneMineTemplate;
-
+    Globals globals;
     AbstractMapGenerator mapGenerator;
 
     // data for placing houses
@@ -67,6 +39,7 @@ public class BuildingPlacementManager : MonoBehaviour
     // initialization
     void Awake()
     {
+        globals = FindObjectOfType<Globals>();
         mapGenerator = FindObjectOfType<AbstractMapGenerator>();
     }
 
@@ -109,7 +82,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
     public bool Build(BuildingTag buildingTag)
     {
-        BuildingTemplate buildingTemplate = NameToTemplate(buildingTag);
+        BuildingTemplate buildingTemplate = globals.NameToTemplate(buildingTag);
 
         // pick location
         (int x, int y) location;
@@ -573,33 +546,6 @@ public class BuildingPlacementManager : MonoBehaviour
                 captureArea[i,j] = true;
             }
         }
-    }
-
-    BuildingTemplate NameToTemplate(BuildingTag buildingTag)
-    {
-        return buildingTag switch
-        {
-            BuildingTag.House => houseTemplate,
-            BuildingTag.Market => marketTemplate,
-            BuildingTag.Church => churchTemplate,
-            BuildingTag.Inn => innTemplate,
-            BuildingTag.Well => wellTemplate,
-            BuildingTag.CottonPlantation => cottonPlantationTemplate,
-            BuildingTag.HopsFarm => hopsFarmTemplate,
-            BuildingTag.WheatFarm => wheatFarmTemplate,
-            BuildingTag.Bakery => bakeryTemplate,
-            BuildingTag.Brewery => breweryTemplate,
-            BuildingTag.Clothier => clothierTemplate,
-            BuildingTag.Forge => forgeTemplate,
-            BuildingTag.Windmill => windmillTemplate,
-            BuildingTag.FishingHut => fishingHutTemplate,
-            BuildingTag.HuntersCabin => huntersCabinTemplate,
-            BuildingTag.IronMine => ironMineTemplate,
-            BuildingTag.SaltMine => saltMineTemplate,
-            BuildingTag.Sawmill => sawmillTemplate,
-            BuildingTag.StoneMine => stoneMineTemplate,
-            _ => throw new ArgumentException("building " + nameof(buildingTag) + " is missing"),
-        };
     }
 
     /*

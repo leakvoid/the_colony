@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Building Template/Farming BT", fileName = "New Farming Building Template")]
-public class FarmingBT : WorkableBT
+public class FarmingBT : ProductionBT
 {
-    [SerializeField] public int amountProducedPerInterval;
-    [SerializeField] public ResourceType producedResource;
 }

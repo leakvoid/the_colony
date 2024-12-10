@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -10,29 +11,89 @@ public class Globals : MonoBehaviour
     [SerializeField] public float sleepDuration = 10f;
 
     [Header("Colony resources")]
-    [SerializeField] int goldAmount = 2000;
-    [SerializeField] int woodAmount = 20;
-    [SerializeField] int stoneAmount = 20;
-    [SerializeField] int toolsAmount = 0;
+    [SerializeField] public int goldAmount = 2000;
+    [SerializeField] public int woodAmount = 20;
+    [SerializeField] public int stoneAmount = 20;
+    [SerializeField] public int toolsAmount = 0;
 
-    [SerializeField] int IronAmount = 0;
-    [SerializeField] int CottonAmount = 0;
-    [SerializeField] int WheatAmount = 0;
-    [SerializeField] int HopsAmount = 0;
-    [SerializeField] int FlourAmount = 0;
-    [SerializeField] int SaltAmount = 0;
-    [SerializeField] int ClothAmount = 0;
-    [SerializeField] int MeatAmount = 0;
-    [SerializeField] int FishAmount = 0;
-    [SerializeField] int BreadAmount = 0;
-    [SerializeField] int BeerAmount = 0;
+    [SerializeField] public int ironAmount = 0;
+    [SerializeField] public int cottonAmount = 0;
+    [SerializeField] public int wheatAmount = 0;
+    [SerializeField] public int hopsAmount = 0;
+    [SerializeField] public int flourAmount = 0;
+    [SerializeField] public int saltAmount = 0;
+    [SerializeField] public int clothAmount = 0;
+    [SerializeField] public int meatAmount = 0;
+    [SerializeField] public int fishAmount = 0;
+    [SerializeField] public int breadAmount = 0;
+    [SerializeField] public int beerAmount = 0;
 
     [Header("Resource prices")]
-    [SerializeField] int foodPrice = 20;
-    [SerializeField] int saltPrice = 30;
-    [SerializeField] int clothPrice = 40;
-    [SerializeField] int beerPrice = 50;
-    [SerializeField] int churchDonation = 10;
+    [SerializeField] public int foodPrice = 20;
+    [SerializeField] public int saltPrice = 30;
+    [SerializeField] public int clothPrice = 40;
+    [SerializeField] public int beerPrice = 50;
+    [SerializeField] public int churchDonation = 10;
+
+    [Header("Temporal")]
+    [SerializeField] public float gameSpeedMultiplier = 1f;
+    [SerializeField] public float needsConsumptionInterval = 5f;
+    [SerializeField] public float needsAmountDecreased = 10f;
+    [SerializeField] public float engineNeedCheckInterval = 2f;
+    [SerializeField] public float engineConstructionInterval = 5f;
+
+    [Header("Building templates")]
+    // housing
+    [SerializeField] public HousingBT houseTemplate;
+    // service
+    [SerializeField] public ServiceBT marketTemplate;
+    [SerializeField] public ServiceBT churchTemplate;
+    [SerializeField] public ServiceBT innTemplate;
+    [SerializeField] public ServiceBT wellTemplate;
+    // farming
+    [SerializeField] public FarmingBT cottonPlantationTemplate;
+    [SerializeField] public FarmingBT hopsFarmTemplate;
+    [SerializeField] public FarmingBT wheatFarmTemplate;
+    // processing
+    [SerializeField] public ProcessingBT bakeryTemplate;
+    [SerializeField] public ProcessingBT breweryTemplate;
+    [SerializeField] public ProcessingBT clothierTemplate;
+    [SerializeField] public ProcessingBT forgeTemplate;
+    [SerializeField] public ProcessingBT windmillTemplate;
+    // gathering
+    [SerializeField] public ResourceGatheringBT fishingHutTemplate;
+    [SerializeField] public ResourceGatheringBT huntersCabinTemplate;
+    [SerializeField] public ResourceGatheringBT ironMineTemplate;
+    [SerializeField] public ResourceGatheringBT saltMineTemplate;
+    [SerializeField] public ResourceGatheringBT sawmillTemplate;
+    [SerializeField] public ResourceGatheringBT stoneMineTemplate;
+
+    public BuildingTemplate NameToTemplate(BuildingTag buildingTag)
+    {
+        return buildingTag switch
+        {
+            BuildingTag.House => houseTemplate,
+            BuildingTag.Market => marketTemplate,
+            BuildingTag.Church => churchTemplate,
+            BuildingTag.Inn => innTemplate,
+            BuildingTag.Well => wellTemplate,
+            BuildingTag.CottonPlantation => cottonPlantationTemplate,
+            BuildingTag.HopsFarm => hopsFarmTemplate,
+            BuildingTag.WheatFarm => wheatFarmTemplate,
+            BuildingTag.Bakery => bakeryTemplate,
+            BuildingTag.Brewery => breweryTemplate,
+            BuildingTag.Clothier => clothierTemplate,
+            BuildingTag.Forge => forgeTemplate,
+            BuildingTag.Windmill => windmillTemplate,
+            BuildingTag.FishingHut => fishingHutTemplate,
+            BuildingTag.HuntersCabin => huntersCabinTemplate,
+            BuildingTag.IronMine => ironMineTemplate,
+            BuildingTag.SaltMine => saltMineTemplate,
+            BuildingTag.Sawmill => sawmillTemplate,
+            BuildingTag.StoneMine => stoneMineTemplate,
+            _ => throw new ArgumentException("building " + nameof(buildingTag) + " is missing"),
+        };
+    }
 
     // Singleton
     static Globals instance = null;
