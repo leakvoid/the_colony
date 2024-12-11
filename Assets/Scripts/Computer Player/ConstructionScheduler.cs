@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class ConstructionScheduler : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class ConstructionScheduler : MonoBehaviour
     int[] pressure;
     bool[] canBuild;
     int[] buildingCount;
+
+    List<BuildingTag> buildingPriorityList;
 
     void Awake()
     {
@@ -23,14 +26,38 @@ public class ConstructionScheduler : MonoBehaviour
         int count = Enum.GetValues(typeof(BuildingTag)).Length;
 
         pressure = new int[count];
-        canBuild = new bool[count];
+        canBuild = new bool[count];//TODO maybe should be deleted
         buildingCount = new int[count];
 
         for (int i = 0; i < count; i++)
             canBuild[i] = true;
+
+        buildingPriorityList = new List<BuildingTag>()
+        {
+            // service
+            BuildingTag.Market,
+            BuildingTag.Well,
+            BuildingTag.Church,
+            BuildingTag.Inn,
+            // housing
+            BuildingTag.House,
+            // raw
+            BuildingTag.IronMine,
+            BuildingTag.CottonPlantation,
+            BuildingTag.HopsFarm,
+            BuildingTag.WheatFarm,
+            BuildingTag.Windmill,
+            // consumption
+            BuildingTag.FishingHut,
+            BuildingTag.HuntersCabin,
+            BuildingTag.Brewery,
+            BuildingTag.Clothier,
+            BuildingTag.Bakery,
+            BuildingTag.SaltMine,
+        };
     }
 
-    void AddBuildingPressure(BuildingTag buildingTag, int amount = 1)
+    void IncreaseBuildingPressure(BuildingTag buildingTag, int amount = 1)
     {
         pressure[(int)buildingTag] += amount;
     }
@@ -40,6 +67,17 @@ public class ConstructionScheduler : MonoBehaviour
         ProductionBT bt = (ProcessingBT)globals.NameToTemplate(buildingTag);
         switch (buildingTag)
         {
+            // Housing
+            case BuildingTag.House:
+                pressure[(int)buildingTag] -= 1;
+                break;
+            // Service
+            case BuildingTag.Market:
+            case BuildingTag.Church:
+            case BuildingTag.Well:
+            case BuildingTag.Inn:
+                pressure[(int)buildingTag] -= bpm.GetServiceCoverValue();
+                break;
             // Construction
             case BuildingTag.Sawmill:
             case BuildingTag.StoneMine:
@@ -54,81 +92,80 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.HopsFarm:
             case BuildingTag.Windmill:
                 grace = (bt.constructionTime + 30) / bt.timeInterval * bt.amountProducedPerInterval;
-                pressure[(int)buildingTag] -= (int)grace; // TODO timeInterval from requesting building ?
+                pressure[(int)buildingTag] -= (int)grace;
                 break;
             // Consumption
             case BuildingTag.SaltMine:
             case BuildingTag.Clothier:
-            case BuildingTag.HuntersCabin:
-            case BuildingTag.FishingHut:
-            case BuildingTag.Bakery:
             case BuildingTag.Brewery:
                 float consumptionPeriod = 100 * globals.needsConsumptionInterval / globals.needsAmountDecreased;
                 grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
                 pressure[(int)buildingTag] -= (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
                 break;
+            case BuildingTag.HuntersCabin:
+            case BuildingTag.FishingHut:
+            case BuildingTag.Bakery:
+                consumptionPeriod = 100 * globals.needsConsumptionInterval / globals.needsAmountDecreased;
+                grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
+                int reducedAmount = (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
+                pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
+                pressure[(int)BuildingTag.FishingHut] -= reducedAmount;
+                pressure[(int)BuildingTag.Bakery] -= reducedAmount;
+                break;
         }
     }
 
-    public void AddResourcePressure(ResourceType resourceType, int amount = 1)
+    public void IncreaseResourcePressure(ResourceType resourceType, int amount = 1)
     {
         switch (resourceType)
         {
             // Construction
             case ResourceType.Wood:
-                AddBuildingPressure(BuildingTag.Sawmill, amount);
+                IncreaseBuildingPressure(BuildingTag.Sawmill, amount);
                 break;
             case ResourceType.Stone:
-                AddBuildingPressure(BuildingTag.StoneMine, amount);
+                IncreaseBuildingPressure(BuildingTag.StoneMine, amount);
                 break;
             case ResourceType.Tools:
-                AddBuildingPressure(BuildingTag.Forge, amount);
+                IncreaseBuildingPressure(BuildingTag.Forge, amount);
                 break;
             // Raw
             case ResourceType.Iron:
-                AddBuildingPressure(BuildingTag.IronMine, amount);
+                IncreaseBuildingPressure(BuildingTag.IronMine, amount);
                 break;
             case ResourceType.Cotton:
-                AddBuildingPressure(BuildingTag.CottonPlantation, amount);
+                IncreaseBuildingPressure(BuildingTag.CottonPlantation, amount);
                 break;
             case ResourceType.Wheat:
-                AddBuildingPressure(BuildingTag.WheatFarm, amount);
+                IncreaseBuildingPressure(BuildingTag.WheatFarm, amount);
                 break;
             case ResourceType.Hops:
-                AddBuildingPressure(BuildingTag.HopsFarm, amount);
+                IncreaseBuildingPressure(BuildingTag.HopsFarm, amount);
                 break;
             case ResourceType.Flour:
-                AddBuildingPressure(BuildingTag.Windmill, amount);
+                IncreaseBuildingPressure(BuildingTag.Windmill, amount);
                 break;
             // Consumption
             case ResourceType.Salt:
-                AddBuildingPressure(BuildingTag.SaltMine, amount);
+                IncreaseBuildingPressure(BuildingTag.SaltMine, amount);
                 break;
             case ResourceType.Cloth:
-                AddBuildingPressure(BuildingTag.Clothier, amount);
+                IncreaseBuildingPressure(BuildingTag.Clothier, amount);
                 break;
             case ResourceType.Food:
-                AddBuildingPressure(BuildingTag.HuntersCabin, amount);
-                AddBuildingPressure(BuildingTag.FishingHut, amount);
-                AddBuildingPressure(BuildingTag.Bakery, amount);
+                IncreaseBuildingPressure(BuildingTag.HuntersCabin, amount);
+                IncreaseBuildingPressure(BuildingTag.FishingHut, amount);
+                IncreaseBuildingPressure(BuildingTag.Bakery, amount);
                 break;
             case ResourceType.Beer:
-                AddBuildingPressure(BuildingTag.Brewery, amount);
+                IncreaseBuildingPressure(BuildingTag.Brewery, amount);
                 break;
             default:
                 throw new Exception("Resource " + nameof(ResourceType) + " not handled");
         }
     }
 
-    enum ConstructionState
-    {
-        NotNeeded,
-        InsufficientGold,
-        InsufficientMaterials,
-        Success
-    }
-
-    int GetThreshold(BuildingTag buildingTag)
+    int GetPressureThreshold(BuildingTag buildingTag)
     {
         if (buildingTag == BuildingTag.Well)
             return 5;
@@ -139,73 +176,102 @@ public class ConstructionScheduler : MonoBehaviour
         return 1;
     }
 
+    enum ConstructionState
+    {
+        NotNeeded,
+        InsufficientGold,
+        InsufficientMaterials,
+        Success
+    }
+
+    bool woodPressureOccurred;
+    bool stonePressureOccurred;
+    bool toolsPressureOccurred;
+
     ConstructionState TryBuilding(BuildingTag buildingTag)
     {
-        if (!canBuild[(int)buildingTag] || pressure[(int)buildingTag] < GetThreshold(buildingTag))
+        // TODO make multiple buildings of the same type at once
+        if (!canBuild[(int)buildingTag] || pressure[(int)buildingTag] < GetPressureThreshold(buildingTag))
             return ConstructionState.NotNeeded;
 
         BuildingTemplate bt = globals.NameToTemplate(buildingTag);
+
         if (bt.goldCost > globals.goldAmount)
             return ConstructionState.InsufficientGold;
+
+        bool insufficientMaterials = false;// TODO maybe max ?
         if (bt.woodCost > globals.woodAmount)
         {
-            AddResourcePressure(ResourceType.Wood, bt.woodCost);
-            return ConstructionState.InsufficientMaterials;
+            if (!woodPressureOccurred)
+            {
+                IncreaseResourcePressure(ResourceType.Wood, bt.woodCost);
+                woodPressureOccurred = true;
+            }
+            insufficientMaterials = true;
         }
         if (bt.stoneCost > globals.stoneAmount)
         {
-            AddResourcePressure(ResourceType.Stone, bt.stoneCost);
-            return ConstructionState.InsufficientMaterials;
+            if (!stonePressureOccurred)
+            {
+                IncreaseResourcePressure(ResourceType.Stone, bt.stoneCost);
+                stonePressureOccurred = true;
+            }
+
+            insufficientMaterials = true;
         }
         if (bt.toolsCost > globals.toolsAmount)
         {
-            AddResourcePressure(ResourceType.Tools, bt.toolsCost);
-            return ConstructionState.InsufficientMaterials;
+            if (!toolsPressureOccurred)
+            {
+                IncreaseResourcePressure(ResourceType.Tools, bt.toolsCost);
+                toolsPressureOccurred = true;
+            }
+            insufficientMaterials = true;
         }
+        if (insufficientMaterials)
+            return ConstructionState.InsufficientMaterials;
         
-        canBuild[(int)buildingTag] = bpm.Build(buildingTag);
-        if (!canBuild[(int)buildingTag])
+        BuildingData buildingData = bpm.Build(buildingTag);
+        if (buildingData == null)
             return ConstructionState.NotNeeded;
 
-        switch (bt.buildingType)
+        if (buildingTag == BuildingTag.House)
         {
-            case BuildingType.Housing:
-                break;
-            case BuildingType.Service:
-                break;
-            case BuildingType.Processing:
-            case BuildingType.Farming:
-            case BuildingType.ResourceGathering:
-                ReduceBuildingPressure(buildingTag);
-                break;
-            default:
-                throw new Exception("Unknown building type");
+            BuildingTag[] serviceTags = new BuildingTag[] {BuildingTag.Market, BuildingTag.Well, BuildingTag.Church, BuildingTag.Inn};
+            foreach (var serviceTag in serviceTags)
+                if (!bpm.CheckServiceOverlap(buildingData.gridLocation, serviceTag))
+                    IncreaseBuildingPressure(serviceTag);
         }
+
+        ReduceBuildingPressure(buildingTag);
 
         return ConstructionState.Success;
     }
 
     public void MakeBuildings()
     {
-        // Services
-        TryBuilding(BuildingTag.Market);
-        TryBuilding(BuildingTag.Well);
-        TryBuilding(BuildingTag.Church);
-        TryBuilding(BuildingTag.Inn);
+        woodPressureOccurred = false;
+        stonePressureOccurred = false;
+        toolsPressureOccurred = false;
 
-        // Houses when worker shortage
-        // if idle citizens < 20
-        // build house
+        foreach(var buildingTag in buildingPriorityList)
+        {
+            // TODO if no idle workers -> return
+            if (TryBuilding(buildingTag) == ConstructionState.InsufficientGold)
+                return;
+        }
 
-        // if ? (gold is also needed -> don't increase; increase construction resource pressure if enough gold)
-        // build wood, stone, tools
+        if (woodPressureOccurred)
+            TryBuilding(BuildingTag.Sawmill);
+        if (stonePressureOccurred)
+            TryBuilding(BuildingTag.StoneMine);
+        if (toolsPressureOccurred)
+            TryBuilding(BuildingTag.Forge);
 
-        // if raw needed
-        // build raw
-
-        // if consumption need
-        // build consumption
-        // else
-        // build or upgrade house (up to limit ?)
+        if (!woodPressureOccurred && !stonePressureOccurred && !toolsPressureOccurred)
+        {
+            // TODO try upgrading
+            TryBuilding(BuildingTag.House);
+        }
     }
 }

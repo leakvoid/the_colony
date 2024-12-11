@@ -80,7 +80,7 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
-    public bool Build(BuildingTag buildingTag)
+    public BuildingData Build(BuildingTag buildingTag)
     {
         BuildingTemplate buildingTemplate = globals.NameToTemplate(buildingTag);
 
@@ -105,11 +105,13 @@ public class BuildingPlacementManager : MonoBehaviour
         if (location == (-1, -1))
         {
             print("Building space run out for " + nameof(buildingTag));
-            return false;
+            return null;
         }
 
         // place building
+        BuildingData buildingData = new BuildingData();
         // TODO instantiate building and place prefab onto scene
+        // TODO split into BuildingLocationFinder and BuildingInstantiationModule
 
         // update building affected areas
         UpdateAvailableSpace(location, buildingTemplate);
@@ -128,7 +130,7 @@ public class BuildingPlacementManager : MonoBehaviour
                 break;
         }
         
-        return true;
+        return buildingData;
     }
 
     bool[,] GetAvailableBuildingSpots(BuildingTemplate bt)
@@ -226,6 +228,13 @@ public class BuildingPlacementManager : MonoBehaviour
         throw new Exception("Should never happen. Picked random housing position not found");
     }
 
+    // TODO hacky
+    int lastCoverValue = 0;
+    public int GetServiceCoverValue()
+    {
+        return lastCoverValue;
+    }
+
     (int, int) PickBestServiceLocation(BuildingTemplate buildingTemplate)
     {
         ServiceBT bt = (ServiceBT)buildingTemplate;
@@ -275,8 +284,10 @@ public class BuildingPlacementManager : MonoBehaviour
             }
         }
 
-        if (numberOfBestSpots == 0)
+        if (numberOfBestSpots == 0)// TODO bestCoverValue == 0 ?
             return (-1, -1);
+
+        lastCoverValue = bestCoverValue;
 
         int chosenPos = UnityEngine.Random.Range(0, numberOfBestSpots);
 
@@ -458,7 +469,7 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             for (int j = location.y; j < location.y + bt.sizeY; j++)
             {
-                availableSpace[i,j] = true;
+                availableSpace[i,j] = false;
             }
         }
     }
@@ -546,6 +557,19 @@ public class BuildingPlacementManager : MonoBehaviour
                 captureArea[i,j] = true;
             }
         }
+    }
+
+    public bool CheckServiceOverlap((int x, int y) location, BuildingTag buildingTag)
+    {
+        if (buildingTag == BuildingTag.Market)
+            return marketCoverArea[location.x, location.y];
+        if (buildingTag == BuildingTag.Well)
+            return wellCoverArea[location.x, location.y];
+        if (buildingTag == BuildingTag.Church)
+            return churchCoverArea[location.x, location.y];
+        if (buildingTag == BuildingTag.Inn)
+            return innCoverArea[location.x, location.y];
+        return false;
     }
 
     /*
