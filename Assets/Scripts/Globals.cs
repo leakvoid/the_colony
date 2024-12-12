@@ -8,7 +8,7 @@ public class Globals : MonoBehaviour
 {
     [Header("General colonist data")]
     [SerializeField] public float colonistMovementSpeed = 3f;
-    [SerializeField] public float sleepDuration = 10f;
+    [SerializeField] public float sleepDuration = 5f;
 
     [Header("Colony resources")]
     [SerializeField] public int goldAmount = 2000;

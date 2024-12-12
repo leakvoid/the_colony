@@ -60,8 +60,8 @@ public class ColonistData : MonoBehaviour
 
     Status status = Status.Idle;
 
-    BuildingData livesAt;
-    BuildingData worksAt;
+    public BuildingData livesAt;
+    public BuildingData worksAt;
 
     GameObject modelReference;
 
@@ -109,4 +109,10 @@ public class ColonistData : MonoBehaviour
         // enqueue goToLocation work
         // enqueue startWorking
     }
+
+    /*
+        logic for same colonist doing work, walking and fulfilling needs isn't viable
+        solution: split each colonist into two
+        husband and wife (worker and consumer)
+    */
 }

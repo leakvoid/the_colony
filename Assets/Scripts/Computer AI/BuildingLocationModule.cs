@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class BuildingPlacementManager : MonoBehaviour
+public class BuildingLocationModule : MonoBehaviour
 {
     Globals globals;
     AbstractMapGenerator mapGenerator;
@@ -80,7 +80,7 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
-    public BuildingData Build(BuildingTag buildingTag)
+    public (int x, int y) PickNewBuildingLocation(BuildingTag buildingTag)
     {
         BuildingTemplate buildingTemplate = globals.NameToTemplate(buildingTag);
 
@@ -105,11 +105,10 @@ public class BuildingPlacementManager : MonoBehaviour
         if (location == (-1, -1))
         {
             print("Building space run out for " + nameof(buildingTag));
-            return null;
+            return location;
         }
 
         // place building
-        BuildingData buildingData = new BuildingData();
         // TODO instantiate building and place prefab onto scene
         // TODO split into BuildingLocationFinder and BuildingInstantiationModule
 
@@ -130,7 +129,7 @@ public class BuildingPlacementManager : MonoBehaviour
                 break;
         }
         
-        return buildingData;
+        return location;
     }
 
     bool[,] GetAvailableBuildingSpots(BuildingTemplate bt)

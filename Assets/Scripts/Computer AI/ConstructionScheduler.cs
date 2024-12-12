@@ -7,7 +7,8 @@ using UnityEngine.Analytics;
 public class ConstructionScheduler : MonoBehaviour
 {
     Globals globals;
-    BuildingPlacementManager bpm;
+    BuildingManager bm;
+    BuildingLocationModule blm;// TODO refactor
 
     int[] pressure;
     bool[] canBuild;
@@ -18,7 +19,8 @@ public class ConstructionScheduler : MonoBehaviour
     void Awake()
     {
         globals = FindObjectOfType<Globals>();
-        bpm = FindObjectOfType<BuildingPlacementManager>();
+        bm = FindObjectOfType<BuildingManager>();
+        blm = FindObjectOfType<BuildingLocationModule>();
     }
 
     void Start()
@@ -76,7 +78,7 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.Church:
             case BuildingTag.Well:
             case BuildingTag.Inn:
-                pressure[(int)buildingTag] -= bpm.GetServiceCoverValue();
+                pressure[(int)buildingTag] -= blm.GetServiceCoverValue();
                 break;
             // Construction
             case BuildingTag.Sawmill:
@@ -205,6 +207,7 @@ public class ConstructionScheduler : MonoBehaviour
             if (!woodPressureOccurred)
             {
                 IncreaseResourcePressure(ResourceType.Wood, bt.woodCost);
+                TryBuilding(BuildingTag.Sawmill);
                 woodPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -214,6 +217,7 @@ public class ConstructionScheduler : MonoBehaviour
             if (!stonePressureOccurred)
             {
                 IncreaseResourcePressure(ResourceType.Stone, bt.stoneCost);
+                TryBuilding(BuildingTag.StoneMine);
                 stonePressureOccurred = true;
             }
 
@@ -224,6 +228,7 @@ public class ConstructionScheduler : MonoBehaviour
             if (!toolsPressureOccurred)
             {
                 IncreaseResourcePressure(ResourceType.Tools, bt.toolsCost);
+                TryBuilding(BuildingTag.Forge);
                 toolsPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -231,7 +236,7 @@ public class ConstructionScheduler : MonoBehaviour
         if (insufficientMaterials)
             return ConstructionState.InsufficientMaterials;
         
-        BuildingData buildingData = bpm.Build(buildingTag);
+        BuildingData buildingData = bm.StartBuildingConstruction(bt);
         if (buildingData == null)
             return ConstructionState.NotNeeded;
 
@@ -239,7 +244,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             BuildingTag[] serviceTags = new BuildingTag[] {BuildingTag.Market, BuildingTag.Well, BuildingTag.Church, BuildingTag.Inn};
             foreach (var serviceTag in serviceTags)
-                if (!bpm.CheckServiceOverlap(buildingData.gridLocation, serviceTag))
+                if (!blm.CheckServiceOverlap(buildingData.gridLocation, serviceTag))
                     IncreaseBuildingPressure(serviceTag);
         }
 
@@ -260,13 +265,6 @@ public class ConstructionScheduler : MonoBehaviour
             if (TryBuilding(buildingTag) == ConstructionState.InsufficientGold)
                 return;
         }
-
-        if (woodPressureOccurred)
-            TryBuilding(BuildingTag.Sawmill);
-        if (stonePressureOccurred)
-            TryBuilding(BuildingTag.StoneMine);
-        if (toolsPressureOccurred)
-            TryBuilding(BuildingTag.Forge);
 
         if (!woodPressureOccurred && !stonePressureOccurred && !toolsPressureOccurred)
         {

@@ -151,6 +151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2761beb6461aeb4901c49a27e68b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  template: {fileID: 0}
+  colonists: []
+  upgradeTier: 0
+  isConstructed: 0
 --- !u!4 &517736889
 Transform:
   m_ObjectHideFlags: 0
@@ -409,6 +413,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1161911595
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1161911597}
+  - component: {fileID: 1161911596}
+  m_Layer: 0
+  m_Name: ForTesting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1161911596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161911595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85941991150921648df1b34a11eb885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPrefab: {fileID: 330314635827307569, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
+--- !u!4 &1161911597
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161911595}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1607651222
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,22 +509,46 @@ MonoBehaviour:
   woodAmount: 20
   stoneAmount: 20
   toolsAmount: 0
-  IronAmount: 0
-  CottonAmount: 0
-  WheatAmount: 0
-  HopsAmount: 0
-  FlourAmount: 0
-  SaltAmount: 0
-  ClothAmount: 0
-  MeatAmount: 0
-  FishAmount: 0
-  BreadAmount: 0
-  BeerAmount: 0
+  ironAmount: 0
+  cottonAmount: 0
+  wheatAmount: 0
+  hopsAmount: 0
+  flourAmount: 0
+  saltAmount: 0
+  clothAmount: 0
+  meatAmount: 0
+  fishAmount: 0
+  breadAmount: 0
+  beerAmount: 0
   foodPrice: 20
   saltPrice: 30
   clothPrice: 40
   beerPrice: 50
   churchDonation: 10
+  gameSpeedMultiplier: 1
+  needsConsumptionInterval: 5
+  needsAmountDecreased: 10
+  engineNeedCheckInterval: 2
+  engineConstructionInterval: 5
+  houseTemplate: {fileID: 0}
+  marketTemplate: {fileID: 0}
+  churchTemplate: {fileID: 0}
+  innTemplate: {fileID: 0}
+  wellTemplate: {fileID: 0}
+  cottonPlantationTemplate: {fileID: 0}
+  hopsFarmTemplate: {fileID: 0}
+  wheatFarmTemplate: {fileID: 0}
+  bakeryTemplate: {fileID: 0}
+  breweryTemplate: {fileID: 0}
+  clothierTemplate: {fileID: 0}
+  forgeTemplate: {fileID: 0}
+  windmillTemplate: {fileID: 0}
+  fishingHutTemplate: {fileID: 0}
+  huntersCabinTemplate: {fileID: 0}
+  ironMineTemplate: {fileID: 0}
+  saltMineTemplate: {fileID: 0}
+  sawmillTemplate: {fileID: 0}
+  stoneMineTemplate: {fileID: 0}
 --- !u!114 &1607651227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,25 +561,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26af30f2b3854f9c93cc6fcc323d520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  houseTemplate: {fileID: 11400000, guid: 226ff6d6c0b3950c78adce9872464a38, type: 2}
-  marketTemplate: {fileID: 11400000, guid: 59d0e301a045d4fbab3c8f2c938dd6ba, type: 2}
-  churchTemplate: {fileID: 11400000, guid: 1f75968ab1df57f91aaeec9cf8be2dbb, type: 2}
-  innTemplate: {fileID: 11400000, guid: 99305cdd500be7b37879d5d2cf7d3918, type: 2}
-  wellTemplate: {fileID: 11400000, guid: 998751906a40ecce48fcae1192552225, type: 2}
-  cottonPlantationTemplate: {fileID: 11400000, guid: 084bcf6304529480cb58f21d00367673, type: 2}
-  hopsFarmTemplate: {fileID: 11400000, guid: 38447bcf8a0b228d0ae68f29c6450f10, type: 2}
-  wheatFarmTemplate: {fileID: 11400000, guid: 71c8de4b786eb2a47962a929084b42f6, type: 2}
-  bakeryTemplate: {fileID: 11400000, guid: 22dc2692ef0f18680a32cca044643a86, type: 2}
-  breweryTemplate: {fileID: 11400000, guid: 0f918bb0bbea1ce8ab74a905d789d8bc, type: 2}
-  clothierTemplate: {fileID: 11400000, guid: c80c2ff6e751339d99536d98ce1b1ed7, type: 2}
-  forgeTemplate: {fileID: 11400000, guid: ed2a86d692f9c2147a0da23e124e9549, type: 2}
-  windmillTemplate: {fileID: 11400000, guid: 85e18b55ad3dcab5ca52bbf59c4c15cf, type: 2}
-  fishingHutTemplate: {fileID: 11400000, guid: d1399b0ea95c75382924fbb034f997b5, type: 2}
-  huntersCabinTemplate: {fileID: 11400000, guid: 82191e2018f984cb6b153150cb948633, type: 2}
-  ironMineTemplate: {fileID: 11400000, guid: 7d5b943c7bd9b9af699613086b3a1d65, type: 2}
-  saltMineTemplate: {fileID: 11400000, guid: d65fbcb6527cc7a079d6d8b1d3ba52ac, type: 2}
-  sawmillTemplate: {fileID: 11400000, guid: 862d403a6826c84989792bdb97971c1c, type: 2}
-  stoneMineTemplate: {fileID: 11400000, guid: ca56520b869b266fe944f56f1bb29a8d, type: 2}
 --- !u!1 &2009708453
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,6 +605,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28f41ef867dfcf3bc9bc0de07830aa16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  livesAt: {fileID: 0}
+  worksAt: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -561,3 +617,4 @@ SceneRoots:
   - {fileID: 517736889}
   - {fileID: 1607651224}
   - {fileID: 915405256}
+  - {fileID: 1161911597}
