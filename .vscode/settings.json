@@ -51,5 +51,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "the_colony.sln"
+    "dotnet.defaultSolution": "the_colony.sln",
+    "cSpell.words": [
+        "Mathf"
+    ]
 }

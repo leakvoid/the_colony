@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ForTesting : MonoBehaviour
@@ -9,10 +10,11 @@ public class ForTesting : MonoBehaviour
 
     GameObject prefabInstance1;
     GameObject prefabInstance2;
+    GameObject prefabInstance3;
 
     void Start()
     {
-        prefabInstance1 = Instantiate(myPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        prefabInstance1 = Instantiate(myPrefab, new Vector3(1, 1, 0), Quaternion.identity);
         CubeData cubeData1 = prefabInstance1.GetComponent<CubeData>();
         cubeData1.foodNeed = 150;
 
@@ -20,16 +22,59 @@ public class ForTesting : MonoBehaviour
         CubeData cubeData2 = prefabInstance2.GetComponent<CubeData>();
         cubeData2.foodNeed = 69;
 
-        CubeData cubeData3 = Instantiate(myPrefab2);
+        prefabInstance3 = Instantiate(myPrefab, new Vector3(5, 5, 0), Quaternion.identity);
+
+        CubeData cubeData3 = Instantiate(myPrefab2);// also prefab
         cubeData3.foodNeed = 77;
 
         print("cubeData1 " + cubeData1.foodNeed);
         print("cubeData2 " + cubeData2.foodNeed);
         print("cubeData3 " + cubeData3.foodNeed);
+
+        StartCoroutine(MoveOverSpeed(prefabInstance1, new Vector3(0f, 5f, 0f), 5f));
+        StartCoroutine(MoveOverSpeed(prefabInstance2, new Vector3(5f, 7f, 0f), 5f));
+    }
+
+    IEnumerator MoveOverSpeed(GameObject objectToMove, Vector3 end, float speed)
+    {
+        var wait = new WaitForEndOfFrame();
+        while (objectToMove.transform.position != end)
+        {
+            objectToMove.transform.position = Vector3.MoveTowards(objectToMove.transform.position, end, speed * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     void Update()
     {
+        var end = new Vector3(2f, 2f, 2f);
+        if (prefabInstance3.transform.position != end)
+            prefabInstance3.transform.position = Vector3.MoveTowards(prefabInstance3.transform.position, end, 0.5f * Time.deltaTime);
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
+            if (Physics.Raycast(ray, out hit, 100))
+            {
+                var cubeData = hit.transform.parent.gameObject.GetComponent<CubeData>();
+                print(cubeData.foodNeed);
+                //Debug.Log(hit.transform.gameObject.name);
+                //Debug.Log(hit.collider.gameObject.name);
+            }
+        }
     }
+
+    /*
+         void CastRay()
+         {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
+            if (hit.collider !=null)
+            {
+                Debug.Log (hit.collider.gameObject.name);
+            }
+        }
+    */
 }

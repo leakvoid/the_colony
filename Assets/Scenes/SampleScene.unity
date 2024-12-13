@@ -443,6 +443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPrefab: {fileID: 330314635827307569, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
+  myPrefab2: {fileID: 3187569466758911184, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
 --- !u!4 &1161911597
 Transform:
   m_ObjectHideFlags: 0
