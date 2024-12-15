@@ -33,6 +33,19 @@ public class ForTesting : MonoBehaviour
 
         StartCoroutine(MoveOverSpeed(prefabInstance1, new Vector3(0f, 5f, 0f), 5f));
         StartCoroutine(MoveOverSpeed(prefabInstance2, new Vector3(5f, 7f, 0f), 5f));
+
+        CreateWorker();
+    }
+
+    [SerializeField] WorkerData abstractWorker;
+    [SerializeField] GameObject workerModel;
+
+    void CreateWorker()
+    {
+        WorkerData abstractWorkerInstance = Instantiate(abstractWorker);
+
+        abstractWorkerInstance.workerModel = Instantiate(workerModel, new Vector3(-1, -1, 0), Quaternion.identity);
+        abstractWorkerInstance.workerModel.transform.parent = abstractWorkerInstance.transform;
     }
 
     IEnumerator MoveOverSpeed(GameObject objectToMove, Vector3 end, float speed)
@@ -58,9 +71,18 @@ public class ForTesting : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 100))
             {
-                var cubeData = hit.transform.parent.gameObject.GetComponent<CubeData>();
-                print(cubeData.foodNeed);
-                //Debug.Log(hit.transform.gameObject.name);
+                if (hit.transform.gameObject.name == "Cube")
+                {
+                    var cubeData = hit.transform.parent.gameObject.GetComponent<CubeData>();
+                    print(cubeData.foodNeed);
+                }
+                if (hit.transform.gameObject.name == "WorkerModel(Clone)")
+                {
+                    var workerData = hit.transform.parent.gameObject.GetComponent<WorkerData>();
+                    print("foodNeed: " + workerData.foodNeed);
+                }
+
+                Debug.Log("name: " + hit.transform.gameObject.name);
                 //Debug.Log(hit.collider.gameObject.name);
             }
         }

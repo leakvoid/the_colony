@@ -14,4 +14,6 @@ public class BuildingTemplate : ScriptableObject
     [SerializeField] public int toolsCost;
     [SerializeField] public int goldCost;
     [SerializeField] public int constructionTime;
+    [SerializeField] public GameObject finishedPrefab;
+    [SerializeField] public GameObject unfinishedPrefab;
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
 {
+    [SerializeField] BuildingData buildingDataPrefab;
+
     Globals globals;
     BuildingLocationModule blm;
     ColonistManager cm;
@@ -36,9 +38,10 @@ public class BuildingManager : MonoBehaviour
         if (location == (-1, -1))
             return null;
 
-        BuildingData buildingData = new BuildingData();// TODO make proper instantiation
+        BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
+        // instantiate unfinished prefab
 
         cm.SendColonistToBuild(buildingData);
         

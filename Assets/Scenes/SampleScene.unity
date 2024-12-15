@@ -444,6 +444,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPrefab: {fileID: 330314635827307569, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
   myPrefab2: {fileID: 3187569466758911184, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
+  abstractWorker: {fileID: 2430357669995396686, guid: 2f25b91bba55c3ded842253b9f9dda1e, type: 3}
+  workerModel: {fileID: 1280535102969009803, guid: fb6a762f344d254e5a341bd496c74619, type: 3}
 --- !u!4 &1161911597
 Transform:
   m_ObjectHideFlags: 0
