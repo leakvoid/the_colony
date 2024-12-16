@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ColonistManager : MonoBehaviour
 {
+    [SerializeField] ColonistData colonistDataPrefab;
+
     List<ColonistData> allColonists;
     Queue<ColonistData> joblessColonists;
 
@@ -15,7 +17,7 @@ public class ColonistManager : MonoBehaviour
 
     public ColonistData CreateColonist(BuildingData livesAt)
     {
-        ColonistData colonistData = new ColonistData();// TODO make proper instantiation
+        ColonistData colonistData = Instantiate(colonistDataPrefab);
         colonistData.livesAt = livesAt;
 
         joblessColonists.Enqueue(colonistData);

@@ -41,7 +41,11 @@ public class BuildingManager : MonoBehaviour
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
-        // instantiate unfinished prefab
+        buildingData.modelReference = Instantiate(
+            buildingData.template.unfinishedPrefab,
+            globals.GridToGlobalCoordinates(location),
+            Quaternion.identity
+        );
 
         cm.SendColonistToBuild(buildingData);
         
@@ -53,6 +57,12 @@ public class BuildingManager : MonoBehaviour
     void FinishBuildingConstruction(BuildingData buildingData)
     {
         buildingData.isConstructed = true;
+        Destroy(buildingData.modelReference);
+        buildingData.modelReference = Instantiate(
+            buildingData.template.finishedPrefab,
+            globals.GridToGlobalCoordinates(buildingData.gridLocation),
+            Quaternion.identity
+        );
 
         if (buildingData.template.buildingType == BuildingType.Housing)
         {

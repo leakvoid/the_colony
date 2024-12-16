@@ -95,6 +95,11 @@ public class Globals : MonoBehaviour
         };
     }
 
+    public Vector3 GridToGlobalCoordinates((int x, int y) location)
+    {
+        return new Vector3(0, 0, 0);// TODO implement coordinate conversion
+    }
+
     // Singleton
     static Globals instance = null;
 

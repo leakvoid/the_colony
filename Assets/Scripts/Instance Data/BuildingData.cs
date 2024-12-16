@@ -9,7 +9,7 @@ public class BuildingData : MonoBehaviour
     public List<ColonistData> colonists;
     public int upgradeTier = 0;
     public bool isConstructed = false;
-    GameObject modelReference;
+    public GameObject modelReference;
 
     void Awake()
     {

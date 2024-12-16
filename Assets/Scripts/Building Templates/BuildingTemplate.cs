@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class BuildingTemplate : ScriptableObject
 {
-    [SerializeField] public string buildingName;
-    [SerializeField] public BuildingTag buildingTag;
-    [SerializeField] public BuildingType buildingType;
-    [SerializeField] public int sizeX;
-    [SerializeField] public int sizeY;
-    [SerializeField] public int woodCost;
-    [SerializeField] public int stoneCost;
-    [SerializeField] public int toolsCost;
-    [SerializeField] public int goldCost;
-    [SerializeField] public int constructionTime;
-    [SerializeField] public GameObject finishedPrefab;
-    [SerializeField] public GameObject unfinishedPrefab;
+    [field: SerializeField] public string buildingName { get; private set; }
+    [field: SerializeField] public BuildingTag buildingTag { get; private set; }
+    [field: SerializeField] public BuildingType buildingType{ get; private set; }
+    [field: SerializeField] public int sizeX { get; private set; }
+    [field: SerializeField] public int sizeY { get; private set; }
+    [field: SerializeField] public int woodCost { get; private set; }
+    [field: SerializeField] public int stoneCost { get; private set; }
+    [field: SerializeField] public int toolsCost { get; private set; }
+    [field: SerializeField] public int goldCost { get; private set; }
+    [field: SerializeField] public int constructionTime { get; private set; }
+    [field: SerializeField] public GameObject finishedPrefab { get; private set; }
+    [field: SerializeField] public GameObject unfinishedPrefab { get; private set; }
 }
