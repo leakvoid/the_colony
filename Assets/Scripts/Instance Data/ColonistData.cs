@@ -6,26 +6,96 @@ using UnityEngine;
 public class ColonistData : MonoBehaviour
 {
     // peasant needs
-    int sleepNeedMeter = 100;
-    int foodNeedMeter = 0;
-    int waterNeedMeter = 0;
+    private int sleepNeedMeter = 100;
+    public int SleepNeedMeter
+    {
+        get { return sleepNeedMeter; }
+        set {
+                if(value <= 0)
+                    sleepNeedMeter = 0;
+                else
+                    sleepNeedMeter = value;
+            }
+    }
+    private int foodNeedMeter = 0;
+    public int FoodNeedMeter
+    {
+        get { return foodNeedMeter; }
+        set {
+                if(value <= 0)
+                    foodNeedMeter = 0;
+                else
+                    foodNeedMeter = value;
+            }
+    }
+    private int waterNeedMeter = 0;
+    public int WaterNeedMeter
+    {
+        get { return waterNeedMeter; }
+        set {
+                if(value <= 0)
+                    waterNeedMeter = 0;
+                else
+                    waterNeedMeter = value;
+            }
+    }
     // citizen needs
-    int clothesNeedMeter = 0;
-    int religionNeedMeter = 0;
+    private int clothesNeedMeter = 0;
+    public int ClothesNeedMeter
+    {
+        get { return clothesNeedMeter; }
+        set {
+                if(value <= 0)
+                    clothesNeedMeter = 0;
+                else
+                    clothesNeedMeter = value;
+            }
+    }
+    private int religionNeedMeter = 0;
+    public int ReligionNeedMeter
+    {
+        get { return religionNeedMeter; }
+        set {
+                if(value <= 0)
+                    religionNeedMeter = 0;
+                else
+                    religionNeedMeter = value;
+            }
+    }
     // nobleman needs
-    int beerNeedMeter = 0;
-    int saltNeedMeter = 0;
+    private int beerNeedMeter = 0;
+        public int BeerNeedMeter
+    {
+        get { return beerNeedMeter; }
+        set {
+                if(value <= 0)
+                    beerNeedMeter = 0;
+                else
+                    beerNeedMeter = value;
+            }
+    }
+    private int saltNeedMeter = 0;
+        public int SaltNeedMeter
+    {
+        get { return saltNeedMeter; }
+        set {
+                if(value <= 0)
+                    saltNeedMeter = 0;
+                else
+                    saltNeedMeter = value;
+            }
+    }
 
     // TODO money earned, money spent
 
-    enum ColonistType
+    public enum Type
     {
         Peasant,
         Citizen,
         Nobleman
     }
 
-    ColonistType colonistType = ColonistType.Peasant;
+    public Type type = Type.Peasant;
 
     enum Occupation
     {
@@ -60,10 +130,29 @@ public class ColonistData : MonoBehaviour
 
     Status status = Status.Idle;
 
+    public enum Action
+    {
+        GoHome,
+        GoToWork,
+        GoToMarket,
+        GoToWell,
+        GoToChurch,
+        GoToInn,
+        Sleep,
+        BuyFood,
+        BuyClothes,
+        BuySalt,
+        GetWater,
+        BuyBeer,
+        AttendChurch
+    }
+
     public BuildingData livesAt;
     public BuildingData worksAt;
+    public BuildingData currentlyInside;
 
-    GameObject modelReference;
+    GameObject workerModelReference;
+    GameObject consumerModelReference;
 
     void QueueActions()
     {

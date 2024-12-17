@@ -69,13 +69,13 @@ public class BuildingManager : MonoBehaviour
             HousingBT bt = (HousingBT)buildingData.template;
             for (int i = 0; i < bt.tier0ColonistCapacity; i++)
                 buildingData.colonists.Add(cm.CreateColonist(buildingData));
-            
-            AssignJobsToColonists();
         }
         else
         {
             emptyWorkableBuildings.Enqueue(buildingData);
         }
+
+        AssignJobsToColonists();
     }
 
     void AssignJobsToColonists()
@@ -91,6 +91,4 @@ public class BuildingManager : MonoBehaviour
             emptyWorkableBuildings.Dequeue();
         }
     }
-
-
 }

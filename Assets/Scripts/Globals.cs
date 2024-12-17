@@ -37,8 +37,9 @@ public class Globals : MonoBehaviour
 
     [Header("Temporal")]
     [SerializeField] public float gameSpeedMultiplier = 1f;
-    [SerializeField] public float needsConsumptionInterval = 5f;
-    [SerializeField] public float needsAmountDecreased = 10f;
+    [SerializeField] public float needConsumptionInterval = 5f;
+    [SerializeField] public int needAmountDecrement = 10;
+    [SerializeField] public int needAmountReplenished = 100;
     [SerializeField] public float engineNeedCheckInterval = 2f;
     [SerializeField] public float engineConstructionInterval = 5f;
 

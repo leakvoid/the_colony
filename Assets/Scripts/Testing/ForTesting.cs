@@ -54,7 +54,7 @@ public class ForTesting : MonoBehaviour
         while (objectToMove.transform.position != end)
         {
             objectToMove.transform.position = Vector3.MoveTowards(objectToMove.transform.position, end, speed * Time.deltaTime);
-            yield return new WaitForEndOfFrame();
+            yield return wait;
         }
     }
 

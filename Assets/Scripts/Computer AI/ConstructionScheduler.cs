@@ -100,14 +100,14 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.SaltMine:
             case BuildingTag.Clothier:
             case BuildingTag.Brewery:
-                float consumptionPeriod = 100 * globals.needsConsumptionInterval / globals.needsAmountDecreased;
+                float consumptionPeriod = 100 * globals.needConsumptionInterval / globals.needAmountDecrement;
                 grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
                 pressure[(int)buildingTag] -= (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
                 break;
             case BuildingTag.HuntersCabin:
             case BuildingTag.FishingHut:
             case BuildingTag.Bakery:
-                consumptionPeriod = 100 * globals.needsConsumptionInterval / globals.needsAmountDecreased;
+                consumptionPeriod = 100 * globals.needConsumptionInterval / globals.needAmountDecrement;
                 grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
                 int reducedAmount = (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
                 pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
