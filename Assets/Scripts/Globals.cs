@@ -8,7 +8,8 @@ public class Globals : MonoBehaviour
 {
     [Header("General colonist data")]
     [SerializeField] public float colonistMovementSpeed = 3f;
-    [SerializeField] public float sleepDuration = 5f;
+    [SerializeField] public float sleepDuration = 2f;
+    [SerializeField] public float prayerDuration = 2f;
 
     [Header("Colony resources")]
     [SerializeField] public int goldAmount = 2000;
@@ -27,6 +28,12 @@ public class Globals : MonoBehaviour
     [SerializeField] public int fishAmount = 0;
     [SerializeField] public int breadAmount = 0;
     [SerializeField] public int beerAmount = 0;
+
+    public int FoodAmount = 0;
+    public int FoodReservedAmount = 0;
+    public int ClothReservedAmount = 0;
+    public int SaltReservedAmount = 0;
+    public int BeerReservedAmount = 0;
 
     [Header("Resource prices")]
     [SerializeField] public int foodPrice = 20;

@@ -571,6 +571,12 @@ public class BuildingLocationModule : MonoBehaviour
         return false;
     }
 
+    public BuildingData GetClosestService(BuildingData house, BuildingTag buildingTag)
+    {
+        // TODO implement
+        return house;
+    }
+
     /*
     What is the right approach for building placement?
     

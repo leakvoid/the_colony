@@ -94,10 +94,9 @@ public class ColonistData : MonoBehaviour
         Citizen,
         Nobleman
     }
-
     public Type type = Type.Peasant;
 
-    enum Occupation
+    public enum Occupation
     {
         Jobless,
         Builder,
@@ -117,18 +116,7 @@ public class ColonistData : MonoBehaviour
         Baker,
         Brewer
     }
-
-    Occupation occupation = Occupation.Jobless;
-
-    enum Status
-    {
-        Idle,
-        Walking,
-        Working,
-        Consuming
-    }
-
-    Status status = Status.Idle;
+    public Occupation occupation = Occupation.Jobless;
 
     public enum Action
     {
@@ -144,64 +132,31 @@ public class ColonistData : MonoBehaviour
         BuySalt,
         GetWater,
         BuyBeer,
-        AttendChurch
+        Pray
     }
+    public Queue<Action> consumerActions;
+
+    // queue flags
+    public bool SleepAlreadyQueued;
+    public bool FoodAlreadyQueued;
+    public bool ClothesAlreadyQueued;
+    public bool SaltAlreadyQueued;
+    public bool WaterAlreadyQueued;
+    public bool BeerAlreadyQueued;
+    public bool ReligionAlreadyQueued;
 
     public BuildingData livesAt;
     public BuildingData worksAt;
     public BuildingData currentlyInside;
-
-    GameObject workerModelReference;
-    GameObject consumerModelReference;
-
-    void QueueActions()
-    {
-        if (sleepNeedMeter <= 0)
-        {
-            // enqueue goToLocation home
-            // enqueue sleep
-        }
-        if (foodNeedMeter <= 0)
-        {
-            // check market availability
-            // if constructed
-            // check if available food
-            // reserve purchase
-            // enqueue goToLocation market
-            // enqueue purchase food
-        }
-        if (clothesNeedMeter <= 0)
-        {
-            // same as food
-        }
-        if (saltNeedMeter <= 0)
-        {
-            // same as food
-        }
-        if (waterNeedMeter <= 0)
-        {
-            // check well availability
-            // if constructed
-            // enqueue goToLocation well
-            // enqueue get water
-        }
-        if (beerNeedMeter <= 0)
-        {
-            // same as food
-        }
-        if (religionNeedMeter <= 0)
-        {
-            // same as well
-        }
-        
-        // if has work
-        // enqueue goToLocation work
-        // enqueue startWorking
-    }
 
     /*
         logic for same colonist doing work, walking and fulfilling needs isn't viable
         solution: split each colonist into two
         husband and wife (worker and consumer)
     */
+    public GameObject workerModelReference;
+    public GameObject consumerModelReference;
+
+    public bool isConsumerRoutineActive;
+    public bool isWorkerRoutineActive;
 }
