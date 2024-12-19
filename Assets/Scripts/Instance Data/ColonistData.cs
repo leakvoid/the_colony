@@ -86,7 +86,8 @@ public class ColonistData : MonoBehaviour
             }
     }
 
-    // TODO money earned, money spent
+    public int MoneyEarned = 0;
+    public int MoneySpent = 0;
 
     public enum Type
     {
@@ -114,26 +115,34 @@ public class ColonistData : MonoBehaviour
         Tailor,
         Miller,
         Baker,
-        Brewer
+        Brewer,
+        Trader,
+        Bartender
     }
     public Occupation occupation = Occupation.Jobless;
 
     public enum Action
     {
+        // movement
         GoHome,
         GoToWork,
         GoToMarket,
         GoToWell,
         GoToChurch,
         GoToInn,
+        // consumer
         Sleep,
         BuyFood,
         BuyClothes,
         BuySalt,
         GetWater,
         BuyBeer,
-        Pray
+        Pray,
+        // worker
+        Build,
+        Work
     }
+    public Queue<Action> workerActions;
     public Queue<Action> consumerActions;
 
     // queue flags
@@ -147,7 +156,7 @@ public class ColonistData : MonoBehaviour
 
     public BuildingData livesAt;
     public BuildingData worksAt;
-    public BuildingData currentlyInside;
+    public BuildingData consumerCurrentlyInside;
 
     /*
         logic for same colonist doing work, walking and fulfilling needs isn't viable

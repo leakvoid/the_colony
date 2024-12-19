@@ -29,7 +29,19 @@ public class Globals : MonoBehaviour
     [SerializeField] public int breadAmount = 0;
     [SerializeField] public int beerAmount = 0;
 
-    public int FoodAmount = 0;
+    public int FoodAmount
+    {
+        get { return meatAmount + fishAmount + breadAmount; }
+        set {
+                // WARNING, only works for decrements
+                if (meatAmount > 0)
+                    meatAmount--;
+                else if (fishAmount > 0)
+                    fishAmount--;
+                else
+                    breadAmount--;
+            }
+    }
     public int FoodReservedAmount = 0;
     public int ClothReservedAmount = 0;
     public int SaltReservedAmount = 0;

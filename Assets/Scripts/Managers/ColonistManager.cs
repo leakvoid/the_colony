@@ -33,7 +33,7 @@ public class ColonistManager : MonoBehaviour
     {
         ColonistData colonistData = Instantiate(colonistDataPrefab);
         colonistData.livesAt = livesAt;
-        colonistData.currentlyInside = livesAt;
+        colonistData.consumerCurrentlyInside = livesAt;
 
         InitiateConsumerRoutine(colonistData);
 
@@ -55,12 +55,12 @@ public class ColonistManager : MonoBehaviour
 
         ColonistData colonistData = joblessColonists.Dequeue();
         colonistData.worksAt = worksAt;
+        colonistData.occupation = ColonistData.Occupation.Builder;
 
-        //colonistData.enqueueAction
-        // TODO send colonist to build
-        /*
-        queue send worker to build -> start building -> send back to house
-        */
+        QueueWorkerAction(ColonistData.Action.GoToWork, colonistData);
+        QueueWorkerAction(ColonistData.Action.Build, colonistData);
+        if (!colonistData.isWorkerRoutineActive)
+            StartCoroutine(ProcessWorkerActionQueue(colonistData));
     }
 
     public void SendColonistToWork(BuildingData worksAt)
@@ -70,9 +70,67 @@ public class ColonistManager : MonoBehaviour
         
         ColonistData colonistData = joblessColonists.Dequeue();
         colonistData.worksAt = worksAt;
+        switch (worksAt.template.buildingTag)
+        {
+            case BuildingTag.Market:
+                colonistData.occupation = ColonistData.Occupation.Trader;
+                break;
+            case BuildingTag.Church:
+                colonistData.occupation = ColonistData.Occupation.Priest;
+                break;
+            case BuildingTag.Inn:
+                colonistData.occupation = ColonistData.Occupation.Bartender;
+                break;
+            case BuildingTag.CottonPlantation:
+                colonistData.occupation = ColonistData.Occupation.PlantationWorker;
+                break;
+            case BuildingTag.HopsFarm:
+                colonistData.occupation = ColonistData.Occupation.HopsFarmer;
+                break;
+            case BuildingTag.WheatFarm:
+                colonistData.occupation = ColonistData.Occupation.WheatFarmer;
+                break;
+            case BuildingTag.Bakery:
+                colonistData.occupation = ColonistData.Occupation.Baker;
+                break;
+            case BuildingTag.Brewery:
+                colonistData.occupation = ColonistData.Occupation.Brewer;
+                break;
+            case BuildingTag.Clothier:
+                colonistData.occupation = ColonistData.Occupation.Tailor;
+                break;
+            case BuildingTag.Forge:
+                colonistData.occupation = ColonistData.Occupation.Blacksmith;
+                break;
+            case BuildingTag.Windmill:
+                colonistData.occupation = ColonistData.Occupation.Miller;
+                break;
+            case BuildingTag.FishingHut:
+                colonistData.occupation = ColonistData.Occupation.Fisherman;
+                break;
+            case BuildingTag.HuntersCabin:
+                colonistData.occupation = ColonistData.Occupation.Hunter;
+                break;
+            case BuildingTag.IronMine:
+                colonistData.occupation = ColonistData.Occupation.IronMiner;
+                break;
+            case BuildingTag.SaltMine:
+                colonistData.occupation = ColonistData.Occupation.SaltMiner;
+                break;
+            case BuildingTag.Sawmill:
+                colonistData.occupation = ColonistData.Occupation.Lumberjack;
+                break;
+            case BuildingTag.StoneMine:
+                colonistData.occupation = ColonistData.Occupation.StoneMiner;
+                break;
+            default:
+                throw new Exception("Unknown occupation for colonist");
+        }
 
-        // TODO send colonist to work
-        /* queue send worker to work -> occupy work building */
+        QueueWorkerAction(ColonistData.Action.GoToWork, colonistData);
+        QueueWorkerAction(ColonistData.Action.Work, colonistData);
+        if (!colonistData.isWorkerRoutineActive)
+            StartCoroutine(ProcessWorkerActionQueue(colonistData));
     }
 
     // consumer coroutines
@@ -174,9 +232,7 @@ public class ColonistManager : MonoBehaviour
                 }
 
                 if (!colonistData.isConsumerRoutineActive && colonistData.consumerActions.Count > 0)
-                {
                     StartCoroutine(ProcessConsumerActionQueue(colonistData));
-                }
 
                 yield return waitForNeedConsumption;
             }
@@ -228,16 +284,19 @@ public class ColonistManager : MonoBehaviour
                 case ColonistData.Action.BuyFood:
                     globals.FoodReservedAmount--;
                     globals.goldAmount += globals.foodPrice;
+                    colonistData.MoneySpent += globals.foodPrice;
                     colonistData.FoodNeedMeter += globals.needAmountReplenished;
                     break;
                 case ColonistData.Action.BuyClothes:
                     globals.ClothReservedAmount--;
                     globals.goldAmount += globals.clothPrice;
+                    colonistData.MoneySpent += globals.clothPrice;
                     colonistData.ClothesNeedMeter += globals.needAmountReplenished;
                     break;
                 case ColonistData.Action.BuySalt:
                     globals.SaltReservedAmount--;
                     globals.goldAmount += globals.saltPrice;
+                    colonistData.MoneySpent += globals.saltPrice;
                     colonistData.SaltNeedMeter += globals.needAmountReplenished;
                     break;
                 case ColonistData.Action.GetWater:
@@ -246,37 +305,88 @@ public class ColonistManager : MonoBehaviour
                 case ColonistData.Action.BuyBeer:
                     globals.BeerReservedAmount--;
                     globals.goldAmount += globals.beerPrice;
+                    colonistData.MoneySpent += globals.beerPrice;
                     colonistData.BeerNeedMeter += globals.needAmountReplenished;
                     break;
                 case ColonistData.Action.Pray:
                     yield return new WaitForSeconds(globals.prayerDuration);
                     globals.goldAmount += globals.churchDonation;
+                    colonistData.MoneySpent += globals.churchDonation;
                     colonistData.ReligionNeedMeter += globals.needAmountReplenished;
                     break;
+                default:
+                    throw new Exception("consumer action queue exception");
             }
         }
 
-        // TODO go home/work
+        if (colonistData.worksAt != null)
+            yield return ConsumerMoveTo(colonistData, colonistData.worksAt);
+        else
+            yield return ConsumerMoveTo(colonistData, colonistData.livesAt);
 
         colonistData.isConsumerRoutineActive = false;
     }
 
-    IEnumerator ConsumerMoveTo(ColonistData colonistData, BuildingData destination)// TODO road traversal + spawn location, animations
+    IEnumerator ConsumerMoveTo(ColonistData colonistData, BuildingData destination)
+    {
+        yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination);
+    }
+
+    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination)// TODO road traversal + spawn location, animations
     {
         colonistData.consumerModelReference = Instantiate(colonistModelPrefab,
-            globals.GridToGlobalCoordinates(colonistData.currentlyInside.gridLocation),
+            globals.GridToGlobalCoordinates(source.gridLocation),
             Quaternion.identity);
         
         var model = colonistData.consumerModelReference;
-        var start = model.transform.position;
         var end = destination.transform.position;
-        while (start != end)
+        while (model.transform.position != end)
         {
             model.transform.position = Vector3.MoveTowards(model.transform.position, end, globals.colonistMovementSpeed * Time.deltaTime);
             yield return new WaitForEndOfFrame();// TODO "new" optimization
         }
+
+        Destroy(model);
+        colonistData.consumerCurrentlyInside = destination;
     }
 
     // worker coroutines
+    void QueueWorkerAction(ColonistData.Action action, ColonistData colonistData)
+    {
+        colonistData.workerActions.Enqueue(action);
+    }
 
+    IEnumerator ProcessWorkerActionQueue(ColonistData colonistData)
+    {
+        colonistData.isWorkerRoutineActive = true;
+
+        while (colonistData.consumerActions.Count > 0)
+        {
+            var action = colonistData.workerActions.Dequeue();
+            switch (action)
+            {
+                case ColonistData.Action.GoHome:
+                    yield return MoveTo(colonistData, colonistData.worksAt, colonistData.livesAt);
+                    colonistData.occupation = ColonistData.Occupation.Jobless;
+                    joblessColonists.Enqueue(colonistData);
+                    break;
+                case ColonistData.Action.GoToWork:
+                    yield return MoveTo(colonistData, colonistData.livesAt, colonistData.worksAt);
+                    break;
+                case ColonistData.Action.Build:
+                    yield return new WaitForSeconds(colonistData.worksAt.template.constructionTime);
+                    bm.FinishBuildingConstruction(colonistData.worksAt);
+                    if (colonistData.consumerActions.Count == 0)// TODO builders cannot be queued for additional work right now
+                        QueueWorkerAction(ColonistData.Action.GoHome, colonistData);
+                    break;
+                case ColonistData.Action.Work:
+                    bm.OnWorkerArrival(colonistData);
+                    break;
+                default:
+                    throw new Exception("worker action queue exception");
+            }
+        }
+
+        colonistData.isWorkerRoutineActive = false;
+    }
 }
