@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Building Template/Service BT", fileName = "New Service Building Template")]
 public class ServiceBT : WorkableBT
 {
-    [SerializeField] public int coverArea;
+    [field: SerializeField] public int CoverArea { get; private set; }
 }

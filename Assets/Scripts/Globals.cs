@@ -6,28 +6,23 @@ using UnityEngine;
 
 public class Globals : MonoBehaviour
 {
-    [Header("General colonist data")]
-    [SerializeField] public float colonistMovementSpeed = 3f;
-    [SerializeField] public float sleepDuration = 2f;
-    [SerializeField] public float prayerDuration = 2f;
-
     [Header("Colony resources")]
-    [SerializeField] public int goldAmount = 2000;
-    [SerializeField] public int woodAmount = 20;
-    [SerializeField] public int stoneAmount = 20;
-    [SerializeField] public int toolsAmount = 0;
+    public int goldAmount = 2000;
+    public int woodAmount = 20;
+    public int stoneAmount = 20;
+    public int toolsAmount = 0;
 
-    [SerializeField] public int ironAmount = 0;
-    [SerializeField] public int cottonAmount = 0;
-    [SerializeField] public int wheatAmount = 0;
-    [SerializeField] public int hopsAmount = 0;
-    [SerializeField] public int flourAmount = 0;
-    [SerializeField] public int saltAmount = 0;
-    [SerializeField] public int clothAmount = 0;
-    [SerializeField] public int meatAmount = 0;
-    [SerializeField] public int fishAmount = 0;
-    [SerializeField] public int breadAmount = 0;
-    [SerializeField] public int beerAmount = 0;
+    public int ironAmount = 0;
+    public int cottonAmount = 0;
+    public int wheatAmount = 0;
+    public int hopsAmount = 0;
+    public int flourAmount = 0;
+    public int saltAmount = 0;
+    public int clothAmount = 0;
+    public int meatAmount = 0;
+    public int fishAmount = 0;
+    public int breadAmount = 0;
+    public int beerAmount = 0;
 
     public int FoodAmount
     {
@@ -42,88 +37,94 @@ public class Globals : MonoBehaviour
                     breadAmount--;
             }
     }
-    public int FoodReservedAmount = 0;
-    public int ClothReservedAmount = 0;
-    public int SaltReservedAmount = 0;
-    public int BeerReservedAmount = 0;
+    public int FoodReservedAmount { get; set; } = 0;
+    public int ClothReservedAmount { get; set; } = 0;
+    public int SaltReservedAmount { get; set; } = 0;
+    public int BeerReservedAmount { get; set; } = 0;
 
-    [Header("Resource prices")]
-    [SerializeField] public int foodPrice = 20;
-    [SerializeField] public int saltPrice = 30;
-    [SerializeField] public int clothPrice = 40;
-    [SerializeField] public int beerPrice = 50;
-    [SerializeField] public int churchDonation = 10;
+    [field: Header("General colonist data")]
+    [field: SerializeField] public float ColonistMovementSpeed { get; private set; } = 3f;
+    [field: SerializeField] public float SleepDuration { get; private set; } = 2f;
+    [field: SerializeField] public float PrayerDuration { get; private set; } = 2f;
+    [field: SerializeField] public int NeedReplenishThreshold { get; private set; } = 20;
 
-    [Header("Temporal")]
-    [SerializeField] public float gameSpeedMultiplier = 1f;
-    [SerializeField] public float needConsumptionInterval = 5f;
-    [SerializeField] public int needAmountDecrement = 10;
-    [SerializeField] public int needAmountReplenished = 100;
-    [SerializeField] public float engineNeedCheckInterval = 2f;
-    [SerializeField] public float engineConstructionInterval = 5f;
+    [field: Header("Resource prices")]
+    [field: SerializeField] public int FoodPrice { get; private set; } = 20;
+    [field: SerializeField] public int SaltPrice { get; private set; } = 30;
+    [field: SerializeField] public int ClothPrice { get; private set; } = 40;
+    [field: SerializeField] public int BeerPrice { get; private set; } = 50;
+    [field: SerializeField] public int ChurchDonation { get; private set; } = 10;
 
-    [Header("Building templates")]
+    [field: Header("Temporal")]
+    [field: SerializeField] public float GameSpeedMultiplier { get; private set; } = 1f;
+    [field: SerializeField] public float NeedConsumptionInterval { get; private set; } = 5f;
+    [field: SerializeField] public int NeedAmountDecrement { get; private set; } = 10;
+    [field: SerializeField] public int NeedAmountReplenished { get; private set; } = 100;
+    [field: SerializeField] public float EngineNeedCheckInterval { get; private set; } = 2f;
+    [field: SerializeField] public float EngineConstructionInterval { get; private set; } = 5f;
+
+    [field: Header("Building templates")]
     // housing
-    [SerializeField] public HousingBT houseTemplate;
+    [field: SerializeField] public HousingBT HouseTemplate { get; private set; }
     // service
-    [SerializeField] public ServiceBT marketTemplate;
-    [SerializeField] public ServiceBT churchTemplate;
-    [SerializeField] public ServiceBT innTemplate;
-    [SerializeField] public ServiceBT wellTemplate;
+    [field: SerializeField] public ServiceBT MarketTemplate { get; private set; }
+    [field: SerializeField] public ServiceBT ChurchTemplate { get; private set; }
+    [field: SerializeField] public ServiceBT InnTemplate { get; private set; }
+    [field: SerializeField] public ServiceBT WellTemplate { get; private set; }
     // farming
-    [SerializeField] public FarmingBT cottonPlantationTemplate;
-    [SerializeField] public FarmingBT hopsFarmTemplate;
-    [SerializeField] public FarmingBT wheatFarmTemplate;
+    [field: SerializeField] public FarmingBT CottonPlantationTemplate { get; private set; }
+    [field: SerializeField] public FarmingBT HopsFarmTemplate { get; private set; }
+    [field: SerializeField] public FarmingBT WheatFarmTemplate { get; private set; }
     // processing
-    [SerializeField] public ProcessingBT bakeryTemplate;
-    [SerializeField] public ProcessingBT breweryTemplate;
-    [SerializeField] public ProcessingBT clothierTemplate;
-    [SerializeField] public ProcessingBT forgeTemplate;
-    [SerializeField] public ProcessingBT windmillTemplate;
+    [field: SerializeField] public ProcessingBT BakeryTemplate { get; private set; }
+    [field: SerializeField] public ProcessingBT BreweryTemplate { get; private set; }
+    [field: SerializeField] public ProcessingBT ClothierTemplate { get; private set; }
+    [field: SerializeField] public ProcessingBT ForgeTemplate { get; private set; }
+    [field: SerializeField] public ProcessingBT WindmillTemplate { get; private set; }
     // gathering
-    [SerializeField] public ResourceGatheringBT fishingHutTemplate;
-    [SerializeField] public ResourceGatheringBT huntersCabinTemplate;
-    [SerializeField] public ResourceGatheringBT ironMineTemplate;
-    [SerializeField] public ResourceGatheringBT saltMineTemplate;
-    [SerializeField] public ResourceGatheringBT sawmillTemplate;
-    [SerializeField] public ResourceGatheringBT stoneMineTemplate;
+    [field: SerializeField] public ResourceGatheringBT FishingHutTemplate { get; private set; }
+    [field: SerializeField] public ResourceGatheringBT HuntersCabinTemplate { get; private set; }
+    [field: SerializeField] public ResourceGatheringBT IronMineTemplate { get; private set; }
+    [field: SerializeField] public ResourceGatheringBT SaltMineTemplate { get; private set; }
+    [field: SerializeField] public ResourceGatheringBT SawmillTemplate { get; private set; }
+    [field: SerializeField] public ResourceGatheringBT StoneMineTemplate { get; private set; }
 
     public BuildingTemplate NameToTemplate(BuildingTag buildingTag)
     {
         return buildingTag switch
         {
-            BuildingTag.House => houseTemplate,
-            BuildingTag.Market => marketTemplate,
-            BuildingTag.Church => churchTemplate,
-            BuildingTag.Inn => innTemplate,
-            BuildingTag.Well => wellTemplate,
-            BuildingTag.CottonPlantation => cottonPlantationTemplate,
-            BuildingTag.HopsFarm => hopsFarmTemplate,
-            BuildingTag.WheatFarm => wheatFarmTemplate,
-            BuildingTag.Bakery => bakeryTemplate,
-            BuildingTag.Brewery => breweryTemplate,
-            BuildingTag.Clothier => clothierTemplate,
-            BuildingTag.Forge => forgeTemplate,
-            BuildingTag.Windmill => windmillTemplate,
-            BuildingTag.FishingHut => fishingHutTemplate,
-            BuildingTag.HuntersCabin => huntersCabinTemplate,
-            BuildingTag.IronMine => ironMineTemplate,
-            BuildingTag.SaltMine => saltMineTemplate,
-            BuildingTag.Sawmill => sawmillTemplate,
-            BuildingTag.StoneMine => stoneMineTemplate,
+            BuildingTag.House => HouseTemplate,
+            BuildingTag.Market => MarketTemplate,
+            BuildingTag.Church => ChurchTemplate,
+            BuildingTag.Inn => InnTemplate,
+            BuildingTag.Well => WellTemplate,
+            BuildingTag.CottonPlantation => CottonPlantationTemplate,
+            BuildingTag.HopsFarm => HopsFarmTemplate,
+            BuildingTag.WheatFarm => WheatFarmTemplate,
+            BuildingTag.Bakery => BakeryTemplate,
+            BuildingTag.Brewery => BreweryTemplate,
+            BuildingTag.Clothier => ClothierTemplate,
+            BuildingTag.Forge => ForgeTemplate,
+            BuildingTag.Windmill => WindmillTemplate,
+            BuildingTag.FishingHut => FishingHutTemplate,
+            BuildingTag.HuntersCabin => HuntersCabinTemplate,
+            BuildingTag.IronMine => IronMineTemplate,
+            BuildingTag.SaltMine => SaltMineTemplate,
+            BuildingTag.Sawmill => SawmillTemplate,
+            BuildingTag.StoneMine => StoneMineTemplate,
             _ => throw new ArgumentException("building " + nameof(buildingTag) + " is missing"),
         };
     }
 
     public Vector3 GridToGlobalCoordinates((int x, int y) location)
     {
-        return new Vector3(0, 0, 0);// TODO implement coordinate conversion
+        return new Vector3(location.x, location.y, 0);
     }
 
     // Singleton
     static Globals instance = null;
 
-    void Start()
+    public void Initialize()
     {
         if(instance != null)
         {

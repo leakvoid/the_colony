@@ -10,10 +10,10 @@ public class BuildingLocationModule : MonoBehaviour
     AbstractMapGenerator mapGenerator;
 
     // data for placing houses
-    bool[,] marketCoverArea;
-    bool[,] churchCoverArea;
-    bool[,] innCoverArea;
-    bool[,] wellCoverArea;
+    BuildingData[,] marketCoverArea;
+    BuildingData[,] churchCoverArea;
+    BuildingData[,] innCoverArea;
+    BuildingData[,] wellCoverArea;
 
     // uncovered houses (for placing service buildings)
     bool[,] uncoveredByMarket;
@@ -43,16 +43,16 @@ public class BuildingLocationModule : MonoBehaviour
         mapGenerator = FindObjectOfType<AbstractMapGenerator>();
     }
 
-    void Start()
+    public void Initialize()
     {
         terrainGrid = mapGenerator.GetTerrainGrid();
         gridX = terrainGrid.GetLength(0);
         gridY = terrainGrid.GetLength(1);
 
-        marketCoverArea = new bool[gridX, gridY];
-        churchCoverArea = new bool[gridX, gridY];
-        innCoverArea = new bool[gridX, gridY];
-        wellCoverArea = new bool[gridX, gridY];
+        marketCoverArea = new BuildingData[gridX, gridY];
+        churchCoverArea = new BuildingData[gridX, gridY];
+        innCoverArea = new BuildingData[gridX, gridY];
+        wellCoverArea = new BuildingData[gridX, gridY];
 
         uncoveredByMarket = new bool[gridX, gridY];
         uncoveredByChurch = new bool[gridX, gridY];
@@ -66,27 +66,40 @@ public class BuildingLocationModule : MonoBehaviour
         saltMineCaptureArea = new bool[gridX, gridY];
         stoneMineCaptureArea = new bool[gridX, gridY];
 
-        // TODO add surrounding resource space as unavailable
-        availableSpace = new bool[gridX, gridY];
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                availableSpace[i,j] = true;
+            }
+        }
+
         for (int i = 0; i < gridX; i++)
         {
             for (int j = 0; j < gridY; j++)
             {
                 if (terrainGrid[i,j] == TerrainType.Ground)
-                    availableSpace[i,j] = true;
-                else
-                    availableSpace[i,j] = false;
+                    continue;
+                
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        int posX = i + dx;
+                        int posY = j + dy;
+                        if (posX >= 0 && posX < gridX && posY >= 0 && posY < gridY)
+                            availableSpace[posX, posY] = false;
+                    }
+                }
             }
         }
     }
 
-    public (int x, int y) PickNewBuildingLocation(BuildingTag buildingTag)
+    public (int x, int y) PickNewBuildingLocation(BuildingTemplate buildingTemplate)
     {
-        BuildingTemplate buildingTemplate = globals.NameToTemplate(buildingTag);
-
         // pick location
         (int x, int y) location;
-        switch (buildingTemplate.buildingType)
+        switch (buildingTemplate.BuildingType)
         {
             case BuildingType.Housing:
                 location = PickBestHousingLocation(buildingTemplate);
@@ -104,46 +117,45 @@ public class BuildingLocationModule : MonoBehaviour
 
         if (location == (-1, -1))
         {
-            print("Building space run out for " + nameof(buildingTag));
+            print("Building space run out for " + nameof(buildingTemplate.BuildingTag));
             return location;
         }
 
-        // place building
-        // TODO instantiate building and place prefab onto scene
-        // TODO split into BuildingLocationFinder and BuildingInstantiationModule
+        return location;
+    }
 
+    public void UpdateAfterBuildingCreation(BuildingData buildingData, BuildingTemplate buildingTemplate)
+    {
         // update building affected areas
-        UpdateAvailableSpace(location, buildingTemplate);
-        switch (buildingTemplate.buildingType)
+        UpdateAvailableSpace(buildingData.gridLocation, buildingTemplate);
+        switch (buildingTemplate.BuildingType)
         {
             case BuildingType.Housing:
-                UpdateServicesForHouse(location, buildingTemplate);
+                UpdateServicesForHouse(buildingData.gridLocation, buildingTemplate);
                 break;
             case BuildingType.Service:
-                UpdateServiceCoverArea(location, buildingTemplate);
+                UpdateServiceCoverArea(buildingData, buildingTemplate);
                 break;
             case BuildingType.ResourceGathering:
-                UpdateResourceCaptureArea(location, buildingTemplate);
+                UpdateResourceCaptureArea(buildingData.gridLocation, buildingTemplate);
                 break;
             default:
                 break;
         }
-        
-        return location;
     }
 
     bool[,] GetAvailableBuildingSpots(BuildingTemplate bt)
     {
         // TODO O(x^4) can be optimized
-        var availableForBuilding = new bool[gridX - bt.sizeX + 1, gridY - bt.sizeY + 1];
+        var availableForBuilding = new bool[gridX - bt.SizeX + 1, gridY - bt.SizeY + 1];
         for (int i = 0; i < availableForBuilding.GetLength(0); i++)
         {
             for (int j = 0; j < availableForBuilding.GetLength(1); j++)
             {
                 availableForBuilding[i,j] = true;
-                for (int k = 0; k < bt.sizeX; k++)
+                for (int k = 0; k < bt.SizeX; k++)
                 {
-                    for (int l = 0; l < bt.sizeY; l++)
+                    for (int l = 0; l < bt.SizeY; l++)
                     {
                         if (!availableSpace[i + k,j + l])
                         {
@@ -241,7 +253,7 @@ public class BuildingLocationModule : MonoBehaviour
         var availableForBuilding = GetAvailableBuildingSpots(bt);
 
         bool[,] uncoveredHouses;
-        switch (bt.buildingTag)
+        switch (bt.BuildingTag)
         {
             case BuildingTag.Market:
                 uncoveredHouses = uncoveredByMarket;
@@ -256,10 +268,10 @@ public class BuildingLocationModule : MonoBehaviour
                 uncoveredHouses = uncoveredByWell;
                 break;
             default:
-                throw new Exception("Unknown service building " + bt.buildingName);
+                throw new Exception("Unknown service building " + nameof(bt.BuildingTag));
         }
 
-        var coverValueGrid = new int[gridX - bt.sizeX + 1, gridY - bt.sizeY + 1];
+        var coverValueGrid = new int[gridX - bt.SizeX + 1, gridY - bt.SizeY + 1];
         int bestCoverValue = 0;
         int numberOfBestSpots = 0;
         for (int i = 0; i < availableForBuilding.GetLength(0); i++)
@@ -283,7 +295,7 @@ public class BuildingLocationModule : MonoBehaviour
             }
         }
 
-        if (numberOfBestSpots == 0)// TODO bestCoverValue == 0 ?
+        if (bestCoverValue == 0)
             return (-1, -1);
 
         lastCoverValue = bestCoverValue;
@@ -312,12 +324,11 @@ public class BuildingLocationModule : MonoBehaviour
 
     int GetServiceCoverAreaValue(int x, int y, bool[,] uncoveredHouses, ServiceBT bt)
     {
-        // TODO center around entire building
-        // TODO O(x^4) can be optimized
+        // TODO O(x^4) can be optimized; center around entire building
         int count = 0;
-        for (int i = Math.Max(x - bt.coverArea, 0); i < Math.Min(x + bt.coverArea, gridX); i++)
+        for (int i = Math.Max(x - bt.CoverArea, 0); i < Math.Min(x + bt.CoverArea, gridX); i++)
         {
-            for (int j = Math.Max(y - bt.coverArea, 0); j < Math.Min(y + bt.coverArea, gridY); j++)
+            for (int j = Math.Max(y - bt.CoverArea, 0); j < Math.Min(y + bt.CoverArea, gridY); j++)
             {
                 if (uncoveredHouses[i,j])
                     count++;
@@ -332,9 +343,9 @@ public class BuildingLocationModule : MonoBehaviour
         ResourceGatheringBT bt = (ResourceGatheringBT)buildingTemplate;
 
         var availableForBuilding = GetAvailableBuildingSpots(bt);
-        var resourceCoverGrid = CreateResourceCoverGrid(bt.groundResource, bt.minDistanceToResource);
+        var resourceCoverGrid = CreateResourceCoverGrid(bt.GroundResource, bt.MinDistanceToResource);
         bool[,] captureArea;
-        switch (bt.buildingTag)
+        switch (bt.BuildingTag)
         {
             case BuildingTag.FishingHut:
                 captureArea = fishingHutCaptureArea;
@@ -355,7 +366,7 @@ public class BuildingLocationModule : MonoBehaviour
                 captureArea = stoneMineCaptureArea;
                 break;
             default:
-                throw new Exception("Resource gathering building " + bt.buildingName + " is missing");
+                throw new Exception("Resource gathering building " + nameof(bt.BuildingTag) + " is missing");
         }
 
         int availableLocations = 0;
@@ -464,16 +475,15 @@ public class BuildingLocationModule : MonoBehaviour
 
     void UpdateAvailableSpace((int x, int y) location, BuildingTemplate bt)
     {
-        for (int i = location.x; i < location.x + bt.sizeX; i++)
+        for (int i = location.x; i < location.x + bt.SizeX; i++)
         {
-            for (int j = location.y; j < location.y + bt.sizeY; j++)
+            for (int j = location.y; j < location.y + bt.SizeY; j++)
             {
                 availableSpace[i,j] = false;
             }
         }
     }
 
-    // TODO top left corner issue
     void UpdateServicesForHouse((int x, int y) pos, BuildingTemplate bt)
     {
         uncoveredByMarket[pos.x, pos.y] = !marketCoverArea[pos.x, pos.y];
@@ -483,12 +493,12 @@ public class BuildingLocationModule : MonoBehaviour
     }
 
     // TODO top left issue (adjust for service building size; adjust for house overlap 11,11,10,10)
-    void UpdateServiceCoverArea((int x, int y) location, BuildingTemplate buildingTemplate)
+    void UpdateServiceCoverArea(BuildingData buildingData, BuildingTemplate buildingTemplate)
     {
         ServiceBT bt = (ServiceBT)buildingTemplate;
         bool[,] uncoveredByService;
-        bool[,] serviceCoverArea;
-        switch (bt.buildingTag)
+        BuildingData[,] serviceCoverArea;
+        switch (bt.BuildingTag)
         {
             case BuildingTag.Market:
                 uncoveredByService = uncoveredByMarket;
@@ -510,12 +520,12 @@ public class BuildingLocationModule : MonoBehaviour
                 throw new Exception("Service not found");
         }
 
-        for (int i = Math.Max(location.x - bt.coverArea, 0); i < Math.Min(location.x + bt.coverArea, gridX); i++)
+        for (int i = Math.Max(buildingData.gridLocation.x - bt.CoverArea, 0); i < Math.Min(buildingData.gridLocation.x + bt.CoverArea, gridX); i++)
         {
-            for (int j = Math.Max(location.y - bt.coverArea, 0); j < Math.Min(location.y + bt.coverArea, gridY); j++)
+            for (int j = Math.Max(buildingData.gridLocation.y - bt.CoverArea, 0); j < Math.Min(buildingData.gridLocation.y + bt.CoverArea, gridY); j++)
             {
                 uncoveredByService[i,j] = false;
-                serviceCoverArea[i,j] = true;
+                serviceCoverArea[i,j] = buildingData;
             }
         }
     }
@@ -525,7 +535,7 @@ public class BuildingLocationModule : MonoBehaviour
         ResourceGatheringBT bt = (ResourceGatheringBT) buildingTemplate;
 
         bool[,] captureArea;
-        switch (bt.buildingTag)
+        switch (bt.BuildingTag)
         {
             case BuildingTag.FishingHut:
                 captureArea = fishingHutCaptureArea;
@@ -546,12 +556,12 @@ public class BuildingLocationModule : MonoBehaviour
                 captureArea = stoneMineCaptureArea;
                 break;
             default:
-                throw new Exception("Resource gathering building " + bt.buildingName + " is missing");
+                throw new Exception("Resource gathering building " + nameof(bt.BuildingTag) + " is missing");
         }
 
-        for (int i = Math.Max(location.x - bt.captureGatheringArea, 0); i < Math.Min(location.x + bt.captureGatheringArea, gridX); i++)
+        for (int i = Math.Max(location.x - bt.CaptureGatheringArea, 0); i < Math.Min(location.x + bt.CaptureGatheringArea, gridX); i++)
         {
-            for (int j = Math.Max(location.y - bt.captureGatheringArea, 0); j < Math.Min(location.y + bt.captureGatheringArea, gridY); j++)
+            for (int j = Math.Max(location.y - bt.CaptureGatheringArea, 0); j < Math.Min(location.y + bt.CaptureGatheringArea, gridY); j++)
             {
                 captureArea[i,j] = true;
             }
@@ -573,8 +583,19 @@ public class BuildingLocationModule : MonoBehaviour
 
     public BuildingData GetClosestService(BuildingData house, BuildingTag buildingTag)
     {
-        // TODO implement
-        return house;
+        switch (buildingTag)
+        {
+            case BuildingTag.Market:
+                return marketCoverArea[house.gridLocation.x, house.gridLocation.y];
+            case BuildingTag.Church:
+                return churchCoverArea[house.gridLocation.x, house.gridLocation.y];
+            case BuildingTag.Inn:
+                return innCoverArea[house.gridLocation.x, house.gridLocation.y];
+            case BuildingTag.Well:
+                return wellCoverArea[house.gridLocation.x, house.gridLocation.y];
+            default:
+                throw new Exception("Unknown service " + nameof(buildingTag));
+        }
     }
 
     /*

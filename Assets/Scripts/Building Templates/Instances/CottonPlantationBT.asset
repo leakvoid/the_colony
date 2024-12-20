@@ -12,13 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e9b2a86338170ab8f65ecb8784eee5, type: 3}
   m_Name: CottonPlantationBT
   m_EditorClassIdentifier: 
-  buildingName: Cotton plantation
-  buildingTag: 5
-  buildingType: 3
-  sizeX: 12
-  sizeY: 12
-  maxNumberOfWorkers: 4
-  salary: 8
-  timeInterval: 10
-  amountProducedPerInterval: 5
-  producedResource: 4
+  <BuildingTag>k__BackingField: 5
+  <BuildingType>k__BackingField: 3
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 0
+  <ProducedResource>k__BackingField: 4

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WorkableBT : BuildingTemplate
 {
-    [SerializeField] public int maxNumberOfWorkers;
-    [SerializeField] public int salary;
-    [SerializeField] public float timeInterval = 10f;
+    [field: SerializeField] public int MaxNumberOfWorkers { get; private set; }
+    [field: SerializeField] public int Salary { get; private set; }
+    [field: SerializeField] public float TimeInterval { get; private set; } = 10f;
 }

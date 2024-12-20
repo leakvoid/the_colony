@@ -26,16 +26,16 @@ public class BuildingManager : MonoBehaviour
 
     public BuildingData StartBuildingConstruction(BuildingTemplate bt)
     {
-        if (bt.goldCost > globals.goldAmount ||
-            bt.woodCost > globals.woodAmount ||
-            bt.stoneCost > globals.stoneAmount ||
-            bt.toolsCost > globals.toolsAmount)
+        if (bt.GoldCost > globals.goldAmount ||
+            bt.WoodCost > globals.woodAmount ||
+            bt.StoneCost > globals.stoneAmount ||
+            bt.ToolsCost > globals.toolsAmount)
             return null;
 
         if (cm.GetJoblessColonistCount() < 1)
             return null;
 
-        (int, int) location = blm.PickNewBuildingLocation(bt.buildingTag);
+        (int, int) location = blm.PickNewBuildingLocation(bt);
         if (location == (-1, -1))
             return null;
 
@@ -43,10 +43,11 @@ public class BuildingManager : MonoBehaviour
         buildingData.template = bt;
         buildingData.gridLocation = location;
         buildingData.modelReference = Instantiate(
-            buildingData.template.unfinishedPrefab,
+            buildingData.template.UnfinishedModel,
             globals.GridToGlobalCoordinates(location),
             Quaternion.identity
         );
+        blm.UpdateAfterBuildingCreation(buildingData, bt);
 
         cm.SendColonistToBuild(buildingData);
         
@@ -60,15 +61,15 @@ public class BuildingManager : MonoBehaviour
         buildingData.isConstructed = true;
         Destroy(buildingData.modelReference);
         buildingData.modelReference = Instantiate(
-            buildingData.template.finishedPrefab,
+            buildingData.template.FinishedModel,
             globals.GridToGlobalCoordinates(buildingData.gridLocation),
             Quaternion.identity
         );
 
-        if (buildingData.template.buildingType == BuildingType.Housing)
+        if (buildingData.template.BuildingType == BuildingType.Housing)
         {
             HousingBT bt = (HousingBT)buildingData.template;
-            for (int i = 0; i < bt.tier0ColonistCapacity; i++)
+            for (int i = 0; i < bt.Tier0ColonistCapacity; i++)
                 buildingData.colonists.Add(cm.CreateColonist(buildingData));
         }
         else
@@ -85,9 +86,9 @@ public class BuildingManager : MonoBehaviour
         {
             BuildingData buildingData = emptyWorkableBuildings.Peek();
             WorkableBT bt = (WorkableBT)buildingData.template;
-            if (bt.maxNumberOfWorkers > cm.GetJoblessColonistCount())
+            if (bt.MaxNumberOfWorkers > cm.GetJoblessColonistCount())
                 return;
-            for (int i = 0; i < bt.maxNumberOfWorkers; i++)
+            for (int i = 0; i < bt.MaxNumberOfWorkers; i++)
                 cm.SendColonistToWork(buildingData);
             emptyWorkableBuildings.Dequeue();
         }
@@ -107,30 +108,30 @@ public class BuildingManager : MonoBehaviour
         void HandleProduction(BuildingTemplate buildingTemplate, ref int producedResource)
         {
             ProductionBT bt = (ProductionBT)buildingTemplate;
-            producedResource += bt.amountProducedPerInterval;
+            producedResource += bt.AmountProducedPerInterval;
         }
 
         void HandleProcessing(BuildingTemplate buildingTemplate, ref int producedResource, ref int consumedResource)
         {
             ProcessingBT bt = (ProcessingBT)buildingTemplate;
-            if (consumedResource < bt.amountConsumedPerInterval)
+            if (consumedResource < bt.AmountConsumedPerInterval)
                 return;
-            consumedResource -= bt.amountConsumedPerInterval;
-            producedResource += bt.amountProducedPerInterval;
+            consumedResource -= bt.AmountConsumedPerInterval;
+            producedResource += bt.AmountProducedPerInterval;
         }
 
         WorkableBT bt = (WorkableBT)buildingData.template;
-        var waitTimeInterval = new WaitForSeconds(bt.timeInterval);
+        var waitTimeInterval = new WaitForSeconds(bt.TimeInterval);
         while (true)
         {
             yield return waitTimeInterval;
             foreach (var colonist in buildingData.colonists)
             {
-                globals.goldAmount -= bt.salary;
-                colonist.MoneyEarned += bt.salary;
+                globals.goldAmount -= bt.Salary;
+                colonist.MoneyEarned += bt.Salary;
             }
 
-            switch (bt.buildingTag)
+            switch (bt.BuildingTag)
             {
                 case BuildingTag.CottonPlantation:
                     HandleProduction(bt, ref globals.cottonAmount);

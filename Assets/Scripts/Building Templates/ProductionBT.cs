@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class ProductionBT : WorkableBT
 {
-    [SerializeField] public int amountProducedPerInterval;
-    [SerializeField] public ResourceType producedResource;
+    [field: SerializeField] public int AmountProducedPerInterval { get; private set; }
+    [field: SerializeField] public ResourceType ProducedResource { get; private set; }
 }

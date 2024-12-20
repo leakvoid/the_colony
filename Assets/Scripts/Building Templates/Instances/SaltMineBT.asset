@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f374ff36175f466492e1b25eedd1069, type: 3}
   m_Name: SaltMineBT
   m_EditorClassIdentifier: 
-  buildingName: Salt mine
-  buildingTag: 16
-  buildingType: 4
-  sizeX: 3
-  sizeY: 3
-  WoodCost: 40
-  StoneCost: 40
-  ToolsCost: 30
-  GoldCost: 1000
-  constructionTime: 20
-  maxNumberOfWorkers: 5
-  salary: 30
-  timeInterval: 10
-  amountProducedPerInterval: 50
-  producedResource: 8
-  groundResource: 4
-  minDistanceToResource: 5
-  captureGatheringArea: 20
+  <BuildingTag>k__BackingField: 16
+  <BuildingType>k__BackingField: 4
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 0
+  <ProducedResource>k__BackingField: 8
+  <GroundResource>k__BackingField: 4
+  <MinDistanceToResource>k__BackingField: 0
+  <CaptureGatheringArea>k__BackingField: 0

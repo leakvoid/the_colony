@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f374ff36175f466492e1b25eedd1069, type: 3}
   m_Name: SawmillBT
   m_EditorClassIdentifier: 
-  buildingName: Sawmill
-  buildingTag: 17
-  buildingType: 4
-  sizeX: 2
-  sizeY: 4
-  WoodCost: 0
-  StoneCost: 0
-  ToolsCost: 0
-  GoldCost: 300
-  constructionTime: 10
-  maxNumberOfWorkers: 3
-  salary: 7
-  timeInterval: 10
-  amountProducedPerInterval: 10
-  producedResource: 0
-  groundResource: 1
-  minDistanceToResource: 2
-  captureGatheringArea: 20
+  <BuildingTag>k__BackingField: 17
+  <BuildingType>k__BackingField: 4
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 0
+  <ProducedResource>k__BackingField: 0
+  <GroundResource>k__BackingField: 1
+  <MinDistanceToResource>k__BackingField: 0
+  <CaptureGatheringArea>k__BackingField: 0

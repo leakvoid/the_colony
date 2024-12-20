@@ -12,15 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d547fbd625f1bcd99baf4d5c3b0383a, type: 3}
   m_Name: ClothierBT
   m_EditorClassIdentifier: 
-  buildingName: Clothier
-  buildingTag: 10
-  buildingType: 2
-  sizeX: 2
-  sizeY: 3
-  maxNumberOfWorkers: 2
-  salary: 12
-  timeInterval: 10
-  amountConsumedPerInterval: 3
-  amountProducedPerInterval: 3
-  consumedResource: 4
-  producedResource: 9
+  <BuildingTag>k__BackingField: 10
+  <BuildingType>k__BackingField: 2
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 0
+  <ProducedResource>k__BackingField: 9
+  <AmountConsumedPerInterval>k__BackingField: 0
+  <ConsumedResource>k__BackingField: 4

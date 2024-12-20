@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5535485978884381294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3713680451143122201}
+  - component: {fileID: 25098427878284524}
+  m_Layer: 0
+  m_Name: ColonistData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3713680451143122201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5535485978884381294}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &25098427878284524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5535485978884381294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f41ef867dfcf3bc9bc0de07830aa16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoneyEarned: 0
+  MoneySpent: 0
+  type: 0
+  occupation: 0
+  SleepAlreadyQueued: 0
+  FoodAlreadyQueued: 0
+  ClothesAlreadyQueued: 0
+  SaltAlreadyQueued: 0
+  WaterAlreadyQueued: 0
+  BeerAlreadyQueued: 0
+  ReligionAlreadyQueued: 0
+  livesAt: {fileID: 0}
+  worksAt: {fileID: 0}
+  consumerCurrentlyInside: {fileID: 0}
+  workerModelReference: {fileID: 0}
+  consumerModelReference: {fileID: 0}
+  isConsumerRoutineActive: 0
+  isWorkerRoutineActive: 0

@@ -11,7 +11,6 @@ public class ConstructionScheduler : MonoBehaviour
     BuildingLocationModule blm;// TODO refactor
 
     int[] pressure;
-    bool[] canBuild;
     int[] buildingCount;
 
     List<BuildingTag> buildingPriorityList;
@@ -23,16 +22,12 @@ public class ConstructionScheduler : MonoBehaviour
         blm = FindObjectOfType<BuildingLocationModule>();
     }
 
-    void Start()
+    public void Initialize()
     {
         int count = Enum.GetValues(typeof(BuildingTag)).Length;
 
         pressure = new int[count];
-        canBuild = new bool[count];//TODO maybe should be deleted
         buildingCount = new int[count];
-
-        for (int i = 0; i < count; i++)
-            canBuild[i] = true;
 
         buildingPriorityList = new List<BuildingTag>()
         {
@@ -84,8 +79,8 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.Sawmill:
             case BuildingTag.StoneMine:
             case BuildingTag.Forge:
-                float grace = (bt.constructionTime + 30) * bt.amountProducedPerInterval;
-                pressure[(int)buildingTag] -= (int)(grace / globals.engineConstructionInterval);
+                float grace = (bt.ConstructionTime + 30) * bt.AmountProducedPerInterval;
+                pressure[(int)buildingTag] -= (int)(grace / globals.EngineConstructionInterval);
                 break;
             // Raw
             case BuildingTag.IronMine:
@@ -93,23 +88,23 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.WheatFarm:
             case BuildingTag.HopsFarm:
             case BuildingTag.Windmill:
-                grace = (bt.constructionTime + 30) / bt.timeInterval * bt.amountProducedPerInterval;
+                grace = (bt.ConstructionTime + 30) / bt.TimeInterval * bt.AmountProducedPerInterval;
                 pressure[(int)buildingTag] -= (int)grace;
                 break;
             // Consumption
             case BuildingTag.SaltMine:
             case BuildingTag.Clothier:
             case BuildingTag.Brewery:
-                float consumptionPeriod = 100 * globals.needConsumptionInterval / globals.needAmountDecrement;
-                grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
-                pressure[(int)buildingTag] -= (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
+                float consumptionPeriod = 100 * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
+                grace = (bt.ConstructionTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
+                pressure[(int)buildingTag] -= (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
                 break;
             case BuildingTag.HuntersCabin:
             case BuildingTag.FishingHut:
             case BuildingTag.Bakery:
-                consumptionPeriod = 100 * globals.needConsumptionInterval / globals.needAmountDecrement;
-                grace = (bt.constructionTime + consumptionPeriod) / bt.timeInterval * bt.amountProducedPerInterval;
-                int reducedAmount = (int)(grace * consumptionPeriod / globals.engineNeedCheckInterval);
+                consumptionPeriod = 100 * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
+                grace = (bt.ConstructionTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
+                int reducedAmount = (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
                 pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
                 pressure[(int)BuildingTag.FishingHut] -= reducedAmount;
                 pressure[(int)BuildingTag.Bakery] -= reducedAmount;
@@ -193,41 +188,41 @@ public class ConstructionScheduler : MonoBehaviour
     ConstructionState TryBuilding(BuildingTag buildingTag)
     {
         // TODO make multiple buildings of the same type at once
-        if (!canBuild[(int)buildingTag] || pressure[(int)buildingTag] < GetPressureThreshold(buildingTag))
+        if (pressure[(int)buildingTag] < GetPressureThreshold(buildingTag))
             return ConstructionState.NotNeeded;
 
         BuildingTemplate bt = globals.NameToTemplate(buildingTag);
 
-        if (bt.goldCost > globals.goldAmount)
+        if (bt.GoldCost > globals.goldAmount)
             return ConstructionState.InsufficientGold;
 
         bool insufficientMaterials = false;// TODO maybe max ?
-        if (bt.woodCost > globals.woodAmount)
+        if (bt.WoodCost > globals.woodAmount)
         {
             if (!woodPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Wood, bt.woodCost);
+                IncreaseResourcePressure(ResourceType.Wood, bt.WoodCost);
                 TryBuilding(BuildingTag.Sawmill);
                 woodPressureOccurred = true;
             }
             insufficientMaterials = true;
         }
-        if (bt.stoneCost > globals.stoneAmount)
+        if (bt.StoneCost > globals.stoneAmount)
         {
             if (!stonePressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Stone, bt.stoneCost);
+                IncreaseResourcePressure(ResourceType.Stone, bt.StoneCost);
                 TryBuilding(BuildingTag.StoneMine);
                 stonePressureOccurred = true;
             }
 
             insufficientMaterials = true;
         }
-        if (bt.toolsCost > globals.toolsAmount)
+        if (bt.ToolsCost > globals.toolsAmount)
         {
             if (!toolsPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Tools, bt.toolsCost);
+                IncreaseResourcePressure(ResourceType.Tools, bt.ToolsCost);
                 TryBuilding(BuildingTag.Forge);
                 toolsPressureOccurred = true;
             }

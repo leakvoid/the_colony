@@ -64,7 +64,7 @@ public class ColonistData : MonoBehaviour
     }
     // nobleman needs
     private int beerNeedMeter = 0;
-        public int BeerNeedMeter
+    public int BeerNeedMeter
     {
         get { return beerNeedMeter; }
         set {
@@ -75,7 +75,7 @@ public class ColonistData : MonoBehaviour
             }
     }
     private int saltNeedMeter = 0;
-        public int SaltNeedMeter
+    public int SaltNeedMeter
     {
         get { return saltNeedMeter; }
         set {

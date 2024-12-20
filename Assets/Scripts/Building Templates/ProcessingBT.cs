@@ -5,6 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Building Template/Processing BT", fileName = "New Processing Building Template")]
 public class ProcessingBT : ProductionBT
 {
-    [SerializeField] public int amountConsumedPerInterval;
-    [SerializeField] public ResourceType consumedResource;
+    [field: SerializeField] public int AmountConsumedPerInterval { get; private set; }
+    [field: SerializeField] public ResourceType ConsumedResource { get; private set; }
 }

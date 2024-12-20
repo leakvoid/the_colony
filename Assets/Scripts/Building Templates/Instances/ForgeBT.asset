@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d547fbd625f1bcd99baf4d5c3b0383a, type: 3}
   m_Name: ForgeBT
   m_EditorClassIdentifier: 
-  buildingName: Forge
-  buildingTag: 11
-  buildingType: 2
-  sizeX: 3
-  sizeY: 3
-  WoodCost: 20
-  StoneCost: 20
-  ToolsCost: 0
-  GoldCost: 500
-  constructionTime: 20
-  maxNumberOfWorkers: 3
-  salary: 7
-  timeInterval: 10
-  amountConsumedPerInterval: 10
-  amountProducedPerInterval: 20
-  consumedResource: 3
-  producedResource: 2
+  <BuildingTag>k__BackingField: 11
+  <BuildingType>k__BackingField: 2
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 0
+  <ProducedResource>k__BackingField: 2
+  <AmountConsumedPerInterval>k__BackingField: 0
+  <ConsumedResource>k__BackingField: 3

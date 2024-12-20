@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Building Template/Resource Gathering BT", fileName = "New Resource Gathering Building Template")]
 public class ResourceGatheringBT : ProductionBT
 {
-    [SerializeField] public TerrainType groundResource;
-    [SerializeField] public int minDistanceToResource;
-    [SerializeField] public int captureGatheringArea;
+    [field: SerializeField] public TerrainType GroundResource { get; private set; }
+    [field: SerializeField] public int MinDistanceToResource { get; private set; }
+    [field: SerializeField] public int CaptureGatheringArea { get; private set; }
 }

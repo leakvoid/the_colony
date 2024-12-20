@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AbstractMapGenerator : MonoBehaviour
 {
-    [SerializeField] int gridX = 500;
-    [SerializeField] int gridY = 500;
+    [SerializeField] int gridX = 100;
+    [SerializeField] int gridY = 100;
 
     // resources
     [SerializeField] int forestPercentage = 15;
@@ -30,15 +30,9 @@ public class AbstractMapGenerator : MonoBehaviour
         return grid;
     }
 
-    void Start()
-    {
-        GenerateNewMap();
-    }
-
-    void GenerateNewMap()
+    public void GenerateNewMap()
     {
         grid = new TerrainType[gridX, gridY];
-
         GenerateTerrainClusters(forestPercentage, numberOfForests, TerrainType.Forest);
         GenerateTerrainClusters(lakePercentage, numberOfLakes, TerrainType.Water);
         GenerateTerrainClusters(ironDepositPercentage, numberOfIronDeposits, TerrainType.IronDeposit);

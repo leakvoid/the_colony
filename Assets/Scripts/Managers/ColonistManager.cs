@@ -26,7 +26,12 @@ public class ColonistManager : MonoBehaviour
         allColonists = new List<ColonistData>();
         joblessColonists = new Queue<ColonistData>();
 
-        waitForNeedConsumption = new WaitForSeconds(globals.needConsumptionInterval);
+        waitForNeedConsumption = new WaitForSeconds(globals.NeedConsumptionInterval);
+    }
+
+    public List<ColonistData> GetColonists()
+    {
+        return allColonists;
     }
 
     public ColonistData CreateColonist(BuildingData livesAt)
@@ -59,6 +64,7 @@ public class ColonistManager : MonoBehaviour
 
         QueueWorkerAction(ColonistData.Action.GoToWork, colonistData);
         QueueWorkerAction(ColonistData.Action.Build, colonistData);
+        QueueWorkerAction(ColonistData.Action.GoHome, colonistData);
         if (!colonistData.isWorkerRoutineActive)
             StartCoroutine(ProcessWorkerActionQueue(colonistData));
     }
@@ -70,7 +76,7 @@ public class ColonistManager : MonoBehaviour
         
         ColonistData colonistData = joblessColonists.Dequeue();
         colonistData.worksAt = worksAt;
-        switch (worksAt.template.buildingTag)
+        switch (worksAt.template.BuildingTag)
         {
             case BuildingTag.Market:
                 colonistData.occupation = ColonistData.Occupation.Trader;
@@ -142,16 +148,16 @@ public class ColonistManager : MonoBehaviour
         {
             while(true)
             {
-                colonistData.SleepNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.SleepNeedMeter <= 20 && !colonistData.SleepAlreadyQueued)
+                colonistData.SleepNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.SleepNeedMeter <= globals.NeedReplenishThreshold && !colonistData.SleepAlreadyQueued)
                 {
                     colonistData.SleepAlreadyQueued = true;
                     QueueConsumerAction(ColonistData.Action.GoHome, colonistData);
                     QueueConsumerAction(ColonistData.Action.Sleep, colonistData);
                 }
                 
-                colonistData.FoodNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.FoodNeedMeter <= 20 && !colonistData.FoodAlreadyQueued)
+                colonistData.FoodNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.FoodNeedMeter <= globals.NeedReplenishThreshold && !colonistData.FoodAlreadyQueued)
                 {
                     BuildingData market = blm.GetClosestService(colonistData.livesAt, BuildingTag.Market);
                     if (market != null && globals.FoodAmount > 0)
@@ -165,8 +171,10 @@ public class ColonistManager : MonoBehaviour
 
                 }
                 
-                colonistData.ClothesNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.type != ColonistData.Type.Peasant && colonistData.ClothesNeedMeter <= 20 && !colonistData.ClothesAlreadyQueued)
+                colonistData.ClothesNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.type != ColonistData.Type.Peasant &&
+                    colonistData.ClothesNeedMeter <= globals.NeedReplenishThreshold &&
+                    !colonistData.ClothesAlreadyQueued)
                 {
                     BuildingData market = blm.GetClosestService(colonistData.livesAt, BuildingTag.Market);
                     if (market != null && globals.clothAmount > 0)
@@ -179,8 +187,10 @@ public class ColonistManager : MonoBehaviour
                     }
                 }
                 
-                colonistData.SaltNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.type == ColonistData.Type.Nobleman && colonistData.SaltNeedMeter <= 20 && !colonistData.SaltAlreadyQueued)
+                colonistData.SaltNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.type == ColonistData.Type.Nobleman &&
+                    colonistData.SaltNeedMeter <= globals.NeedReplenishThreshold &&
+                    !colonistData.SaltAlreadyQueued)
                 {
                     BuildingData market = blm.GetClosestService(colonistData.livesAt, BuildingTag.Market);
                     if (market != null && globals.saltAmount > 0)
@@ -193,8 +203,8 @@ public class ColonistManager : MonoBehaviour
                     }
                 }
 
-                colonistData.WaterNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.WaterNeedMeter <= 20 && !colonistData.WaterAlreadyQueued)
+                colonistData.WaterNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.WaterNeedMeter <= globals.NeedReplenishThreshold && !colonistData.WaterAlreadyQueued)
                 {
                     BuildingData well = blm.GetClosestService(colonistData.livesAt, BuildingTag.Well);
                     if (well != null)
@@ -205,8 +215,10 @@ public class ColonistManager : MonoBehaviour
                     }
                 }
 
-                colonistData.BeerNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.type == ColonistData.Type.Nobleman && colonistData.BeerNeedMeter <= 20 && !colonistData.BeerAlreadyQueued)
+                colonistData.BeerNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.type == ColonistData.Type.Nobleman &&
+                    colonistData.BeerNeedMeter <= globals.NeedReplenishThreshold &&
+                    !colonistData.BeerAlreadyQueued)
                 {
                     BuildingData inn = blm.GetClosestService(colonistData.livesAt, BuildingTag.Inn);
                     if (inn != null && globals.beerAmount > 0)
@@ -219,8 +231,10 @@ public class ColonistManager : MonoBehaviour
                     }
                 }
 
-                colonistData.ReligionNeedMeter -= globals.needAmountDecrement;
-                if (colonistData.type != ColonistData.Type.Peasant && colonistData.ReligionNeedMeter <= 20 && !colonistData.ReligionAlreadyQueued)
+                colonistData.ReligionNeedMeter -= globals.NeedAmountDecrement;
+                if (colonistData.type != ColonistData.Type.Peasant &&
+                    colonistData.ReligionNeedMeter <= globals.NeedReplenishThreshold &&
+                    !colonistData.ReligionAlreadyQueued)
                 {
                     BuildingData church = blm.GetClosestService(colonistData.livesAt, BuildingTag.Church);
                     if (church != null)
@@ -278,41 +292,41 @@ public class ColonistManager : MonoBehaviour
                     yield return ConsumerMoveTo(colonistData, inn);
                     break;
                 case ColonistData.Action.Sleep:
-                    yield return new WaitForSeconds(globals.sleepDuration);
-                    colonistData.SleepNeedMeter += globals.needAmountReplenished;
+                    yield return new WaitForSeconds(globals.SleepDuration);
+                    colonistData.SleepNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.BuyFood:
                     globals.FoodReservedAmount--;
-                    globals.goldAmount += globals.foodPrice;
-                    colonistData.MoneySpent += globals.foodPrice;
-                    colonistData.FoodNeedMeter += globals.needAmountReplenished;
+                    globals.goldAmount += globals.FoodPrice;
+                    colonistData.MoneySpent += globals.FoodPrice;
+                    colonistData.FoodNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.BuyClothes:
                     globals.ClothReservedAmount--;
-                    globals.goldAmount += globals.clothPrice;
-                    colonistData.MoneySpent += globals.clothPrice;
-                    colonistData.ClothesNeedMeter += globals.needAmountReplenished;
+                    globals.goldAmount += globals.ClothPrice;
+                    colonistData.MoneySpent += globals.ClothPrice;
+                    colonistData.ClothesNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.BuySalt:
                     globals.SaltReservedAmount--;
-                    globals.goldAmount += globals.saltPrice;
-                    colonistData.MoneySpent += globals.saltPrice;
-                    colonistData.SaltNeedMeter += globals.needAmountReplenished;
+                    globals.goldAmount += globals.SaltPrice;
+                    colonistData.MoneySpent += globals.SaltPrice;
+                    colonistData.SaltNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.GetWater:
-                    colonistData.WaterNeedMeter += globals.needAmountReplenished;
+                    colonistData.WaterNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.BuyBeer:
                     globals.BeerReservedAmount--;
-                    globals.goldAmount += globals.beerPrice;
-                    colonistData.MoneySpent += globals.beerPrice;
-                    colonistData.BeerNeedMeter += globals.needAmountReplenished;
+                    globals.goldAmount += globals.BeerPrice;
+                    colonistData.MoneySpent += globals.BeerPrice;
+                    colonistData.BeerNeedMeter += globals.NeedAmountReplenished;
                     break;
                 case ColonistData.Action.Pray:
-                    yield return new WaitForSeconds(globals.prayerDuration);
-                    globals.goldAmount += globals.churchDonation;
-                    colonistData.MoneySpent += globals.churchDonation;
-                    colonistData.ReligionNeedMeter += globals.needAmountReplenished;
+                    yield return new WaitForSeconds(globals.PrayerDuration);
+                    globals.goldAmount += globals.ChurchDonation;
+                    colonistData.MoneySpent += globals.ChurchDonation;
+                    colonistData.ReligionNeedMeter += globals.NeedAmountReplenished;
                     break;
                 default:
                     throw new Exception("consumer action queue exception");
@@ -342,8 +356,8 @@ public class ColonistManager : MonoBehaviour
         var end = destination.transform.position;
         while (model.transform.position != end)
         {
-            model.transform.position = Vector3.MoveTowards(model.transform.position, end, globals.colonistMovementSpeed * Time.deltaTime);
-            yield return new WaitForEndOfFrame();// TODO "new" optimization
+            model.transform.position = Vector3.MoveTowards(model.transform.position, end, globals.ColonistMovementSpeed * Time.deltaTime);
+            yield return null;
         }
 
         Destroy(model);
@@ -374,10 +388,8 @@ public class ColonistManager : MonoBehaviour
                     yield return MoveTo(colonistData, colonistData.livesAt, colonistData.worksAt);
                     break;
                 case ColonistData.Action.Build:
-                    yield return new WaitForSeconds(colonistData.worksAt.template.constructionTime);
+                    yield return new WaitForSeconds(colonistData.worksAt.template.ConstructionTime);
                     bm.FinishBuildingConstruction(colonistData.worksAt);
-                    if (colonistData.consumerActions.Count == 0)// TODO builders cannot be queued for additional work right now
-                        QueueWorkerAction(ColonistData.Action.GoHome, colonistData);
                     break;
                 case ColonistData.Action.Work:
                     bm.OnWorkerArrival(colonistData);

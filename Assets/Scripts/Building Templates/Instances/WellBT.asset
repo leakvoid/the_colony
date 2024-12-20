@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c822e21afd547bdfba03fc3851fe45f, type: 3}
   m_Name: WellBT
   m_EditorClassIdentifier: 
-  buildingName: Well
-  buildingTag: 4
-  buildingType: 1
-  sizeX: 1
-  sizeY: 1
-  WoodCost: 10
-  StoneCost: 10
-  ToolsCost: 0
-  GoldCost: 200
-  constructionTime: 0
-  maxNumberOfWorkers: 0
-  salary: 0
-  timeInterval: 10
-  coverArea: 40
+  <BuildingTag>k__BackingField: 4
+  <BuildingType>k__BackingField: 1
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <CoverArea>k__BackingField: 0

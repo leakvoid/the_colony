@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d547fbd625f1bcd99baf4d5c3b0383a, type: 3}
   m_Name: WindmillBT
   m_EditorClassIdentifier: 
-  buildingName: Windmill
-  buildingTag: 12
-  buildingType: 2
-  sizeX: 3
-  sizeY: 3
-  WoodCost: 0
-  StoneCost: 0
-  ToolsCost: 0
-  GoldCost: 0
-  constructionTime: 0
-  maxNumberOfWorkers: 3
-  salary: 12
-  timeInterval: 10
-  amountConsumedPerInterval: 60
-  amountProducedPerInterval: 60
-  consumedResource: 5
-  producedResource: 7
+  <BuildingTag>k__BackingField: 12
+  <BuildingType>k__BackingField: 2
+  <SizeX>k__BackingField: 0
+  <SizeY>k__BackingField: 0
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 0
+  <ConstructionTime>k__BackingField: 0
+  <FinishedModel>k__BackingField: {fileID: 0}
+  <UnfinishedModel>k__BackingField: {fileID: 0}
+  <MaxNumberOfWorkers>k__BackingField: 0
+  <Salary>k__BackingField: 0
+  <TimeInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 60
+  <ProducedResource>k__BackingField: 7
+  <AmountConsumedPerInterval>k__BackingField: 60
+  <ConsumedResource>k__BackingField: 5

@@ -5,11 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Building Template/Housing BT", fileName = "New Housing Building Template")]
 public class HousingBT : BuildingTemplate
 {
-    [SerializeField] public int tier0ColonistCapacity;
-    [SerializeField] public int tier1ColonistCapacity;
-    [SerializeField] public int tier2ColonistCapacity;
-    [SerializeField] public int tier1UpgradeWoodCost;
-    [SerializeField] public int tier1UpgradeGoldCost;
-    [SerializeField] public int tier2UpgradeStoneCost;
-    [SerializeField] public int tier2UpgradeGoldCost;
+    [field: SerializeField] public int Tier0ColonistCapacity { get; private set; }
+    [field: SerializeField] public int Tier1ColonistCapacity { get; private set; }
+    [field: SerializeField] public int Tier2ColonistCapacity { get; private set; }
+    [field: SerializeField] public int Tier1UpgradeWoodCost { get; private set; }
+    [field: SerializeField] public int Tier1UpgradeGoldCost { get; private set; }
+    [field: SerializeField] public int Tier2UpgradeStoneCost { get; private set; }
+    [field: SerializeField] public int Tier2UpgradeGoldCost { get; private set; }
+    [field: SerializeField] public GameObject Tier1ModelPrefab { get; private set; }
+    [field: SerializeField] public GameObject Tier2ModelPrefab { get; private set; }
+
 }
