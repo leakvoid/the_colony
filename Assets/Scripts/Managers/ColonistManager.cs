@@ -13,6 +13,7 @@ public class ColonistManager : MonoBehaviour
 
     List<ColonistData> allColonists;
     Queue<ColonistData> joblessColonists;
+    int futureColonistCount = 0;
 
     [SerializeField] ColonistData colonistDataPrefab;
     [SerializeField] GameObject colonistModelPrefab;
@@ -53,6 +54,11 @@ public class ColonistManager : MonoBehaviour
         return joblessColonists.Count;
     }
 
+    public int GetFutureColonistCount()
+    {
+        return futureColonistCount;
+    }
+
     public void SendColonistToBuild(BuildingData worksAt)
     {
         if (GetJoblessColonistCount() < 1)
@@ -76,62 +82,27 @@ public class ColonistManager : MonoBehaviour
         
         ColonistData colonistData = joblessColonists.Dequeue();
         colonistData.worksAt = worksAt;
-        switch (worksAt.template.BuildingTag)
+        colonistData.occupation = worksAt.template.BuildingTag switch
         {
-            case BuildingTag.Market:
-                colonistData.occupation = ColonistData.Occupation.Trader;
-                break;
-            case BuildingTag.Church:
-                colonistData.occupation = ColonistData.Occupation.Priest;
-                break;
-            case BuildingTag.Inn:
-                colonistData.occupation = ColonistData.Occupation.Bartender;
-                break;
-            case BuildingTag.CottonPlantation:
-                colonistData.occupation = ColonistData.Occupation.PlantationWorker;
-                break;
-            case BuildingTag.HopsFarm:
-                colonistData.occupation = ColonistData.Occupation.HopsFarmer;
-                break;
-            case BuildingTag.WheatFarm:
-                colonistData.occupation = ColonistData.Occupation.WheatFarmer;
-                break;
-            case BuildingTag.Bakery:
-                colonistData.occupation = ColonistData.Occupation.Baker;
-                break;
-            case BuildingTag.Brewery:
-                colonistData.occupation = ColonistData.Occupation.Brewer;
-                break;
-            case BuildingTag.Clothier:
-                colonistData.occupation = ColonistData.Occupation.Tailor;
-                break;
-            case BuildingTag.Forge:
-                colonistData.occupation = ColonistData.Occupation.Blacksmith;
-                break;
-            case BuildingTag.Windmill:
-                colonistData.occupation = ColonistData.Occupation.Miller;
-                break;
-            case BuildingTag.FishingHut:
-                colonistData.occupation = ColonistData.Occupation.Fisherman;
-                break;
-            case BuildingTag.HuntersCabin:
-                colonistData.occupation = ColonistData.Occupation.Hunter;
-                break;
-            case BuildingTag.IronMine:
-                colonistData.occupation = ColonistData.Occupation.IronMiner;
-                break;
-            case BuildingTag.SaltMine:
-                colonistData.occupation = ColonistData.Occupation.SaltMiner;
-                break;
-            case BuildingTag.Sawmill:
-                colonistData.occupation = ColonistData.Occupation.Lumberjack;
-                break;
-            case BuildingTag.StoneMine:
-                colonistData.occupation = ColonistData.Occupation.StoneMiner;
-                break;
-            default:
-                throw new Exception("Unknown occupation for colonist");
-        }
+            BuildingTag.Market => ColonistData.Occupation.Trader,
+            BuildingTag.Church => ColonistData.Occupation.Priest,
+            BuildingTag.Inn => ColonistData.Occupation.Bartender,
+            BuildingTag.CottonPlantation => ColonistData.Occupation.PlantationWorker,
+            BuildingTag.HopsFarm => ColonistData.Occupation.HopsFarmer,
+            BuildingTag.WheatFarm => ColonistData.Occupation.WheatFarmer,
+            BuildingTag.Bakery => ColonistData.Occupation.Baker,
+            BuildingTag.Brewery => ColonistData.Occupation.Brewer,
+            BuildingTag.Clothier => ColonistData.Occupation.Tailor,
+            BuildingTag.Forge => ColonistData.Occupation.Blacksmith,
+            BuildingTag.Windmill => ColonistData.Occupation.Miller,
+            BuildingTag.FishingHut => ColonistData.Occupation.Fisherman,
+            BuildingTag.HuntersCabin => ColonistData.Occupation.Hunter,
+            BuildingTag.IronMine => ColonistData.Occupation.IronMiner,
+            BuildingTag.SaltMine => ColonistData.Occupation.SaltMiner,
+            BuildingTag.Sawmill => ColonistData.Occupation.Lumberjack,
+            BuildingTag.StoneMine => ColonistData.Occupation.StoneMiner,
+            _ => throw new Exception("Unknown occupation for colonist"),
+        };
 
         QueueWorkerAction(ColonistData.Action.GoToWork, colonistData);
         QueueWorkerAction(ColonistData.Action.Work, colonistData);
@@ -343,16 +314,20 @@ public class ColonistManager : MonoBehaviour
 
     IEnumerator ConsumerMoveTo(ColonistData colonistData, BuildingData destination)
     {
-        yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination);
+        yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination, false);
     }
 
-    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination)// TODO road traversal + spawn location, animations
+    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO road traversal + spawn location, animations
     {
-        colonistData.consumerModelReference = Instantiate(colonistModelPrefab,
+        var model = Instantiate(colonistModelPrefab,
             globals.GridToGlobalCoordinates(source.gridLocation),
             Quaternion.identity);
         
-        var model = colonistData.consumerModelReference;
+        if (isWorker)
+            colonistData.workerModelReference = model;
+        else
+            colonistData.consumerModelReference = model;
+
         var end = destination.transform.position;
         while (model.transform.position != end)
         {
@@ -374,22 +349,28 @@ public class ColonistManager : MonoBehaviour
     {
         colonistData.isWorkerRoutineActive = true;
 
-        while (colonistData.consumerActions.Count > 0)
+        while (colonistData.workerActions.Count > 0)
         {
             var action = colonistData.workerActions.Dequeue();
             switch (action)
             {
                 case ColonistData.Action.GoHome:
-                    yield return MoveTo(colonistData, colonistData.worksAt, colonistData.livesAt);
+                    yield return MoveTo(colonistData, colonistData.worksAt, colonistData.livesAt, true);
                     colonistData.occupation = ColonistData.Occupation.Jobless;
                     joblessColonists.Enqueue(colonistData);
                     break;
                 case ColonistData.Action.GoToWork:
-                    yield return MoveTo(colonistData, colonistData.livesAt, colonistData.worksAt);
+                    if (colonistData.worksAt.template.BuildingTag == BuildingTag.House)
+                        futureColonistCount += globals.HouseTemplate.Tier0ColonistCapacity;
+
+                    yield return MoveTo(colonistData, colonistData.livesAt, colonistData.worksAt, true);
                     break;
                 case ColonistData.Action.Build:
                     yield return new WaitForSeconds(colonistData.worksAt.template.ConstructionTime);
                     bm.FinishBuildingConstruction(colonistData.worksAt);
+
+                    if (colonistData.worksAt.template.BuildingTag == BuildingTag.House)
+                        futureColonistCount -= globals.HouseTemplate.Tier0ColonistCapacity;
                     break;
                 case ColonistData.Action.Work:
                     bm.OnWorkerArrival(colonistData);

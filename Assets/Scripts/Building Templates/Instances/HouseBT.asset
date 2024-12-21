@@ -12,20 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f737aa640cf7be41d9b2b327927c73c9, type: 3}
   m_Name: HouseBT
   m_EditorClassIdentifier: 
-  buildingName: House
-  buildingTag: 0
-  buildingType: 0
-  sizeX: 2
-  sizeY: 2
-  WoodCost: 0
-  StoneCost: 0
-  ToolsCost: 0
-  GoldCost: 50
-  constructionTime: 5
-  tier0ColonistCapacity: 5
-  tier1ColonistCapacity: 10
-  tier2ColonistCapacity: 15
-  tier1UpgradeWoodCost: 10
-  tier1UpgradeGoldCost: 100
-  tier2UpgradeStoneCost: 10
-  tier2UpgradeGoldCost: 200
+  <BuildingTag>k__BackingField: 0
+  <BuildingType>k__BackingField: 0
+  <SizeX>k__BackingField: 2
+  <SizeY>k__BackingField: 2
+  <WoodCost>k__BackingField: 0
+  <StoneCost>k__BackingField: 0
+  <ToolsCost>k__BackingField: 0
+  <GoldCost>k__BackingField: 100
+  <ConstructionTime>k__BackingField: 5
+  <FinishedModel>k__BackingField: {fileID: 2712444041067125745, guid: f42abbc36a8f6650994674d6450ce426, type: 3}
+  <UnfinishedModel>k__BackingField: {fileID: 2115481439548520979, guid: 364ca6850963a47c098f43461adb1cfc, type: 3}
+  <Tier0ColonistCapacity>k__BackingField: 5
+  <Tier1ColonistCapacity>k__BackingField: 8
+  <Tier2ColonistCapacity>k__BackingField: 10
+  <Tier1UpgradeWoodCost>k__BackingField: 10
+  <Tier1UpgradeGoldCost>k__BackingField: 200
+  <Tier2UpgradeStoneCost>k__BackingField: 10
+  <Tier2UpgradeGoldCost>k__BackingField: 200
+  <Tier1ModelPrefab>k__BackingField: {fileID: 0}
+  <Tier2ModelPrefab>k__BackingField: {fileID: 0}

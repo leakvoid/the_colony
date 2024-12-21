@@ -142,8 +142,8 @@ public class ColonistData : MonoBehaviour
         Build,
         Work
     }
-    public Queue<Action> workerActions;
-    public Queue<Action> consumerActions;
+    public Queue<Action> workerActions = new Queue<Action>();
+    public Queue<Action> consumerActions = new Queue<Action>();
 
     // queue flags
     public bool SleepAlreadyQueued;

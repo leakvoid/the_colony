@@ -66,6 +66,8 @@ public class BuildingLocationModule : MonoBehaviour
         saltMineCaptureArea = new bool[gridX, gridY];
         stoneMineCaptureArea = new bool[gridX, gridY];
 
+        availableSpace = new bool[gridX, gridY];
+
         for (int i = 0; i < gridX; i++)
         {
             for (int j = 0; j < gridY; j++)

@@ -54,9 +54,16 @@ public class ComputerPlayerEngine : MonoBehaviour
 
         while (true)
         {
-            yield return waitForInterval;
+            int workerDeficit = 20 - cm.GetJoblessColonistCount() - cm.GetFutureColonistCount();
+            if (workerDeficit > 0)
+            {
+                cs.IncreaseBuildingPressure(BuildingTag.House,
+                    (workerDeficit + globals.HouseTemplate.Tier0ColonistCapacity - 1) / globals.HouseTemplate.Tier0ColonistCapacity);
+            }
 
             cs.MakeBuildings();
+
+            yield return waitForInterval;
         }
     }
 
@@ -65,6 +72,10 @@ public class ComputerPlayerEngine : MonoBehaviour
     2. check module load order +
     3. todos +
     4. refactor building templates +
-    5. fill all game models with cubes
+    5. fill all game models with cubes +
+    6. AI number of available workers +
+    7. place starting house +
+
+    roads: shortest path vs already connected; shortest path to road network?
     */
 }

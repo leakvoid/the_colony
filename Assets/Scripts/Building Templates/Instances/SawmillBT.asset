@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <BuildingTag>k__BackingField: 17
   <BuildingType>k__BackingField: 4
-  <SizeX>k__BackingField: 0
-  <SizeY>k__BackingField: 0
+  <SizeX>k__BackingField: 2
+  <SizeY>k__BackingField: 4
   <WoodCost>k__BackingField: 0
   <StoneCost>k__BackingField: 0
   <ToolsCost>k__BackingField: 0
-  <GoldCost>k__BackingField: 0
-  <ConstructionTime>k__BackingField: 0
-  <FinishedModel>k__BackingField: {fileID: 0}
-  <UnfinishedModel>k__BackingField: {fileID: 0}
-  <MaxNumberOfWorkers>k__BackingField: 0
-  <Salary>k__BackingField: 0
+  <GoldCost>k__BackingField: 300
+  <ConstructionTime>k__BackingField: 10
+  <FinishedModel>k__BackingField: {fileID: 7059418105320256427, guid: 1b84f9504044ac5d9b099669497fa868, type: 3}
+  <UnfinishedModel>k__BackingField: {fileID: 4364022416332688633, guid: 97a5e5f88a72849d1ade210f513f41a7, type: 3}
+  <MaxNumberOfWorkers>k__BackingField: 2
+  <Salary>k__BackingField: 7
   <TimeInterval>k__BackingField: 10
-  <AmountProducedPerInterval>k__BackingField: 0
+  <AmountProducedPerInterval>k__BackingField: 10
   <ProducedResource>k__BackingField: 0
   <GroundResource>k__BackingField: 1
-  <MinDistanceToResource>k__BackingField: 0
-  <CaptureGatheringArea>k__BackingField: 0
+  <MinDistanceToResource>k__BackingField: 3
+  <CaptureGatheringArea>k__BackingField: 8

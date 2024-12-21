@@ -24,6 +24,27 @@ public class BuildingManager : MonoBehaviour
         emptyWorkableBuildings = new Queue<BuildingData>();
     }
 
+    public void PlaceStartingHouse()// TODO should be center of the map
+    {
+        BuildingTemplate bt = globals.HouseTemplate;
+
+        (int, int) location = blm.PickNewBuildingLocation(bt);
+
+        BuildingData buildingData = Instantiate(buildingDataPrefab);
+        buildingData.template = bt;
+        buildingData.gridLocation = location;
+        buildingData.modelReference = Instantiate(
+            buildingData.template.UnfinishedModel,
+            globals.GridToGlobalCoordinates(location),
+            Quaternion.identity
+        );
+        blm.UpdateAfterBuildingCreation(buildingData, bt);
+
+        allBuildings.Add(buildingData);
+
+        FinishBuildingConstruction(buildingData);
+    }
+
     public BuildingData StartBuildingConstruction(BuildingTemplate bt)
     {
         if (bt.GoldCost > globals.goldAmount ||
@@ -48,10 +69,14 @@ public class BuildingManager : MonoBehaviour
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
+        allBuildings.Add(buildingData);
+
+        globals.goldAmount -= bt.GoldCost;
+        globals.woodAmount -= bt.WoodCost;
+        globals.stoneAmount -= bt.StoneCost;
+        globals.toolsAmount -= bt.ToolsCost;
 
         cm.SendColonistToBuild(buildingData);
-        
-        allBuildings.Add(buildingData);
 
         return buildingData;
     }

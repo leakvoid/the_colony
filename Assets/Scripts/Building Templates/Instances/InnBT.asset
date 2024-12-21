@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <BuildingTag>k__BackingField: 3
   <BuildingType>k__BackingField: 1
-  <SizeX>k__BackingField: 0
-  <SizeY>k__BackingField: 0
-  <WoodCost>k__BackingField: 0
-  <StoneCost>k__BackingField: 0
-  <ToolsCost>k__BackingField: 0
-  <GoldCost>k__BackingField: 0
-  <ConstructionTime>k__BackingField: 0
-  <FinishedModel>k__BackingField: {fileID: 0}
-  <UnfinishedModel>k__BackingField: {fileID: 0}
-  <MaxNumberOfWorkers>k__BackingField: 0
-  <Salary>k__BackingField: 0
+  <SizeX>k__BackingField: 4
+  <SizeY>k__BackingField: 4
+  <WoodCost>k__BackingField: 20
+  <StoneCost>k__BackingField: 20
+  <ToolsCost>k__BackingField: 20
+  <GoldCost>k__BackingField: 800
+  <ConstructionTime>k__BackingField: 20
+  <FinishedModel>k__BackingField: {fileID: 886605762607425727, guid: a9516c9b7c3504004888807d112ecd6f, type: 3}
+  <UnfinishedModel>k__BackingField: {fileID: 1354756598267085735, guid: 70a40c48f2c5b15159d07601d44de2a1, type: 3}
+  <MaxNumberOfWorkers>k__BackingField: 3
+  <Salary>k__BackingField: 8
   <TimeInterval>k__BackingField: 10
-  <CoverArea>k__BackingField: 0
+  <CoverArea>k__BackingField: 15

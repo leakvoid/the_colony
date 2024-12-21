@@ -216,6 +216,76 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &836096116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 836096117}
+  - component: {fileID: 836096120}
+  - component: {fileID: 836096119}
+  - component: {fileID: 836096118}
+  m_Layer: 0
+  m_Name: Computer Player
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &836096117
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836096116}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1607651224}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &836096118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836096116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc7164794468b4770b5ee2497f9b8d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &836096119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836096116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8de90d783a3a5b472b682d79e6871449, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &836096120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836096116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26af30f2b3854f9c93cc6fcc323d520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &915405255
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,12 +311,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 915405255}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1607651224}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &915405257
 MonoBehaviour:
@@ -260,8 +330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b1960747cf37971893d5af00e3e3590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridX: 1000
-  gridY: 1000
+  gridX: 100
+  gridY: 100
   forestPercentage: 15
   numberOfForests: 8
   lakePercentage: 10
@@ -308,7 +378,7 @@ Camera:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -359,7 +429,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -413,6 +483,99 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1468763708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1468763709}
+  - component: {fileID: 1468763710}
+  m_Layer: 0
+  m_Name: Globals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1468763709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468763708}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1468763710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468763708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464286222190e16e0b94e3e2a4211805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldAmount: 2000
+  woodAmount: 20
+  stoneAmount: 20
+  toolsAmount: 0
+  ironAmount: 0
+  cottonAmount: 0
+  wheatAmount: 0
+  hopsAmount: 0
+  flourAmount: 0
+  saltAmount: 0
+  clothAmount: 0
+  meatAmount: 0
+  fishAmount: 0
+  breadAmount: 0
+  beerAmount: 0
+  <ColonistMovementSpeed>k__BackingField: 3
+  <SleepDuration>k__BackingField: 2
+  <PrayerDuration>k__BackingField: 2
+  <NeedReplenishThreshold>k__BackingField: 20
+  <FoodPrice>k__BackingField: 20
+  <SaltPrice>k__BackingField: 30
+  <ClothPrice>k__BackingField: 40
+  <BeerPrice>k__BackingField: 50
+  <ChurchDonation>k__BackingField: 10
+  <GameSpeedMultiplier>k__BackingField: 1
+  <NeedConsumptionInterval>k__BackingField: 5
+  <NeedAmountDecrement>k__BackingField: 10
+  <NeedAmountReplenished>k__BackingField: 100
+  <EngineNeedCheckInterval>k__BackingField: 2
+  <EngineConstructionInterval>k__BackingField: 5
+  <HouseTemplate>k__BackingField: {fileID: 11400000, guid: 226ff6d6c0b3950c78adce9872464a38, type: 2}
+  <MarketTemplate>k__BackingField: {fileID: 11400000, guid: 59d0e301a045d4fbab3c8f2c938dd6ba, type: 2}
+  <ChurchTemplate>k__BackingField: {fileID: 11400000, guid: 1f75968ab1df57f91aaeec9cf8be2dbb, type: 2}
+  <InnTemplate>k__BackingField: {fileID: 11400000, guid: 99305cdd500be7b37879d5d2cf7d3918, type: 2}
+  <WellTemplate>k__BackingField: {fileID: 11400000, guid: 998751906a40ecce48fcae1192552225, type: 2}
+  <CottonPlantationTemplate>k__BackingField: {fileID: 11400000, guid: 084bcf6304529480cb58f21d00367673, type: 2}
+  <HopsFarmTemplate>k__BackingField: {fileID: 11400000, guid: 38447bcf8a0b228d0ae68f29c6450f10, type: 2}
+  <WheatFarmTemplate>k__BackingField: {fileID: 11400000, guid: 71c8de4b786eb2a47962a929084b42f6, type: 2}
+  <BakeryTemplate>k__BackingField: {fileID: 11400000, guid: 22dc2692ef0f18680a32cca044643a86, type: 2}
+  <BreweryTemplate>k__BackingField: {fileID: 11400000, guid: 0f918bb0bbea1ce8ab74a905d789d8bc, type: 2}
+  <ClothierTemplate>k__BackingField: {fileID: 11400000, guid: c80c2ff6e751339d99536d98ce1b1ed7, type: 2}
+  <ForgeTemplate>k__BackingField: {fileID: 11400000, guid: ed2a86d692f9c2147a0da23e124e9549, type: 2}
+  <WindmillTemplate>k__BackingField: {fileID: 11400000, guid: 85e18b55ad3dcab5ca52bbf59c4c15cf, type: 2}
+  <FishingHutTemplate>k__BackingField: {fileID: 11400000, guid: d1399b0ea95c75382924fbb034f997b5, type: 2}
+  <HuntersCabinTemplate>k__BackingField: {fileID: 11400000, guid: 82191e2018f984cb6b153150cb948633, type: 2}
+  <IronMineTemplate>k__BackingField: {fileID: 11400000, guid: 7d5b943c7bd9b9af699613086b3a1d65, type: 2}
+  <SaltMineTemplate>k__BackingField: {fileID: 11400000, guid: d65fbcb6527cc7a079d6d8b1d3ba52ac, type: 2}
+  <SawmillTemplate>k__BackingField: {fileID: 11400000, guid: 862d403a6826c84989792bdb97971c1c, type: 2}
+  <StoneMineTemplate>k__BackingField: {fileID: 11400000, guid: ca56520b869b266fe944f56f1bb29a8d, type: 2}
 --- !u!1 &1607651222
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,8 +585,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1607651224}
-  - component: {fileID: 1607651226}
-  - component: {fileID: 1607651227}
+  - component: {fileID: 1607651225}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -443,10 +605,13 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 915405256}
+  - {fileID: 836096117}
+  - {fileID: 1987594263}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1607651226
+--- !u!114 &1607651225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -455,79 +620,75 @@ MonoBehaviour:
   m_GameObject: {fileID: 1607651222}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464286222190e16e0b94e3e2a4211805, type: 3}
+  m_Script: {fileID: 11500000, guid: ed35733b61c68fb4487e1051e9aa457f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colonistMovementSpeed: 3
-  sleepDuration: 10
-  prayerDuration: 2
-  goldAmount: 2000
-  woodAmount: 20
-  stoneAmount: 20
-  toolsAmount: 0
-  ironAmount: 0
-  cottonAmount: 0
-  wheatAmount: 0
-  hopsAmount: 0
-  flourAmount: 0
-  saltAmount: 0
-  clothAmount: 0
-  meatAmount: 0
-  fishAmount: 0
-  breadAmount: 0
-  beerAmount: 0
-  FoodReservedAmount: 0
-  ClothReservedAmount: 0
-  SaltReservedAmount: 0
-  BeerReservedAmount: 0
-  foodPrice: 20
-  saltPrice: 30
-  clothPrice: 40
-  beerPrice: 50
-  churchDonation: 10
-  gameSpeedMultiplier: 1
-  needConsumptionInterval: 5
-  needAmountDecrement: 10
-  needAmountReplenished: 100
-  engineNeedCheckInterval: 2
-  engineConstructionInterval: 5
-  houseTemplate: {fileID: 0}
-  marketTemplate: {fileID: 0}
-  churchTemplate: {fileID: 0}
-  innTemplate: {fileID: 0}
-  wellTemplate: {fileID: 0}
-  cottonPlantationTemplate: {fileID: 0}
-  hopsFarmTemplate: {fileID: 0}
-  wheatFarmTemplate: {fileID: 0}
-  bakeryTemplate: {fileID: 0}
-  breweryTemplate: {fileID: 0}
-  clothierTemplate: {fileID: 0}
-  forgeTemplate: {fileID: 0}
-  windmillTemplate: {fileID: 0}
-  fishingHutTemplate: {fileID: 0}
-  huntersCabinTemplate: {fileID: 0}
-  ironMineTemplate: {fileID: 0}
-  saltMineTemplate: {fileID: 0}
-  sawmillTemplate: {fileID: 0}
-  stoneMineTemplate: {fileID: 0}
---- !u!114 &1607651227
+--- !u!1 &1987594262
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1987594263}
+  - component: {fileID: 1987594265}
+  - component: {fileID: 1987594264}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1987594263
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987594262}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1607651224}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1987594264
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1607651222}
+  m_GameObject: {fileID: 1987594262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d26af30f2b3854f9c93cc6fcc323d520, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b575c246c573c3d691006a3cef30123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colonistDataPrefab: {fileID: 25098427878284524, guid: 141c2a57a9b01a4dda9d76512abe7b8e, type: 3}
+  colonistModelPrefab: {fileID: 2090671699045426009, guid: 794acb20999f5a70b98b861785fb635c, type: 3}
+--- !u!114 &1987594265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987594262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57b66d112d2e925bc8171a1236d98ba7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingDataPrefab: {fileID: 7333904426476454871, guid: b7703fea878787e28b1b358eb009ad8a, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 963194228}
   - {fileID: 705507995}
+  - {fileID: 1468763709}
   - {fileID: 1607651224}
-  - {fileID: 915405256}
   - {fileID: 1161911597}
