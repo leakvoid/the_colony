@@ -320,7 +320,7 @@ public class ColonistManager : MonoBehaviour
     IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO road traversal + spawn location, animations
     {
         var model = Instantiate(colonistModelPrefab,
-            globals.GridToGlobalCoordinates(source.gridLocation),
+            source.modelReference.transform.position,// TODO spawn position
             Quaternion.identity);
         
         if (isWorker)
@@ -328,7 +328,7 @@ public class ColonistManager : MonoBehaviour
         else
             colonistData.consumerModelReference = model;
 
-        var end = destination.transform.position;
+        var end = destination.modelReference.transform.position;// TODO spawn position
         while (model.transform.position != end)
         {
             model.transform.position = Vector3.MoveTowards(model.transform.position, end, globals.ColonistMovementSpeed * Time.deltaTime);

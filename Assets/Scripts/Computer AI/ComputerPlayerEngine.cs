@@ -75,6 +75,7 @@ public class ComputerPlayerEngine : MonoBehaviour
     5. fill all game models with cubes +
     6. AI number of available workers +
     7. place starting house +
+    8. DONT ACCUMULATE PRESSURE INDEFINITELY
 
     roads: shortest path vs already connected; shortest path to road network?
     */
