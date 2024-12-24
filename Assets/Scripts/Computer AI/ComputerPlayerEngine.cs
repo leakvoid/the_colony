@@ -80,5 +80,6 @@ public class ComputerPlayerEngine : MonoBehaviour
     10. camera control (up, down, left, right, zoom in zoom out) + borders
 
     roads: shortest path vs already connected; shortest path to road network?
+    make minimap camera orthographic
     */
 }

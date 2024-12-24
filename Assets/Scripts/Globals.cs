@@ -7,7 +7,7 @@ using UnityEngine;
 public class Globals : MonoBehaviour
 {
     [Header("Colony resources")]
-    public int goldAmount = 2000;
+    public int goldAmount = 3000;
     public int woodAmount = 20;
     public int stoneAmount = 20;
     public int toolsAmount = 0;
