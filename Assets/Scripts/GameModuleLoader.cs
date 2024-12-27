@@ -9,6 +9,7 @@ public class GameModuleLoader : MonoBehaviour
     BuildingLocationModule buildingLocationModule;
     ConstructionScheduler constructionScheduler;
     ComputerPlayerEngine computerPlayerEngine;
+    TerrainMeshRenderer terrainMeshRenderer;
 
     void Awake()
     {
@@ -17,6 +18,7 @@ public class GameModuleLoader : MonoBehaviour
         buildingLocationModule = FindObjectOfType<BuildingLocationModule>();
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();
         computerPlayerEngine = FindObjectOfType<ComputerPlayerEngine>();
+        terrainMeshRenderer = FindObjectOfType<TerrainMeshRenderer>();
     }
 
     void Start()
@@ -26,5 +28,6 @@ public class GameModuleLoader : MonoBehaviour
         buildingLocationModule.Initialize();
         constructionScheduler.Initialize();
         computerPlayerEngine.InitializeComputerPlayer();
+        terrainMeshRenderer.Initialize();
     }
 }
