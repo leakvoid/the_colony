@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AbstractMapGenerator : MonoBehaviour
 {
-    [SerializeField] int gridX = 100;
-    [SerializeField] int gridY = 100;
+    [SerializeField] int gridX = 150;
+    [SerializeField] int gridY = 150;
 
     // resources
     [SerializeField] int forestPercentage = 15;
@@ -14,13 +14,13 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] int lakePercentage = 10;
     [SerializeField] int numberOfLakes = 6;
 
-    [SerializeField] int ironDepositPercentage = 2;
+    [SerializeField] int ironDepositPercentage = 1;
     [SerializeField] int numberOfIronDeposits = 5;
 
-    [SerializeField] int stoneDepositPercentage = 2;
+    [SerializeField] int stoneDepositPercentage = 1;
     [SerializeField] int numberOfStoneDeposits = 5;
 
-    [SerializeField] int saltDepositPercentage = 2;
+    [SerializeField] int saltDepositPercentage = 1;
     [SerializeField] int numberOfSaltDeposits = 5;
 
     TerrainType[,] grid;
@@ -38,10 +38,14 @@ public class AbstractMapGenerator : MonoBehaviour
         GenerateTerrainClusters(ironDepositPercentage, numberOfIronDeposits, TerrainType.IronDeposit);
         GenerateTerrainClusters(stoneDepositPercentage, numberOfStoneDeposits, TerrainType.StoneDeposit);
         GenerateTerrainClusters(saltDepositPercentage, numberOfSaltDeposits, TerrainType.SaltDeposit);
+        FillTerrainGaps();
     }
 
     void GenerateTerrainClusters(int tilePercentage, int numberOfClusters, TerrainType tileType)
     {
+        if (numberOfClusters == 0)
+            return;
+
         // get clusters of randomized size
         int totalTileCount = gridX * gridY * tilePercentage / 100;
 
@@ -58,23 +62,31 @@ public class AbstractMapGenerator : MonoBehaviour
         for (int i = 0; i < numberOfClusters; i++)
         {
             // get starting point for cluster
-            (int x, int y) startingPos;
+            (int x, int y) pos;
             while (true)
             {
-                startingPos = (Random.Range(0, gridX), Random.Range(0, gridY));
-                if (grid[startingPos.x, startingPos.y] == TerrainType.Ground)
+                pos = (Random.Range(1, gridX - 1), Random.Range(1, gridY - 1));
+                if (grid[pos.x, pos.y] == TerrainType.Ground &&
+                    ScanLeft(pos, TerrainType.Ground) &&
+                    ScanRight(pos, TerrainType.Ground) &&
+                    ScanUp(pos, TerrainType.Ground) &&
+                    ScanDown(pos, TerrainType.Ground) &&
+                    ScanUp((pos.x - 1, pos.y), TerrainType.Ground) &&
+                    ScanDown((pos.x - 1, pos.y), TerrainType.Ground) &&
+                    ScanUp((pos.x + 1, pos.y), TerrainType.Ground) &&
+                    ScanDown((pos.x + 1, pos.y), TerrainType.Ground))
                     break;
             }
 
             // generate cluster
-            GenerateCluster(startingPos, clusterTileCount[i], tileType);
+            GenerateCluster(pos, clusterTileCount[i], tileType);
         }
 
     }
 
-    [SerializeField] int tilePropagationChance = 70;
+    [SerializeField] int tilePropagationChance = 60;
 
-    // TODO issues: 1. tileCount not always exhausted within enclosed areas / circular random paths 2. can still create closed off spaces
+    // TODO ground type overlap bug
     void GenerateCluster((int x,int y) startingPos, int tileCount, TerrainType tileType)
     {
         var edges = new Queue<(int x, int y)>();
@@ -88,13 +100,13 @@ public class AbstractMapGenerator : MonoBehaviour
             int potentialEdgeCount = 0;
             foreach (var pos in edges)
             {
-                if (IsValidLeft(pos))
+                if (IsValidLeft(pos, tileType))
                     potentialEdgeCount++;
-                if (IsValidRight(pos))
+                if (IsValidRight(pos, tileType))
                     potentialEdgeCount++;
-                if (IsValidUp(pos))
+                if (IsValidUp(pos, tileType))
                     potentialEdgeCount++;
-                if (IsValidDown(pos))
+                if (IsValidDown(pos, tileType))
                     potentialEdgeCount++;
             }
 
@@ -110,13 +122,13 @@ public class AbstractMapGenerator : MonoBehaviour
             {
                 (int x, int y) pos = edges.Dequeue();
 
-                if (IsValidLeft(pos))
+                if (IsValidLeft(pos, tileType))
                     TryAddingTile((pos.x - 1, pos.y), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
-                if (IsValidRight(pos))
+                if (IsValidRight(pos, tileType))
                     TryAddingTile((pos.x + 1, pos.y), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
-                if (IsValidUp(pos))
+                if (IsValidUp(pos, tileType))
                     TryAddingTile((pos.x, pos.y + 1), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
-                if (IsValidDown(pos))
+                if (IsValidDown(pos, tileType))
                     TryAddingTile((pos.x, pos.y - 1), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
             }
         }
@@ -124,49 +136,118 @@ public class AbstractMapGenerator : MonoBehaviour
 
     void TryAddingTile((int x, int y) pos, TerrainType tileType, Queue<(int x, int y)> edges, ref int tilesToGenerate, ref int potentialEdgeCount)
     {
-        potentialEdgeCount -= 1;
-
         // surrounded ground tile case
-        if (IsValidLeft(pos, tileType) &&
-            IsValidRight(pos, tileType) &&
-            IsValidUp(pos, tileType) &&
-            IsValidDown(pos, tileType))
-        {
-            grid[pos.x, pos.y] = tileType;
-            tilesToGenerate -= 1;
-            return;
-        }
-
         if (potentialEdgeCount <= 0 || tilesToGenerate <= 0)
             return;
 
         // try to add tile
-        float tileChance = tilesToGenerate / potentialEdgeCount;
-        if (Random.Range(0,1) <= tileChance)
+        float tileChance = (float)tilesToGenerate / potentialEdgeCount;
+        if (Random.Range(0f, 1f) <= tileChance)
         {
             grid[pos.x, pos.y] = tileType;
             tilesToGenerate -= 1;
             edges.Enqueue(pos);
         }
+
+        potentialEdgeCount -= 1;
     }
 
-    bool IsValidLeft((int x, int y) pos, TerrainType tileType = TerrainType.Ground)
+    bool IsValidLeft((int x, int y) pos, TerrainType tileType)
     {
-        return (pos.x - 1 >= 0 && grid[pos.x - 1, pos.y] == tileType);
+        int dx = pos.x - 1;
+        (int, int) shift = (pos.x - 2, pos.y);
+        return (dx >= 0 &&
+            grid[dx, pos.y] == TerrainType.Ground &&
+            ScanLeft((dx, pos.y), tileType) &&
+            ScanUp(shift, tileType) &&
+            ScanDown(shift, tileType));
     }
 
-    bool IsValidRight((int x, int y) pos, TerrainType tileType = TerrainType.Ground)
+    bool IsValidRight((int x, int y) pos, TerrainType tileType)
     {
-        return (pos.x + 1 < gridX && grid[pos.x + 1, pos.y] == tileType);
+        int dx = pos.x + 1;
+        (int, int) shift = (pos.x + 2, pos.y);
+        return (dx < gridX &&
+            grid[dx, pos.y] == TerrainType.Ground &&
+            ScanRight((dx, pos.y), tileType) &&
+            ScanUp(shift, tileType) &&
+            ScanDown(shift, tileType));
     }
 
-    bool IsValidUp((int x, int y) pos, TerrainType tileType = TerrainType.Ground)
+    bool IsValidUp((int x, int y) pos, TerrainType tileType)
     {
-        return (pos.y + 1 < gridY && grid[pos.x, pos.y + 1] == tileType);
+        int dy = pos.y + 1;
+        (int, int) shift = (pos.x, pos.y + 2);
+        return (dy < gridY &&
+            grid[pos.x, dy] == TerrainType.Ground &&
+            ScanUp((pos.x, dy), tileType) &&
+            ScanLeft(shift, tileType) &&
+            ScanRight(shift, tileType));
     }
 
-    bool IsValidDown((int x, int y) pos, TerrainType tileType = TerrainType.Ground)
+    bool IsValidDown((int x, int y) pos, TerrainType tileType)
     {
-        return (pos.y - 1 >= 0 && grid[pos.x, pos.y - 1] == tileType);
+        int dy = pos.y - 1;
+        (int, int) shift = (pos.x, pos.y - 2);
+        return (dy >= 0 &&
+            grid[pos.x, dy] == TerrainType.Ground &&
+            ScanDown((pos.x, dy), tileType) &&
+            ScanLeft(shift, tileType) &&
+            ScanRight(shift, tileType));
+    }
+
+    bool ScanLeft((int x, int y) pos, TerrainType tileType)
+    {
+        int dx = pos.x - 1;
+        return (dx >= 0 && (grid[dx, pos.y] == TerrainType.Ground || grid[dx, pos.y] == tileType));
+    }
+
+    bool ScanRight((int x, int y) pos, TerrainType tileType)
+    {
+        int dx = pos.x + 1;
+        return (dx < gridX && (grid[dx, pos.y] == TerrainType.Ground || grid[dx, pos.y] == tileType));
+    }
+
+    bool ScanUp((int x, int y) pos, TerrainType tileType)
+    {
+        int dy = pos.y + 1;
+        return (dy < gridY && (grid[pos.x, dy] == TerrainType.Ground || grid[pos.x, dy] == tileType));
+    }
+
+    bool ScanDown((int x, int y) pos, TerrainType tileType)
+    {
+        int dy = pos.y - 1;
+        return (dy >= 0 && (grid[pos.x, dy] == TerrainType.Ground || grid[pos.x, dy] == tileType));
+    }
+
+    void FillTerrainGaps()
+    {
+        void FillGroundGrid(bool[,] groundGrid, (int x, int y) pos)
+        {
+            if (pos.x < 0 || pos.x >= gridX || pos.y < 0 || pos.y >= gridY ||
+                groundGrid[pos.x, pos.y] || grid[pos.x, pos.y] != TerrainType.Ground)
+                return;
+            
+            groundGrid[pos.x, pos.y] = true;
+
+            FillGroundGrid(groundGrid, (pos.x - 1, pos.y));
+            FillGroundGrid(groundGrid, (pos.x + 1, pos.y));
+            FillGroundGrid(groundGrid, (pos.x, pos.y + 1));
+            FillGroundGrid(groundGrid, (pos.x, pos.y + 1));
+        }
+
+        bool[,] groundGrid = new bool[gridX, gridY];
+        FillGroundGrid(groundGrid, (0, 0));
+        
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                if (groundGrid[i, j] == false && grid[i, j] == TerrainType.Ground)
+                {
+                    grid[i, j] = grid[i - 1, j];
+                }
+            }
+        }
     }
 }
