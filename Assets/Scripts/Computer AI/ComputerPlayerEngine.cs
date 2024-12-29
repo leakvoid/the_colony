@@ -66,20 +66,4 @@ public class ComputerPlayerEngine : MonoBehaviour
             yield return waitForInterval;
         }
     }
-
-    /*
-    1. write this module +
-    2. check module load order +
-    3. todos +
-    4. refactor building templates +
-    5. fill all game models with cubes +
-    6. AI number of available workers +
-    7. place starting house +
-    8. DONT ACCUMULATE PRESSURE INDEFINITELY +
-    9. create and display minimap
-    10. camera control (up, down, left, right, zoom in zoom out) + borders
-
-    roads: shortest path vs already connected; shortest path to road network?
-    make minimap camera orthographic
-    */
 }

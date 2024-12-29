@@ -24,6 +24,7 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] int numberOfSaltDeposits = 5;
 
     TerrainType[,] grid;
+    bool[,] takenByCluster;
 
     public TerrainType[,] GetTerrainGrid()
     {
@@ -33,6 +34,7 @@ public class AbstractMapGenerator : MonoBehaviour
     public void GenerateNewMap()
     {
         grid = new TerrainType[gridX, gridY];
+        takenByCluster = new bool[gridX, gridY];
         GenerateTerrainClusters(forestPercentage, numberOfForests, TerrainType.Forest);
         GenerateTerrainClusters(lakePercentage, numberOfLakes, TerrainType.Water);
         GenerateTerrainClusters(ironDepositPercentage, numberOfIronDeposits, TerrainType.IronDeposit);
@@ -67,14 +69,14 @@ public class AbstractMapGenerator : MonoBehaviour
             {
                 pos = (Random.Range(1, gridX - 1), Random.Range(1, gridY - 1));
                 if (grid[pos.x, pos.y] == TerrainType.Ground &&
-                    ScanLeft(pos, TerrainType.Ground) &&
-                    ScanRight(pos, TerrainType.Ground) &&
-                    ScanUp(pos, TerrainType.Ground) &&
-                    ScanDown(pos, TerrainType.Ground) &&
-                    ScanUp((pos.x - 1, pos.y), TerrainType.Ground) &&
-                    ScanDown((pos.x - 1, pos.y), TerrainType.Ground) &&
-                    ScanUp((pos.x + 1, pos.y), TerrainType.Ground) &&
-                    ScanDown((pos.x + 1, pos.y), TerrainType.Ground))
+                    ScanLeft(pos) &&
+                    ScanRight(pos) &&
+                    ScanUp(pos) &&
+                    ScanDown(pos) &&
+                    ScanUp((pos.x - 1, pos.y)) &&
+                    ScanDown((pos.x - 1, pos.y)) &&
+                    ScanUp((pos.x + 1, pos.y)) &&
+                    ScanDown((pos.x + 1, pos.y)))
                     break;
             }
 
@@ -86,10 +88,10 @@ public class AbstractMapGenerator : MonoBehaviour
 
     [SerializeField] int tilePropagationChance = 60;
 
-    // TODO ground type overlap bug
     void GenerateCluster((int x,int y) startingPos, int tileCount, TerrainType tileType)
     {
         var edges = new Queue<(int x, int y)>();
+        var clusterPos = new bool[gridX, gridY];
 
         tileCount -= 1;
         grid[startingPos.x, startingPos.y] = tileType;
@@ -123,18 +125,28 @@ public class AbstractMapGenerator : MonoBehaviour
                 (int x, int y) pos = edges.Dequeue();
 
                 if (IsValidLeft(pos, tileType))
-                    TryAddingTile((pos.x - 1, pos.y), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
+                    TryAddingTile((pos.x - 1, pos.y), tileType, edges, clusterPos, ref tilesToGenerate, ref potentialEdgeCount);
                 if (IsValidRight(pos, tileType))
-                    TryAddingTile((pos.x + 1, pos.y), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
+                    TryAddingTile((pos.x + 1, pos.y), tileType, edges, clusterPos, ref tilesToGenerate, ref potentialEdgeCount);
                 if (IsValidUp(pos, tileType))
-                    TryAddingTile((pos.x, pos.y + 1), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
+                    TryAddingTile((pos.x, pos.y + 1), tileType, edges, clusterPos, ref tilesToGenerate, ref potentialEdgeCount);
                 if (IsValidDown(pos, tileType))
-                    TryAddingTile((pos.x, pos.y - 1), tileType, edges, ref tilesToGenerate, ref potentialEdgeCount);
+                    TryAddingTile((pos.x, pos.y - 1), tileType, edges, clusterPos, ref tilesToGenerate, ref potentialEdgeCount);
+            }
+        }
+
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                if (clusterPos[i, j])
+                    takenByCluster[i, j] = true;
             }
         }
     }
 
-    void TryAddingTile((int x, int y) pos, TerrainType tileType, Queue<(int x, int y)> edges, ref int tilesToGenerate, ref int potentialEdgeCount)
+    void TryAddingTile((int x, int y) pos, TerrainType tileType, Queue<(int x, int y)> edges,
+                        bool[,] clusterPos, ref int tilesToGenerate, ref int potentialEdgeCount)
     {
         // surrounded ground tile case
         if (potentialEdgeCount <= 0 || tilesToGenerate <= 0)
@@ -145,6 +157,7 @@ public class AbstractMapGenerator : MonoBehaviour
         if (Random.Range(0f, 1f) <= tileChance)
         {
             grid[pos.x, pos.y] = tileType;
+            clusterPos[pos.x, pos.y] = true;
             tilesToGenerate -= 1;
             edges.Enqueue(pos);
         }
@@ -158,9 +171,9 @@ public class AbstractMapGenerator : MonoBehaviour
         (int, int) shift = (pos.x - 2, pos.y);
         return (dx >= 0 &&
             grid[dx, pos.y] == TerrainType.Ground &&
-            ScanLeft((dx, pos.y), tileType) &&
-            ScanUp(shift, tileType) &&
-            ScanDown(shift, tileType));
+            ScanLeft((dx, pos.y)) &&
+            ScanUp(shift) &&
+            ScanDown(shift));
     }
 
     bool IsValidRight((int x, int y) pos, TerrainType tileType)
@@ -169,9 +182,9 @@ public class AbstractMapGenerator : MonoBehaviour
         (int, int) shift = (pos.x + 2, pos.y);
         return (dx < gridX &&
             grid[dx, pos.y] == TerrainType.Ground &&
-            ScanRight((dx, pos.y), tileType) &&
-            ScanUp(shift, tileType) &&
-            ScanDown(shift, tileType));
+            ScanRight((dx, pos.y)) &&
+            ScanUp(shift) &&
+            ScanDown(shift));
     }
 
     bool IsValidUp((int x, int y) pos, TerrainType tileType)
@@ -180,9 +193,9 @@ public class AbstractMapGenerator : MonoBehaviour
         (int, int) shift = (pos.x, pos.y + 2);
         return (dy < gridY &&
             grid[pos.x, dy] == TerrainType.Ground &&
-            ScanUp((pos.x, dy), tileType) &&
-            ScanLeft(shift, tileType) &&
-            ScanRight(shift, tileType));
+            ScanUp((pos.x, dy)) &&
+            ScanLeft(shift) &&
+            ScanRight(shift));
     }
 
     bool IsValidDown((int x, int y) pos, TerrainType tileType)
@@ -191,33 +204,33 @@ public class AbstractMapGenerator : MonoBehaviour
         (int, int) shift = (pos.x, pos.y - 2);
         return (dy >= 0 &&
             grid[pos.x, dy] == TerrainType.Ground &&
-            ScanDown((pos.x, dy), tileType) &&
-            ScanLeft(shift, tileType) &&
-            ScanRight(shift, tileType));
+            ScanDown((pos.x, dy)) &&
+            ScanLeft(shift) &&
+            ScanRight(shift));
     }
 
-    bool ScanLeft((int x, int y) pos, TerrainType tileType)
+    bool ScanLeft((int x, int y) pos)
     {
         int dx = pos.x - 1;
-        return (dx >= 0 && (grid[dx, pos.y] == TerrainType.Ground || grid[dx, pos.y] == tileType));
+        return (dx >= 0 && !takenByCluster[dx, pos.y]);
     }
 
-    bool ScanRight((int x, int y) pos, TerrainType tileType)
+    bool ScanRight((int x, int y) pos)
     {
         int dx = pos.x + 1;
-        return (dx < gridX && (grid[dx, pos.y] == TerrainType.Ground || grid[dx, pos.y] == tileType));
+        return (dx < gridX && !takenByCluster[dx, pos.y]);
     }
 
-    bool ScanUp((int x, int y) pos, TerrainType tileType)
+    bool ScanUp((int x, int y) pos)
     {
         int dy = pos.y + 1;
-        return (dy < gridY && (grid[pos.x, dy] == TerrainType.Ground || grid[pos.x, dy] == tileType));
+        return (dy < gridY && !takenByCluster[pos.x, dy]);
     }
 
-    bool ScanDown((int x, int y) pos, TerrainType tileType)
+    bool ScanDown((int x, int y) pos)
     {
         int dy = pos.y - 1;
-        return (dy >= 0 && (grid[pos.x, dy] == TerrainType.Ground || grid[pos.x, dy] == tileType));
+        return (dy >= 0 && !takenByCluster[pos.x, dy]);
     }
 
     void FillTerrainGaps()
@@ -232,7 +245,7 @@ public class AbstractMapGenerator : MonoBehaviour
 
             FillGroundGrid(groundGrid, (pos.x - 1, pos.y));
             FillGroundGrid(groundGrid, (pos.x + 1, pos.y));
-            FillGroundGrid(groundGrid, (pos.x, pos.y + 1));
+            FillGroundGrid(groundGrid, (pos.x, pos.y - 1));
             FillGroundGrid(groundGrid, (pos.x, pos.y + 1));
         }
 
