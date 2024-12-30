@@ -9,40 +9,55 @@ public class MainCameraControls : MonoBehaviour
     [SerializeField] float cameraZoomSpeed = 100f;
     [SerializeField] float cameraRotationSpeed = 100f;
 
-    Vector3 mousePos;
-    Vector3 oldPosition;
-
     Vector3 screenPosSnapshot;
+
+    int gridX;
+    int gridY;
+
+    float aspectRatio = 16f/9f;
+
+    public void Initialize()
+    {
+        var grid = FindObjectOfType<AbstractMapGenerator>().GetTerrainGrid();
+        gridX = grid.GetLength(0);
+        gridY = grid.GetLength(1);
+    }
 
     void Update()
     {
-        mousePos = Input.mousePosition;
-        if (mousePos != oldPosition)
-        {
-            oldPosition = mousePos;
-            print("World pos: " + mousePos);
-            print("Screen pos: " + Camera.main.ScreenToWorldPoint(mousePos));
-            print("viewport: " + Camera.main.ScreenToViewportPoint(mousePos));
-        }
+        UpdateCameraPosition();
+        UpdateCameraSize();
+        UpdateCameraRotation();
+    }
 
-        var screenPos = Camera.main.ScreenToViewportPoint(mousePos);
+    void UpdateCameraPosition()
+    {
+        var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        var cameraPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (screenPos.x <= 0.02 || Input.GetButton("Left"))
         {
-            Camera.main.transform.position -= new Vector3(cameraMoveSpeed * Time.deltaTime, 0);
+            if ((cameraPos.x + cameraPos.z) >= 0)
+                Camera.main.transform.position -= new Vector3(cameraMoveSpeed * Time.deltaTime, 0);
         }
         else if (screenPos.x >= 0.98 || Input.GetButton("Right"))
         {
-            Camera.main.transform.position += new Vector3(cameraMoveSpeed * Time.deltaTime, 0);
+            if ((cameraPos.x - cameraPos.z) <= gridX)
+                Camera.main.transform.position += new Vector3(cameraMoveSpeed * Time.deltaTime, 0);
         }
         if (screenPos.y <= 0.02 || Input.GetButton("Down"))
         {
-            Camera.main.transform.position -= new Vector3(0, cameraMoveSpeed * Time.deltaTime);
+            if ((cameraPos.y + cameraPos.z / aspectRatio) >= 0)
+                Camera.main.transform.position -= new Vector3(0, cameraMoveSpeed * Time.deltaTime);
         }
         else if (screenPos.y >= 0.98 || Input.GetButton("Up"))
         {
-            Camera.main.transform.position += new Vector3(0, cameraMoveSpeed * Time.deltaTime);
+            if ((cameraPos.y - cameraPos.z / aspectRatio) <= gridY)
+                Camera.main.transform.position += new Vector3(0, cameraMoveSpeed * Time.deltaTime);
         }
+    }
 
+    void UpdateCameraSize()// TODO change to zoom multiplier
+    {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
         {
             Camera.main.transform.position += new Vector3(0, 0, cameraZoomSpeed * Time.deltaTime);
@@ -51,7 +66,11 @@ public class MainCameraControls : MonoBehaviour
         {
             Camera.main.transform.position -= new Vector3(0, 0, cameraZoomSpeed * Time.deltaTime);
         }
+    }
 
+    void UpdateCameraRotation()
+    {
+        var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
         if (Input.GetMouseButtonDown(2))
         {
             screenPosSnapshot = screenPos;

@@ -67,8 +67,22 @@
     7. place starting house +
     8. DONT ACCUMULATE PRESSURE INDEFINITELY +
     9. create and display minimap +
-    10. camera control (up, down, left, right, zoom in zoom out) + borders
+    10. camera control (up, down, left, right, zoom in zoom out) +
+    * make minimap camera orthographic +
+    * strategic resources display on bottom panel
+    * fix AI
 
+    secondary resources display inside bottom right panel
+    building info on left click (bottom right panel)
+    citizen info on left click (bottom right panel)
+    clicking on nothing restores resource view
+
+    perlin noise for iron, stone, salt deposits
+    textures for terrain and water
+    3d models for buildings
+
+    camera rotation
+    move camera on minimap click
     roads: shortest path vs already connected; shortest path to road network?
-    make minimap camera orthographic
+
     */
