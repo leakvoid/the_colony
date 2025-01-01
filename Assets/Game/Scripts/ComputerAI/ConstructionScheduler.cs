@@ -89,7 +89,7 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.StoneMine:
             case BuildingTag.Forge:
                 ProductionBT bt = (ProductionBT)buildingTemplate;
-                float grace = (bt.ConstructionTime + 30) * bt.AmountProducedPerInterval;
+                float grace = (bt.ConstructionTime + 30) * bt.AmountProducedPerInterval;// TODO (+ walk time from house to work) * 2
                 pressure[(int)buildingTemplate.BuildingTag] -= (int)(grace / globals.EngineConstructionInterval);
                 break;
             // Raw
@@ -131,7 +131,7 @@ public class ConstructionScheduler : MonoBehaviour
             pressure[(int)buildingTag] += amount;
     }
 
-    public void IncreaseResourcePressure(ResourceType resourceType, int amount = 1)// TODO increase pressure until negative per loop ?
+    public void IncreaseResourcePressure(ResourceType resourceType, int amount = 1)
     {
         switch (resourceType)
         {
@@ -211,7 +211,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             if (!woodPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Wood, bt.WoodCost);
+                IncreaseResourcePressure(ResourceType.Wood, globals.SawmillTemplate.AmountProducedPerInterval);
                 woodPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -220,7 +220,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             if (!stonePressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Stone, bt.StoneCost);
+                IncreaseResourcePressure(ResourceType.Stone, globals.StoneMineTemplate.AmountProducedPerInterval);
                 stonePressureOccurred = true;
             }
 
@@ -230,7 +230,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             if (!toolsPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Tools, bt.ToolsCost);
+                IncreaseResourcePressure(ResourceType.Tools, globals.ForgeTemplate.AmountProducedPerInterval);
                 toolsPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -269,13 +269,18 @@ public class ConstructionScheduler : MonoBehaviour
                 if (TryBuilding(buildingTag))
                     constructedCount++;
             }
+            print("Constructed count: " + constructedCount);
         }
         while (constructedCount > 0);
 
+        print("flags: " + woodPressureOccurred + " " + stonePressureOccurred + " " + toolsPressureOccurred);
         if (!woodPressureOccurred && !stonePressureOccurred && !toolsPressureOccurred)
         {
+            print("Try building a house");
             // TODO try upgrading && while loop here like above
-            TryBuilding(BuildingTag.House);
+            IncreaseBuildingPressure(BuildingTag.House, 5);
+            for (int i = 0; i < 5; i++)
+                TryBuilding(BuildingTag.House);
         }
     }
 }

@@ -68,10 +68,11 @@
     8. DONT ACCUMULATE PRESSURE INDEFINITELY +
     9. create and display minimap +
     10. camera control (up, down, left, right, zoom in zoom out) +
-    * make minimap camera orthographic +
-    * strategic resources display on bottom panel
-    * fix AI
+    make minimap camera orthographic +
+    strategic resources display on bottom panel +
+    fix AI +
 
+    upgrade houses logic
     secondary resources display inside bottom right panel
     building info on left click (bottom right panel)
     citizen info on left click (bottom right panel)

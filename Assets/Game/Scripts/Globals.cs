@@ -43,16 +43,16 @@ public class Globals : MonoBehaviour
     public int BeerReservedAmount { get; set; } = 0;
 
     [field: Header("General colonist data")]
-    [field: SerializeField] public float ColonistMovementSpeed { get; private set; } = 3f;
+    [field: SerializeField] public float ColonistMovementSpeed { get; private set; } = 6f;
     [field: SerializeField] public float SleepDuration { get; private set; } = 2f;
     [field: SerializeField] public float PrayerDuration { get; private set; } = 2f;
     [field: SerializeField] public int NeedReplenishThreshold { get; private set; } = 20;
 
     [field: Header("Resource prices")]
-    [field: SerializeField] public int FoodPrice { get; private set; } = 20;
+    [field: SerializeField] public int FoodPrice { get; private set; } = 40;
     [field: SerializeField] public int SaltPrice { get; private set; } = 30;
-    [field: SerializeField] public int ClothPrice { get; private set; } = 40;
-    [field: SerializeField] public int BeerPrice { get; private set; } = 50;
+    [field: SerializeField] public int ClothPrice { get; private set; } = 50;
+    [field: SerializeField] public int BeerPrice { get; private set; } = 60;
     [field: SerializeField] public int ChurchDonation { get; private set; } = 10;
 
     [field: Header("Temporal")]

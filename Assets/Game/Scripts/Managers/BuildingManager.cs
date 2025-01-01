@@ -10,6 +10,7 @@ public class BuildingManager : MonoBehaviour
     Globals globals;
     BuildingLocationModule blm;
     ColonistManager cm;
+    ConstructionScheduler constructionScheduler;
 
     List<BuildingData> allBuildings;
     Queue<BuildingData> emptyWorkableBuildings;
@@ -19,6 +20,7 @@ public class BuildingManager : MonoBehaviour
         globals = FindObjectOfType<Globals>();
         blm = FindObjectOfType<BuildingLocationModule>();
         cm = FindObjectOfType<ColonistManager>();
+        constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
 
         allBuildings = new List<BuildingData>();
         emptyWorkableBuildings = new Queue<BuildingData>();
@@ -60,6 +62,7 @@ public class BuildingManager : MonoBehaviour
         if (location == (-1, -1))
             return null;
 
+        print("DEBUG Build: " + bt.BuildingTag.ToString());
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
@@ -140,7 +143,11 @@ public class BuildingManager : MonoBehaviour
         {
             ProcessingBT bt = (ProcessingBT)buildingTemplate;
             if (consumedResource < bt.AmountConsumedPerInterval)
+            {
+                if (constructionScheduler)
+                    constructionScheduler.IncreaseResourcePressure(bt.ConsumedResource, bt.AmountConsumedPerInterval);
                 return;
+            }
             consumedResource -= bt.AmountConsumedPerInterval;
             producedResource += bt.AmountProducedPerInterval;
         }
@@ -202,5 +209,10 @@ public class BuildingManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    void UpgradeHouse(BuildingData house)
+    {
+        
     }
 }

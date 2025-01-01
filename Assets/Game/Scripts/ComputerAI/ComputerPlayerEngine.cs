@@ -33,7 +33,7 @@ public class ComputerPlayerEngine : MonoBehaviour
 
             foreach (var colonist in colonists)
             {
-                if (colonist.FoodNeedMeter <= globals.NeedReplenishThreshold)
+                if (colonist.FoodNeedMeter <= globals.NeedReplenishThreshold)// TODO potential issue with building pressure when no building nearby
                     cs.IncreaseResourcePressure(ResourceType.Food);
                 if (colonist.type != ColonistData.Type.Peasant && colonist.ClothesNeedMeter <= globals.NeedReplenishThreshold)
                     cs.IncreaseResourcePressure(ResourceType.Cloth);

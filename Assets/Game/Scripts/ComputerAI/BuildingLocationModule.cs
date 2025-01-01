@@ -476,9 +476,9 @@ public class BuildingLocationModule : MonoBehaviour
 
     void UpdateAvailableSpace((int x, int y) location, BuildingTemplate bt)
     {
-        for (int i = location.x; i < location.x + bt.SizeX; i++)
+        for (int i = Math.Max(location.x - 1, 0); i < Math.Min(location.x + bt.SizeX + 1, gridX - 1); i++)// TODO available space yes, no, roads-only
         {
-            for (int j = location.y; j < location.y + bt.SizeY; j++)
+            for (int j = Math.Max(location.y - 1, 0); j < Math.Min(location.y + bt.SizeY + 1, gridY - 1); j++)
             {
                 availableSpace[i,j] = false;
             }

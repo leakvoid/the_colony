@@ -19,7 +19,7 @@ MonoBehaviour:
   <WoodCost>k__BackingField: 20
   <StoneCost>k__BackingField: 20
   <ToolsCost>k__BackingField: 0
-  <GoldCost>k__BackingField: 40
+  <GoldCost>k__BackingField: 400
   <ConstructionTime>k__BackingField: 10
   <FinishedModel>k__BackingField: {fileID: 5232221567952099945, guid: be883a79206154327936bf76c7ec6d41, type: 3}
   <UnfinishedModel>k__BackingField: {fileID: 6024084815729676317, guid: a9f3d57df09b1fa5d8999b3368852703, type: 3}

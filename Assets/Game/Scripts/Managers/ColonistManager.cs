@@ -117,6 +117,8 @@ public class ColonistManager : MonoBehaviour
     {
         IEnumerator NeedsDecrementRoutine(ColonistData colonistData)
         {
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 5f));
+
             while(true)
             {
                 colonistData.SleepNeedMeter -= globals.NeedAmountDecrement;
@@ -265,39 +267,46 @@ public class ColonistManager : MonoBehaviour
                 case ColonistData.Action.Sleep:
                     yield return new WaitForSeconds(globals.SleepDuration);
                     colonistData.SleepNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.SleepAlreadyQueued = false;
                     break;
                 case ColonistData.Action.BuyFood:
                     globals.FoodReservedAmount--;
                     globals.goldAmount += globals.FoodPrice;
                     colonistData.MoneySpent += globals.FoodPrice;
                     colonistData.FoodNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.FoodAlreadyQueued = false;
                     break;
                 case ColonistData.Action.BuyClothes:
                     globals.ClothReservedAmount--;
                     globals.goldAmount += globals.ClothPrice;
                     colonistData.MoneySpent += globals.ClothPrice;
                     colonistData.ClothesNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.ClothesAlreadyQueued = false;
                     break;
                 case ColonistData.Action.BuySalt:
                     globals.SaltReservedAmount--;
                     globals.goldAmount += globals.SaltPrice;
                     colonistData.MoneySpent += globals.SaltPrice;
                     colonistData.SaltNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.SaltAlreadyQueued = false;
                     break;
                 case ColonistData.Action.GetWater:
                     colonistData.WaterNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.WaterAlreadyQueued = false;
                     break;
                 case ColonistData.Action.BuyBeer:
                     globals.BeerReservedAmount--;
                     globals.goldAmount += globals.BeerPrice;
                     colonistData.MoneySpent += globals.BeerPrice;
                     colonistData.BeerNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.BeerAlreadyQueued = false;
                     break;
                 case ColonistData.Action.Pray:
                     yield return new WaitForSeconds(globals.PrayerDuration);
                     globals.goldAmount += globals.ChurchDonation;
                     colonistData.MoneySpent += globals.ChurchDonation;
                     colonistData.ReligionNeedMeter += globals.NeedAmountReplenished;
+                    colonistData.ReligionAlreadyQueued = false;
                     break;
                 default:
                     throw new Exception("consumer action queue exception");
