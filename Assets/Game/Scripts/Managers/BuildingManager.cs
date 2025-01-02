@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -13,6 +14,7 @@ public class BuildingManager : MonoBehaviour
     ConstructionScheduler constructionScheduler;
 
     List<BuildingData> allBuildings;
+    List<BuildingData> allHouses;
     Queue<BuildingData> emptyWorkableBuildings;
 
     void Awake()
@@ -23,7 +25,13 @@ public class BuildingManager : MonoBehaviour
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
 
         allBuildings = new List<BuildingData>();
+        allHouses = new List<BuildingData>();
         emptyWorkableBuildings = new Queue<BuildingData>();
+    }
+
+    public List<BuildingData> GetAllHouses()
+    {
+        return allHouses;
     }
 
     public void PlaceStartingHouse()// TODO should be center of the map
@@ -43,6 +51,7 @@ public class BuildingManager : MonoBehaviour
         blm.UpdateAfterBuildingCreation(buildingData, bt);
 
         allBuildings.Add(buildingData);
+        allHouses.Add(buildingData);
 
         FinishBuildingConstruction(buildingData);
     }
@@ -73,6 +82,8 @@ public class BuildingManager : MonoBehaviour
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
         allBuildings.Add(buildingData);
+        if (bt.BuildingTag == BuildingTag.House)
+            allHouses.Add(buildingData);
 
         globals.goldAmount -= bt.GoldCost;
         globals.woodAmount -= bt.WoodCost;
@@ -211,8 +222,41 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
-    void UpgradeHouse(BuildingData house)
+    public void UpgradeHouse(BuildingData house)
     {
-        
+        HousingBT bt = (HousingBT)house.template;
+        if (house.upgradeTier == 0)
+        {
+            print("DEBUG upgrade wood");
+            if (globals.goldAmount < bt.Tier1UpgradeGoldCost || globals.woodAmount < bt.Tier1UpgradeWoodCost)
+                return;
+
+            for (int i = 0; i < (bt.Tier1ColonistCapacity - bt.Tier0ColonistCapacity); i++)
+                house.colonists.Add(cm.CreateColonist(house));
+            foreach(var colonist in house.colonists)
+                colonist.type = ColonistData.Type.Citizen;
+            house.upgradeTier = 1;
+
+            globals.goldAmount -= bt.Tier1UpgradeGoldCost;
+            globals.woodAmount -= bt.Tier1UpgradeWoodCost;
+
+        }
+        else if (house.upgradeTier == 1)
+        {
+            print("DEBUG upgrade stone");
+            if (globals.goldAmount < bt.Tier2UpgradeGoldCost || globals.stoneAmount < bt.Tier2UpgradeStoneCost)
+                return;
+
+            for (int i = 0; i < (bt.Tier2ColonistCapacity - bt.Tier1ColonistCapacity); i++)
+                house.colonists.Add(cm.CreateColonist(house));
+            foreach(var colonist in house.colonists)
+                colonist.type = ColonistData.Type.Nobleman;
+            house.upgradeTier = 2;
+            
+            globals.goldAmount -= bt.Tier2UpgradeGoldCost;
+            globals.stoneAmount -= bt.Tier2UpgradeStoneCost;
+        }
+        else
+            throw new Exception("House already full upgraded");
     }
 }

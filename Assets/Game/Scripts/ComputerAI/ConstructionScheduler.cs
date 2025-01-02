@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Analytics;
 
@@ -69,8 +70,14 @@ public class ConstructionScheduler : MonoBehaviour
         pressure[(int)buildingTag] += amount;
     }
 
-    void ReduceBuildingPressure(BuildingTemplate buildingTemplate)
+    public int GetBuildingPressure(BuildingTag buildingTag)
     {
+        return pressure[(int)buildingTag];
+    }
+
+    public void ReduceBuildingPressure(BuildingTemplate buildingTemplate, float walkingTime)
+    {
+        print("DEBUG walking time: " + walkingTime);
         switch (buildingTemplate.BuildingTag)
         {
             // Housing
@@ -89,7 +96,7 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.StoneMine:
             case BuildingTag.Forge:
                 ProductionBT bt = (ProductionBT)buildingTemplate;
-                float grace = (bt.ConstructionTime + 30) * bt.AmountProducedPerInterval;// TODO (+ walk time from house to work) * 2
+                float grace = (bt.ConstructionTime + 2 * walkingTime + 30) * bt.AmountProducedPerInterval;
                 pressure[(int)buildingTemplate.BuildingTag] -= (int)(grace / globals.EngineConstructionInterval);
                 break;
             // Raw
@@ -99,7 +106,7 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.HopsFarm:
             case BuildingTag.Windmill:
                 bt = (ProductionBT)buildingTemplate;
-                grace = (bt.ConstructionTime + 30) / bt.TimeInterval * bt.AmountProducedPerInterval;
+                grace = (bt.ConstructionTime + 2 * walkingTime + 30) * bt.AmountProducedPerInterval / bt.TimeInterval;
                 pressure[(int)buildingTemplate.BuildingTag] -= (int)grace;
                 break;
             // Consumption
@@ -107,16 +114,16 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.Clothier:
             case BuildingTag.Brewery:
                 bt = (ProductionBT)buildingTemplate;
-                float consumptionPeriod = 100 * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
-                grace = (bt.ConstructionTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
+                float consumptionPeriod = globals.NeedAmountReplenished * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
+                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
                 pressure[(int)buildingTemplate.BuildingTag] -= (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
                 break;
             case BuildingTag.HuntersCabin:
             case BuildingTag.FishingHut:
             case BuildingTag.Bakery:
                 bt = (ProductionBT)buildingTemplate;
-                consumptionPeriod = 100 * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
-                grace = (bt.ConstructionTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
+                consumptionPeriod = globals.NeedAmountReplenished * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
+                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
                 int reducedAmount = (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
                 pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
                 pressure[(int)BuildingTag.FishingHut] -= reducedAmount;
@@ -177,7 +184,7 @@ public class ConstructionScheduler : MonoBehaviour
                 IncreaseResourceBuildingPressure(BuildingTag.Brewery, amount);
                 break;
             default:
-                throw new Exception("Resource " + nameof(ResourceType) + " not handled");
+                throw new Exception("Resource " + resourceType.ToString() + " not handled");
         }
     }
 
@@ -192,6 +199,7 @@ public class ConstructionScheduler : MonoBehaviour
         return 1;
     }
 
+    bool goldPressureOccurred;
     bool woodPressureOccurred;
     bool stonePressureOccurred;
     bool toolsPressureOccurred;
@@ -204,14 +212,17 @@ public class ConstructionScheduler : MonoBehaviour
         BuildingTemplate bt = globals.NameToTemplate(buildingTag);
 
         if (bt.GoldCost > globals.goldAmount)
+        {
+            goldPressureOccurred = true;
             return false;
+        }
 
         bool insufficientMaterials = false;
         if (bt.WoodCost > globals.woodAmount)
         {
             if (!woodPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Wood, globals.SawmillTemplate.AmountProducedPerInterval);
+                IncreaseResourcePressure(ResourceType.Wood, bt.WoodCost);
                 woodPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -220,7 +231,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             if (!stonePressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Stone, globals.StoneMineTemplate.AmountProducedPerInterval);
+                IncreaseResourcePressure(ResourceType.Stone, bt.StoneCost);
                 stonePressureOccurred = true;
             }
 
@@ -230,7 +241,7 @@ public class ConstructionScheduler : MonoBehaviour
         {
             if (!toolsPressureOccurred)
             {
-                IncreaseResourcePressure(ResourceType.Tools, globals.ForgeTemplate.AmountProducedPerInterval);
+                IncreaseResourcePressure(ResourceType.Tools, bt.ToolsCost);
                 toolsPressureOccurred = true;
             }
             insufficientMaterials = true;
@@ -249,13 +260,12 @@ public class ConstructionScheduler : MonoBehaviour
                     IncreaseBuildingPressure(serviceTag);
         }
 
-        ReduceBuildingPressure(bt);
-
         return true;
     }
 
     public void MakeBuildings()
     {
+        goldPressureOccurred = false;
         woodPressureOccurred = false;
         stonePressureOccurred = false;
         toolsPressureOccurred = false;
@@ -269,18 +279,41 @@ public class ConstructionScheduler : MonoBehaviour
                 if (TryBuilding(buildingTag))
                     constructedCount++;
             }
-            print("Constructed count: " + constructedCount);
         }
         while (constructedCount > 0);
 
-        print("flags: " + woodPressureOccurred + " " + stonePressureOccurred + " " + toolsPressureOccurred);
-        if (!woodPressureOccurred && !stonePressureOccurred && !toolsPressureOccurred)
+        if (!goldPressureOccurred && !woodPressureOccurred && !stonePressureOccurred && !toolsPressureOccurred)
         {
-            print("Try building a house");
-            // TODO try upgrading && while loop here like above
+            UpgradeRandomHouses();
+
             IncreaseBuildingPressure(BuildingTag.House, 5);
             for (int i = 0; i < 5; i++)
                 TryBuilding(BuildingTag.House);
+        }
+    }
+
+    void UpgradeRandomHouses()
+    {
+        int tier1Wood = globals.woodAmount / globals.HouseTemplate.Tier1UpgradeWoodCost;
+        int tier1Gold = globals.goldAmount / globals.HouseTemplate.Tier1UpgradeGoldCost;
+        int tier1Upgraded = Math.Min(tier1Wood, tier1Gold);
+        int tier2Stone = globals.stoneAmount / globals.HouseTemplate.Tier2UpgradeStoneCost;
+        int tier2Gold = (globals.goldAmount - tier1Upgraded * globals.HouseTemplate.Tier1UpgradeGoldCost) / globals.HouseTemplate.Tier2UpgradeGoldCost;
+        int tier2Upgraded = Math.Min(tier2Stone, tier2Gold);
+
+        var houses = bm.GetAllHouses();
+        foreach(var house in houses)
+        {
+            if (tier1Upgraded > 0 && house.upgradeTier == 0)
+            {
+                bm.UpgradeHouse(house);
+                tier1Upgraded--;
+            }
+            if (tier2Upgraded > 0 && house.upgradeTier == 1)
+            {
+                bm.UpgradeHouse(house);
+                tier2Upgraded--;
+            }
         }
     }
 }

@@ -60,7 +60,7 @@ public class Globals : MonoBehaviour
     [field: SerializeField] public float NeedConsumptionInterval { get; private set; } = 5f;
     [field: SerializeField] public int NeedAmountDecrement { get; private set; } = 10;
     [field: SerializeField] public int NeedAmountReplenished { get; private set; } = 100;
-    [field: SerializeField] public float EngineNeedCheckInterval { get; private set; } = 2f;
+    [field: SerializeField] public float EngineNeedCheckInterval { get; private set; } = 5f;
     [field: SerializeField] public float EngineConstructionInterval { get; private set; } = 5f;
 
     [field: Header("Building templates")]
@@ -112,7 +112,7 @@ public class Globals : MonoBehaviour
             BuildingTag.SaltMine => SaltMineTemplate,
             BuildingTag.Sawmill => SawmillTemplate,
             BuildingTag.StoneMine => StoneMineTemplate,
-            _ => throw new ArgumentException("building " + nameof(buildingTag) + " is missing"),
+            _ => throw new ArgumentException("building " + buildingTag.ToString() + " is missing"),
         };
     }
 

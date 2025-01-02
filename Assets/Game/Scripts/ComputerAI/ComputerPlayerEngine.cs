@@ -8,12 +8,14 @@ public class ComputerPlayerEngine : MonoBehaviour
     Globals globals;
     ConstructionScheduler cs;
     ColonistManager cm;
+    BuildingLocationModule blm;
 
     void Awake()
     {
         globals = FindObjectOfType<Globals>();
         cs = FindObjectOfType<ConstructionScheduler>();
         cm = FindObjectOfType<ColonistManager>();
+        blm = FindObjectOfType<BuildingLocationModule>();
     }
     
     public void InitializeComputerPlayer()
@@ -33,15 +35,17 @@ public class ComputerPlayerEngine : MonoBehaviour
 
             foreach (var colonist in colonists)
             {
-                if (colonist.FoodNeedMeter <= globals.NeedReplenishThreshold)// TODO potential issue with building pressure when no building nearby
+                BuildingData market = blm.GetClosestService(colonist.livesAt, BuildingTag.Market);
+                if (market != null && colonist.FoodNeedMeter <= globals.NeedReplenishThreshold)
                     cs.IncreaseResourcePressure(ResourceType.Food);
-                if (colonist.type != ColonistData.Type.Peasant && colonist.ClothesNeedMeter <= globals.NeedReplenishThreshold)
+                if (market != null && colonist.type != ColonistData.Type.Peasant && colonist.ClothesNeedMeter <= globals.NeedReplenishThreshold)
                     cs.IncreaseResourcePressure(ResourceType.Cloth);
                 if (colonist.type == ColonistData.Type.Nobleman)
                 {
-                    if (colonist.SaltNeedMeter <= globals.NeedReplenishThreshold)
+                    if (market != null && colonist.SaltNeedMeter <= globals.NeedReplenishThreshold)
                         cs.IncreaseResourcePressure(ResourceType.Salt);
-                    if (colonist.BeerNeedMeter <= globals.NeedReplenishThreshold)
+                    BuildingData inn = blm.GetClosestService(colonist.livesAt, BuildingTag.Inn);
+                    if (inn != null && colonist.BeerNeedMeter <= globals.NeedReplenishThreshold)
                         cs.IncreaseResourcePressure(ResourceType.Beer);
                 }
             }
@@ -54,7 +58,9 @@ public class ComputerPlayerEngine : MonoBehaviour
 
         while (true)
         {
-            int workerDeficit = 20 - cm.GetJoblessColonistCount() - cm.GetFutureColonistCount();
+            int workerDeficit = 20 - cm.GetJoblessColonistCount() - cm.GetFutureColonistCount() -
+                cs.GetBuildingPressure(BuildingTag.House) * globals.HouseTemplate.Tier0ColonistCapacity;
+            
             if (workerDeficit > 0)
             {
                 cs.IncreaseBuildingPressure(BuildingTag.House,

@@ -10,6 +10,7 @@ public class ColonistManager : MonoBehaviour
     Globals globals;
     BuildingManager bm;
     BuildingLocationModule blm;
+    ConstructionScheduler constructionScheduler;
 
     List<ColonistData> allColonists;
     Queue<ColonistData> joblessColonists;
@@ -23,6 +24,7 @@ public class ColonistManager : MonoBehaviour
         globals = FindObjectOfType<Globals>();
         bm = FindObjectOfType<BuildingManager>();
         blm = FindObjectOfType<BuildingLocationModule>();
+        constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
 
         allColonists = new List<ColonistData>();
         joblessColonists = new Queue<ColonistData>();
@@ -59,7 +61,7 @@ public class ColonistManager : MonoBehaviour
         return futureColonistCount;
     }
 
-    public void SendColonistToBuild(BuildingData worksAt)
+    public void SendColonistToBuild(BuildingData worksAt)// TODO ReduceBuildingPressure !!!!!
     {
         if (GetJoblessColonistCount() < 1)
             throw new System.Exception("Not enough workers to build");
@@ -68,11 +70,21 @@ public class ColonistManager : MonoBehaviour
         colonistData.worksAt = worksAt;
         colonistData.occupation = ColonistData.Occupation.Builder;
 
+        if (constructionScheduler)
+            constructionScheduler.ReduceBuildingPressure(worksAt.template, CalculateWalkingTime(colonistData));
+
         QueueWorkerAction(ColonistData.Action.GoToWork, colonistData);
         QueueWorkerAction(ColonistData.Action.Build, colonistData);
         QueueWorkerAction(ColonistData.Action.GoHome, colonistData);
         if (!colonistData.isWorkerRoutineActive)
             StartCoroutine(ProcessWorkerActionQueue(colonistData));
+    }
+
+    float CalculateWalkingTime(ColonistData colonistData)// TODO for roads
+    {
+        float distance = Vector3.Distance(colonistData.livesAt.modelReference.transform.position,
+            colonistData.worksAt.modelReference.transform.position);
+        return distance / globals.ColonistMovementSpeed;
     }
 
     public void SendColonistToWork(BuildingData worksAt)

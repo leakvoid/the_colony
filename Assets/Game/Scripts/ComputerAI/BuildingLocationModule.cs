@@ -118,7 +118,7 @@ public class BuildingLocationModule : MonoBehaviour
 
         if (location == (-1, -1))
         {
-            print("Building space run out for " + nameof(buildingTemplate.BuildingTag));
+            print("Building space run out for " + buildingTemplate.BuildingTag.ToString());
             return location;
         }
 
@@ -269,7 +269,7 @@ public class BuildingLocationModule : MonoBehaviour
                 uncoveredHouses = uncoveredByWell;
                 break;
             default:
-                throw new Exception("Unknown service building " + nameof(bt.BuildingTag));
+                throw new Exception("Unknown service building " + bt.BuildingTag.ToString());
         }
 
         var coverValueGrid = new int[gridX - bt.SizeX + 1, gridY - bt.SizeY + 1];
@@ -367,7 +367,7 @@ public class BuildingLocationModule : MonoBehaviour
                 captureArea = stoneMineCaptureArea;
                 break;
             default:
-                throw new Exception("Resource gathering building " + nameof(bt.BuildingTag) + " is missing");
+                throw new Exception("Resource gathering building " + bt.BuildingTag.ToString() + " is missing");
         }
 
         int availableLocations = 0;
@@ -557,7 +557,7 @@ public class BuildingLocationModule : MonoBehaviour
                 captureArea = stoneMineCaptureArea;
                 break;
             default:
-                throw new Exception("Resource gathering building " + nameof(bt.BuildingTag) + " is missing");
+                throw new Exception("Resource gathering building " + bt.BuildingTag.ToString() + " is missing");
         }
 
         for (int i = Math.Max(location.x - bt.CaptureGatheringArea, 0); i < Math.Min(location.x + bt.CaptureGatheringArea, gridX); i++)
@@ -595,7 +595,7 @@ public class BuildingLocationModule : MonoBehaviour
             case BuildingTag.Well:
                 return wellCoverArea[house.gridLocation.x, house.gridLocation.y];
             default:
-                throw new Exception("Unknown service " + nameof(buildingTag));
+                throw new Exception("Unknown service " + buildingTag.ToString());
         }
     }
 }
