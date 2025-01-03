@@ -50,6 +50,8 @@ public class BuildingManager : MonoBehaviour
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
 
+        buildingData.modelReference.transform.parent = buildingData.transform;
+
         allBuildings.Add(buildingData);
         allHouses.Add(buildingData);
 
@@ -81,9 +83,12 @@ public class BuildingManager : MonoBehaviour
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
+
         allBuildings.Add(buildingData);
         if (bt.BuildingTag == BuildingTag.House)
             allHouses.Add(buildingData);
+
+        buildingData.modelReference.transform.parent = buildingData.transform;
 
         globals.goldAmount -= bt.GoldCost;
         globals.woodAmount -= bt.WoodCost;
@@ -104,6 +109,8 @@ public class BuildingManager : MonoBehaviour
             globals.GridToGlobalCoordinates(buildingData.gridLocation),
             Quaternion.identity
         );
+
+        buildingData.modelReference.transform.parent = buildingData.transform;
 
         if (buildingData.template.BuildingType == BuildingType.Housing)
         {

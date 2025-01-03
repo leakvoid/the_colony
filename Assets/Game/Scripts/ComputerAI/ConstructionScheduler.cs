@@ -77,7 +77,6 @@ public class ConstructionScheduler : MonoBehaviour
 
     public void ReduceBuildingPressure(BuildingTemplate buildingTemplate, float walkingTime)
     {
-        print("DEBUG walking time: " + walkingTime);
         switch (buildingTemplate.BuildingTag)
         {
             // Housing

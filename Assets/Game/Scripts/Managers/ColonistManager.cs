@@ -344,6 +344,8 @@ public class ColonistManager : MonoBehaviour
             source.modelReference.transform.position,// TODO spawn position
             Quaternion.identity);
         
+        model.transform.parent = colonistData.transform;
+        
         if (isWorker)
             colonistData.workerModelReference = model;
         else

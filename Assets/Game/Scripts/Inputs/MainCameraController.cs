@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainCameraControls : MonoBehaviour
+public class MainCameraController : MonoBehaviour
 {
     [SerializeField] float cameraMoveSpeed = 100f;
     [SerializeField] float cameraZoomSpeed = 100f;
