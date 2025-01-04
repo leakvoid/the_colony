@@ -75,7 +75,7 @@
 
     secondary resources display inside bottom right panel +
     building info on left click (bottom right panel)
-    citizen info on left click (bottom right panel)
+    citizen info on left click (bottom right panel) +
     clicking on nothing restores resource view +
 
     perlin noise for iron, stone, salt deposits

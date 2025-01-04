@@ -43,6 +43,7 @@ public class BuildingManager : MonoBehaviour
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
+        buildingData.isConstructed = true;
         buildingData.modelReference = Instantiate(
             buildingData.template.UnfinishedModel,
             globals.GridToGlobalCoordinates(location),
