@@ -72,11 +72,11 @@
     strategic resources display on bottom panel +
     fix AI +
     upgrade houses logic +
-
     secondary resources display inside bottom right panel +
-    building info on left click (bottom right panel)
+    building info on left click (bottom right panel) +
     citizen info on left click (bottom right panel) +
     clicking on nothing restores resource view +
+    construction slider
 
     perlin noise for iron, stone, salt deposits
     textures for terrain and water

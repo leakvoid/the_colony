@@ -54,6 +54,7 @@
     "dotnet.defaultSolution": "the_colony.sln",
     "cSpell.words": [
         "Mathf",
-        "Perlin"
+        "Perlin",
+        "stoneblock"
     ]
 }

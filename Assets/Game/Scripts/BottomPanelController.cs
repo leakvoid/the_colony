@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,13 +11,13 @@ public class BottomPanelController : MonoBehaviour
     Globals globals;
     ColonistManager cm;
 
-    // strategic resources
+    [Header("Strategic resources")]
     [SerializeField] TextMeshProUGUI woodText;
     [SerializeField] TextMeshProUGUI stoneText;
     [SerializeField] TextMeshProUGUI toolsText;
     [SerializeField] TextMeshProUGUI goldText;
 
-    // secondary resources
+    [Header("Secondary resources")]
     [SerializeField] TextMeshProUGUI ironText;
     [SerializeField] TextMeshProUGUI cottonText;
     [SerializeField] TextMeshProUGUI wheatText;
@@ -30,8 +32,8 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] TextMeshProUGUI breadText;
     [SerializeField] TextMeshProUGUI beerText;
 
-    // colonist info / house panel
-    [SerializeField] TextMeshProUGUI typeOccupationText;
+    [Header("Colonist and house panel")]
+    [SerializeField] TextMeshProUGUI descriptionText;
 
     [SerializeField] Slider sleepNeedSlider;
     [SerializeField] Slider foodNeedSlider;
@@ -43,12 +45,32 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] Slider beerNeedSlider;
     [SerializeField] Slider saltNeedSlider;
 
-    // panels
+    [Header("Building info panel")]
+    [SerializeField] TextMeshProUGUI buildingDescriptionText;
+
+    [SerializeField] GameObject productionGroup;
+    [SerializeField] GameObject processingGroup;
+    [SerializeField] Image leftResourceImage;
+    [SerializeField] TextMeshProUGUI leftResourceText;
+    [SerializeField] Image rightResourceImage;
+    [SerializeField] TextMeshProUGUI rightResourceText;
+
+    [SerializeField] GameObject serviceGroup;
+    [SerializeField] GameObject marketGroup;
+    [SerializeField] Image serviceResourceImage;
+    [SerializeField] TextMeshProUGUI serviceResourceText;
+    [SerializeField] TextMeshProUGUI serviceFoodText;
+    [SerializeField] TextMeshProUGUI serviceClothText;
+
+    [SerializeField] TextMeshProUGUI numberOfWorkersText;
+    [SerializeField] TextMeshProUGUI salaryText;
+
+    [Header("Panels")]
     [SerializeField] GameObject secondaryResourcePanel;
     [SerializeField] GameObject buildingInfoPanel;
     [SerializeField] GameObject colonistInfoPanel;
 
-    // fps
+    [Header("FPS")]
     [SerializeField] TextMeshProUGUI fpsText;
     float deltaTime;
 
@@ -158,7 +180,7 @@ public class BottomPanelController : MonoBehaviour
                 colonistType = building.colonists[0].type;
             }
 
-            typeOccupationText.text = descriptionText;
+            this.descriptionText.text = descriptionText;
 
             sleepNeedSlider.value = sleepNeedMeter;
             foodNeedSlider.value = foodNeedMeter;
@@ -196,7 +218,154 @@ public class BottomPanelController : MonoBehaviour
 
     void UpdateBuildingInfoPanel()
     {
+        if (buildingInfoPanel.activeSelf)
+        {
+            buildingDescriptionText.text = building.template.BuildingTag.ToString();
+            WorkableBT wbt = (WorkableBT)building.template;
+            numberOfWorkersText.text = "workers: " + building.colonists.Count.ToString();
+            salaryText.text = "salary: " + wbt.Salary.ToString();
 
+            if (building.template.BuildingType == BuildingType.Service)
+            {
+                serviceGroup.SetActive(true);
+                productionGroup.SetActive(false);
+
+                switch (building.template.BuildingTag)
+                {
+                    case BuildingTag.Market:
+                        marketGroup.SetActive(true);
+
+                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+                        serviceResourceText.text = globals.SaltPrice.ToString();
+                        serviceFoodText.text = globals.FoodPrice.ToString();
+                        serviceClothText.text = globals.ClothPrice.ToString();
+                        break;
+                    case BuildingTag.Church:
+                        marketGroup.SetActive(false);
+
+                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            "Assets/StrategyGameResourceIcons/Icons/cross.png", typeof(Sprite));
+                        serviceResourceText.text = globals.ChurchDonation.ToString();
+                        break;
+                    case BuildingTag.Well:
+                        marketGroup.SetActive(false);
+
+                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            "Assets/StrategyGameResourceIcons/Icons/bucket.png", typeof(Sprite));
+                        serviceResourceText.text = "0";
+                        break;
+                    case BuildingTag.Inn:
+                        marketGroup.SetActive(false);
+
+                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            "Assets/StrategyGameResourceIcons/Icons/barrel.png", typeof(Sprite));
+                        serviceResourceText.text = globals.BeerPrice.ToString();
+                        break;
+                    default:
+                        throw new Exception("Unknown service building");
+                }
+            }
+            else
+            {
+                productionGroup.SetActive(true);
+                serviceGroup.SetActive(false);
+
+                if (building.template.BuildingType == BuildingType.Processing)
+                {
+                    processingGroup.SetActive(true);
+
+                    ProcessingBT bt = (ProcessingBT)building.template;
+                    leftResourceText.text = bt.AmountConsumedPerInterval.ToString();
+                    rightResourceText.text = bt.AmountProducedPerInterval.ToString();
+
+                    switch (bt.BuildingTag)
+                    {
+                        case BuildingTag.Bakery:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/sugar.png", typeof(Sprite));
+                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/Game/Art/Images/bread.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.Brewery:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/Game/Art/Images/hops.png", typeof(Sprite));
+                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/barrel.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.Clothier:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/cotton.png", typeof(Sprite));
+                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/coat.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.Forge:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
+                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/tools.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.Windmill:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/wheat.png", typeof(Sprite));
+                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/sugar.png", typeof(Sprite));
+                            break;
+                        default:
+                            throw new Exception("Unknown processing building");
+                    }
+                }
+                else
+                {
+                    processingGroup.SetActive(false);
+
+                    ProductionBT bt = (ProductionBT)building.template;
+                    leftResourceText.text = bt.AmountProducedPerInterval.ToString();
+
+                    switch (bt.BuildingTag)
+                    {
+                        case BuildingTag.CottonPlantation:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/cotton.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.HopsFarm:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/Game/Art/Images/hops.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.WheatFarm:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/wheat.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.FishingHut:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/fish.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.HuntersCabin:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/ham.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.IronMine:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.SaltMine:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.Sawmill:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/logs.png", typeof(Sprite));
+                            break;
+                        case BuildingTag.StoneMine:
+                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                                "Assets/StrategyGameResourceIcons/Icons/stoneblock.png", typeof(Sprite));
+                            break;
+                        default:
+                            throw new Exception("Unknown production building");
+                    }
+                }
+            }
+        }
     }
 
     public void ShowBuildingInfoPanel(BuildingData buildingData)
