@@ -9,5 +9,6 @@ public class BuildingData : MonoBehaviour
     public List<ColonistData> colonists = new List<ColonistData>();
     public int upgradeTier = 0;
     public bool isConstructed = false;
+    public float buildStartTime = 0;
     public GameObject modelReference;
 }

@@ -32,6 +32,13 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] TextMeshProUGUI breadText;
     [SerializeField] TextMeshProUGUI beerText;
 
+    [Header("Construction panel")]
+    [SerializeField] GameObject constructionGroup;
+    [SerializeField] TextMeshProUGUI constructionStatusText;
+    [SerializeField] TextMeshProUGUI remainingTimeText;
+    [SerializeField] TextMeshProUGUI constructionDurationText;
+    [SerializeField] Slider constructionProgressBar;
+
     [Header("Colonist and house panel")]
     [SerializeField] TextMeshProUGUI descriptionText;
 
@@ -221,6 +228,36 @@ public class BottomPanelController : MonoBehaviour
         if (buildingInfoPanel.activeSelf)
         {
             buildingDescriptionText.text = building.template.BuildingTag.ToString();
+
+            if (!building.isConstructed)
+            {
+                serviceGroup.SetActive(false);
+                productionGroup.SetActive(false);
+                constructionGroup.SetActive(true);
+
+                constructionDurationText.text = building.template.ConstructionTime.ToString();
+                if (building.buildStartTime == 0)
+                {
+                    constructionStatusText.text = "Builder is coming";
+                    remainingTimeText.text = building.template.ConstructionTime.ToString();
+                    constructionProgressBar.value = 0;
+                    return;
+                }
+
+                constructionStatusText.text = "Building";
+                float timePassed = Time.time - building.buildStartTime;
+                remainingTimeText.text = (building.template.ConstructionTime - (int)timePassed).ToString();
+                constructionProgressBar.maxValue = building.template.ConstructionTime;
+                constructionProgressBar.value = timePassed;
+                return;
+            }
+
+            if (building.template.BuildingTag == BuildingTag.House)
+            {
+                buildingInfoPanel.SetActive(false);
+                colonistInfoPanel.SetActive(true);
+                return;
+            }
             WorkableBT wbt = (WorkableBT)building.template;
             numberOfWorkersText.text = "workers: " + building.colonists.Count.ToString();
             salaryText.text = "salary: " + wbt.Salary.ToString();
@@ -229,6 +266,7 @@ public class BottomPanelController : MonoBehaviour
             {
                 serviceGroup.SetActive(true);
                 productionGroup.SetActive(false);
+                constructionGroup.SetActive(false);
 
                 switch (building.template.BuildingTag)
                 {
@@ -270,6 +308,7 @@ public class BottomPanelController : MonoBehaviour
             {
                 productionGroup.SetActive(true);
                 serviceGroup.SetActive(false);
+                constructionGroup.SetActive(false);
 
                 if (building.template.BuildingType == BuildingType.Processing)
                 {

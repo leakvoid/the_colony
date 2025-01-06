@@ -76,7 +76,7 @@
     building info on left click (bottom right panel) +
     citizen info on left click (bottom right panel) +
     clicking on nothing restores resource view +
-    construction slider
+    construction slider +
 
     perlin noise for iron, stone, salt deposits
     textures for terrain and water

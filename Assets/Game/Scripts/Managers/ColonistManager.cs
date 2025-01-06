@@ -61,7 +61,7 @@ public class ColonistManager : MonoBehaviour
         return futureColonistCount;
     }
 
-    public void SendColonistToBuild(BuildingData worksAt)// TODO ReduceBuildingPressure !!!!!
+    public void SendColonistToBuild(BuildingData worksAt)
     {
         if (GetJoblessColonistCount() < 1)
             throw new System.Exception("Not enough workers to build");
@@ -389,6 +389,7 @@ public class ColonistManager : MonoBehaviour
                     yield return MoveTo(colonistData, colonistData.livesAt, colonistData.worksAt, true);
                     break;
                 case ColonistData.Action.Build:
+                    colonistData.worksAt.buildStartTime = Time.time;
                     yield return new WaitForSeconds(colonistData.worksAt.template.ConstructionTime);
                     bm.FinishBuildingConstruction(colonistData.worksAt);
 
