@@ -5459,6 +5459,7 @@ GameObject:
   - component: {fileID: 915405256}
   - component: {fileID: 915405257}
   - component: {fileID: 915405258}
+  - component: {fileID: 915405259}
   m_Layer: 0
   m_Name: Map Generator
   m_TagString: Untagged
@@ -5525,6 +5526,23 @@ MonoBehaviour:
   ironIconPrefab: {fileID: 4923445812951440458, guid: 74f69b41bf204179d913dfbeb10fed0c, type: 3}
   saltIconPrefab: {fileID: 3033842239229528082, guid: 95cb3394fe81ab1ff89991a8843bcfe5, type: 3}
   stoneIconPrefab: {fileID: 748287172455148913, guid: 1e111346da62bb452a5e7795aa9561dc, type: 3}
+--- !u!114 &915405259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915405255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff9a987a7b744772692b815a0ebd6f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depositMeshPrefab: {fileID: 7577770619422810628, guid: 1639ac916dcc969e69217157e34f4f8b, type: 3}
+  granularity: 10
+  depositSlope: 4
+  noiseScale: 0.3
+  maxHeight: 2
 --- !u!1 &932514715
 GameObject:
   m_ObjectHideFlags: 0
@@ -13341,7 +13359,7 @@ SceneRoots:
   - {fileID: 1468763709}
   - {fileID: 1607651224}
   - {fileID: 1116115219}
-  - {fileID: 1161911597}
   - {fileID: 1094949817}
   - {fileID: 865720563}
+  - {fileID: 1161911597}
   - {fileID: 413722573}

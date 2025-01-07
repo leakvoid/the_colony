@@ -53,6 +53,7 @@
     },
     "dotnet.defaultSolution": "the_colony.sln",
     "cSpell.words": [
+        "Lerp",
         "Mathf",
         "Perlin",
         "stoneblock"

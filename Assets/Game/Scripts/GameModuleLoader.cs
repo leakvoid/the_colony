@@ -11,6 +11,7 @@ public class GameModuleLoader : MonoBehaviour
     ComputerPlayerEngine computerPlayerEngine;
     TerrainMeshRenderer terrainMeshRenderer;
     MainCameraController mainCameraControls;
+    TerrainDepositsGenerator terrainDepositsGenerator;
 
     void Awake()
     {
@@ -20,6 +21,7 @@ public class GameModuleLoader : MonoBehaviour
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();
         computerPlayerEngine = FindObjectOfType<ComputerPlayerEngine>();
         terrainMeshRenderer = FindObjectOfType<TerrainMeshRenderer>();
+        terrainDepositsGenerator = FindObjectOfType<TerrainDepositsGenerator>();
         mainCameraControls = FindObjectOfType<MainCameraController>();
     }
 
@@ -31,6 +33,7 @@ public class GameModuleLoader : MonoBehaviour
         constructionScheduler.Initialize();
         computerPlayerEngine.InitializeComputerPlayer();
         terrainMeshRenderer.Initialize();
+        terrainDepositsGenerator.Initialize();
         mainCameraControls.Initialize();
     }
 }
