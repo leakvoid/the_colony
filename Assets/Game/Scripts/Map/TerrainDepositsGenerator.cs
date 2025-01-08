@@ -110,8 +110,8 @@ public class TerrainDepositsGenerator : MonoBehaviour
 
                 if (terrainGrid[gridX, gridY] != TerrainType.Ground && markedDeposits[gridX, gridY] == deposit.index)
                 {
-                    float topMultiplier = GetEdgeFalloff(gridX, gridY + 1, y % granularity);
-                    float bottomMultiplier = GetEdgeFalloff(gridX, gridY - 1, granularity - 1 - y % granularity);
+                    float topMultiplier = GetEdgeFalloff(gridX, gridY + 1, granularity - 1 - y % granularity);
+                    float bottomMultiplier = GetEdgeFalloff(gridX, gridY - 1, y % granularity);
                     float leftMultiplier = GetEdgeFalloff(gridX - 1, gridY, x % granularity);
                     float rightMultiplier = GetEdgeFalloff(gridX + 1, gridY, granularity - 1 - x % granularity);
 
