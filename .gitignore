@@ -73,6 +73,9 @@ crashlytics-build.properties
 
 Assets/StrategyGameResourceIcons
 Assets/StrategyGameResourceIcons.meta
-Assets/TextMesh Pro.meta
 Assets/TextMesh Pro
+Assets/TextMesh Pro.meta
+Assets/TerrainSampleAssets/
+Assets/TerrainSampleAssets.meta
+
 Assets/Game/Art/

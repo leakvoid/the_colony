@@ -68,12 +68,16 @@ public class MainCameraController : MonoBehaviour
         }
     }
 
+    Vector3 target;
+
     void UpdateCameraRotation()
     {
         var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
         if (Input.GetMouseButtonDown(2))
         {
             screenPosSnapshot = screenPos;
+            target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            target.z = 5f;
         }
         if (Input.GetButton("HoldMiddleMouse"))
         {
@@ -91,7 +95,19 @@ public class MainCameraController : MonoBehaviour
                 dy = -1;
             else if (dy > 0)
                 dy = 1;
-            Camera.main.transform.eulerAngles += new Vector3(dy * cameraRotationSpeed * Time.deltaTime, 0, dx * cameraRotationSpeed * Time.deltaTime);
+
+            
+
+            /*Vector3 relativePos = target - Camera.main.transform.position;
+            Quaternion rotationToTarget = Quaternion.LookRotation(relativePos);
+            Camera.main.transform.rotation = rotationToTarget;*/
+
+            /*Quaternion rotationY = Quaternion.AngleAxis(-dy * cameraRotationSpeed * Time.deltaTime, transform.right);
+            Camera.main.transform.rotation *= rotationY;
+
+            Quaternion rotationX = Quaternion.AngleAxis(-dx * cameraRotationSpeed * Time.deltaTime, Vector3.up);
+            Camera.main.transform.rotation *= rotationX;*/
+            //Camera.main.transform.eulerAngles += new Vector3(dy * cameraRotationSpeed * Time.deltaTime, 0, dx * cameraRotationSpeed * Time.deltaTime);
         }
     }
 }

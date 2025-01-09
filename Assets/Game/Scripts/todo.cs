@@ -78,7 +78,7 @@
     clicking on nothing restores resource view +
     construction slider +
 
-    perlin noise for iron, stone, salt deposits
+    perlin noise for iron, stone, salt deposits +
     textures for terrain and water
     3d models for buildings
 

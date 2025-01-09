@@ -8,19 +8,19 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] int gridY = 150;
 
     // resources
-    [SerializeField] int forestPercentage = 15;
+    [SerializeField] float forestPercentage = 15;
     [SerializeField] int numberOfForests = 8;
 
-    [SerializeField] int lakePercentage = 10;
+    [SerializeField] float lakePercentage = 10;
     [SerializeField] int numberOfLakes = 6;
 
-    [SerializeField] int ironDepositPercentage = 1;
+    [SerializeField] float ironDepositPercentage = 1;
     [SerializeField] int numberOfIronDeposits = 5;
 
-    [SerializeField] int stoneDepositPercentage = 1;
+    [SerializeField] float stoneDepositPercentage = 1;
     [SerializeField] int numberOfStoneDeposits = 5;
 
-    [SerializeField] int saltDepositPercentage = 1;
+    [SerializeField] float saltDepositPercentage = 1;
     [SerializeField] int numberOfSaltDeposits = 5;
 
     TerrainType[,] grid;
@@ -43,20 +43,20 @@ public class AbstractMapGenerator : MonoBehaviour
         FillTerrainGaps();
     }
 
-    void GenerateTerrainClusters(int tilePercentage, int numberOfClusters, TerrainType tileType)
+    void GenerateTerrainClusters(float tilePercentage, int numberOfClusters, TerrainType tileType)
     {
         if (numberOfClusters == 0)
             return;
 
         // get clusters of randomized size
-        int totalTileCount = gridX * gridY * tilePercentage / 100;
+        int totalTileCount = (int)(gridX * gridY * tilePercentage / 100);
 
         var clusterTileCount = new int[numberOfClusters];
         int avgTileCount = totalTileCount / numberOfClusters;
         clusterTileCount[0] = avgTileCount;
         for (int i = 1; i < numberOfClusters; i++)
         {
-            int variance = avgTileCount * Random.Range(0, 71) / 100;
+            int variance = avgTileCount * Random.Range(0, 51) / 100;
             clusterTileCount[i - 1] -= variance;
             clusterTileCount[i] = avgTileCount + variance;
         }

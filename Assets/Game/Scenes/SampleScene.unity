@@ -2837,7 +2837,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &413722573
 Transform:
   m_ObjectHideFlags: 0
@@ -5500,11 +5500,11 @@ MonoBehaviour:
   numberOfForests: 8
   lakePercentage: 10
   numberOfLakes: 6
-  ironDepositPercentage: 1
+  ironDepositPercentage: 0.5
   numberOfIronDeposits: 5
-  stoneDepositPercentage: 1
+  stoneDepositPercentage: 0.5
   numberOfStoneDeposits: 5
-  saltDepositPercentage: 1
+  saltDepositPercentage: 0.5
   numberOfSaltDeposits: 5
   tilePropagationChance: 60
 --- !u!114 &915405258
@@ -5540,9 +5540,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   depositMeshPrefab: {fileID: 7577770619422810628, guid: 1639ac916dcc969e69217157e34f4f8b, type: 3}
   granularity: 10
-  depositSlope: 4
+  depositSlope: 3
   noiseScale: 0.3
-  maxHeight: 2
+  maxHeight: 0.3
 --- !u!1 &932514715
 GameObject:
   m_ObjectHideFlags: 0

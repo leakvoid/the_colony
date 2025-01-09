@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -97,45 +98,106 @@ public class TerrainDepositsGenerator : MonoBehaviour
 
     void CreateDepositMesh(DepositInfo deposit)
     {
-        int refinedSizeX = (deposit.right - deposit.left + 1) * granularity;
-        int refinedSizeY = (deposit.top - deposit.bottom + 1) * granularity;
-        Vector3[] vertices = new Vector3[(refinedSizeX + 1) * (refinedSizeY + 1)];// TODO generate mesh only for non-terrain
-        for (int i = 0, y = 0; y <= refinedSizeY; y++)
+        int sizeX = deposit.right - deposit.left + 1;
+        int sizeY = deposit.top - deposit.bottom + 1;
+        int refinedSizeX = sizeX * granularity;
+        int refinedSizeY = sizeY * granularity;
+
+        // needlessly overcomplicated way to count vertices
+        int totalVertices = 0;
+        int totalDepositCells = 0;
+        for (int y = deposit.bottom; y < deposit.bottom + sizeY; y++)
         {
-            int gridY = deposit.bottom + y / granularity;
-            for (int x = 0; x <= refinedSizeX; x++, i++)
+            for (int x = deposit.left; x < deposit.left + sizeX; x++)
             {
-                int gridX = deposit.left + x / granularity;
-                float height = 0f;
+                if (markedDeposits[x, y] != deposit.index)
+                    continue;
+                totalDepositCells++;
 
-                if (terrainGrid[gridX, gridY] != TerrainType.Ground && markedDeposits[gridX, gridY] == deposit.index)
+                int newVertices = (granularity + 1) * (granularity + 1);
+                if (y > 0)
                 {
-                    float topMultiplier = GetEdgeFalloff(gridX, gridY + 1, granularity - 1 - y % granularity);
-                    float bottomMultiplier = GetEdgeFalloff(gridX, gridY - 1, y % granularity);
-                    float leftMultiplier = GetEdgeFalloff(gridX - 1, gridY, x % granularity);
-                    float rightMultiplier = GetEdgeFalloff(gridX + 1, gridY, granularity - 1 - x % granularity);
-
-                    float multiplier = Mathf.Min(topMultiplier, bottomMultiplier, leftMultiplier, rightMultiplier);
-
-                    float noiseValue = 0.5f + Mathf.PerlinNoise(x * noiseScale, y * noiseScale) / 2;
-                    height = noiseValue * multiplier * maxHeight;
+                    if (markedDeposits[x, y - 1] == deposit.index)
+                    {
+                        newVertices -= granularity + 1;
+                    }
+                    else
+                    {
+                        if (x > 0 && markedDeposits[x - 1, y - 1] == deposit.index)
+                            newVertices -= 1;
+                        if ((x + 1) < (deposit.left + sizeX) && markedDeposits[x + 1, y - 1] == deposit.index)
+                            newVertices -= 1;
+                    }
                 }
-
-                vertices[i] = new Vector3((float)x / granularity, (float)y / granularity, -height);
+                if (x > 0 && markedDeposits[x - 1, y] == deposit.index)
+                {
+                    newVertices -= granularity + 1;
+                    if (y > 0 && (markedDeposits[x - 1, y - 1] == deposit.index || markedDeposits[x, y - 1] == deposit.index))
+                        newVertices += 1;
+                }
+                totalVertices += newVertices;
             }
         }
 
-        int[] triangles = new int[refinedSizeX * refinedSizeY * 6];
-        for (int ti = 0, vi = 0, y = 0; y < refinedSizeY; y++, vi++)
+        int noiseOffset = UnityEngine.Random.Range(0,100);
+
+        Vector3[] vertices = new Vector3[totalVertices];
+        int[,] vertexHelper = new int[refinedSizeX + 1,refinedSizeY + 1];
+        for (int idx = 0, y = 0; y <= refinedSizeY; y++)
         {
-            for (int x = 0; x < refinedSizeX; x++, ti += 6, vi++)
+            int gridY = deposit.bottom + y / granularity;
+            int leftGridY = (y > 0) ? (deposit.bottom + (y - 1) / granularity) : (deposit.bottom - 1);
+
+            for (int x = 0; x <= refinedSizeX; x++)
             {
-                triangles[ti] = vi;
-                triangles[ti + 1] = vi + refinedSizeX + 1;
-                triangles[ti + 2] = vi + 1;
-                triangles[ti + 3] = vi + 1;
-                triangles[ti + 4] = vi + refinedSizeX + 1;
-                triangles[ti + 5] = vi + refinedSizeX + 2;
+                int gridX = deposit.left + x / granularity;
+                int leftGridX = (x > 0) ? (deposit.left + (x - 1) / granularity) : (deposit.left - 1);
+
+                if (markedDeposits[gridX, gridY] == deposit.index ||
+                    markedDeposits[leftGridX, gridY] == deposit.index ||
+                    markedDeposits[gridX, leftGridY] == deposit.index ||
+                    markedDeposits[leftGridX, leftGridY] == deposit.index)
+                {
+                    float leftMultiplier = GetEdgeFalloff(gridX - 1, gridY, x % granularity);
+                    float rightMultiplier = GetEdgeFalloff(gridX + 1, gridY, granularity - 1 - x % granularity);
+                    float bottomMultiplier = GetEdgeFalloff(gridX, gridY - 1, y % granularity);
+                    float topMultiplier = GetEdgeFalloff(gridX, gridY + 1, granularity - 1 - y % granularity);
+
+                    float shift = Mathf.Min(topMultiplier, bottomMultiplier, leftMultiplier, rightMultiplier);
+                    shift = 1 - shift;
+                    if (markedDeposits[gridX, gridY] != deposit.index ||
+                        markedDeposits[leftGridX, gridY] != deposit.index ||
+                        markedDeposits[gridX, leftGridY] != deposit.index ||
+                        markedDeposits[leftGridX, leftGridY] != deposit.index)
+                        shift = 1f;
+
+                    float noiseValue = 0.05f + Mathf.PerlinNoise((x + noiseOffset) * noiseScale, (y + noiseOffset) * noiseScale) * 0.95f;
+                    float height = (noiseValue - shift) * maxHeight;
+                    vertices[idx] = new Vector3((float)x / granularity, (float)y / granularity, -height);
+                    vertexHelper[x, y] = idx;
+                    idx++;
+                }
+            }
+        }
+
+        int[] triangles = new int[totalDepositCells * granularity * granularity * 6];
+        int ti = 0;
+        for (int y = 0; y < refinedSizeY; y++)
+        {
+            int gridY = deposit.bottom + y / granularity;
+            for (int x = 0; x < refinedSizeX; x++)
+            {
+                int gridX = deposit.left + x / granularity;
+                if (markedDeposits[gridX, gridY] == deposit.index)
+                {
+                    triangles[ti] = vertexHelper[x, y];
+                    triangles[ti + 1] = vertexHelper[x, y + 1];
+                    triangles[ti + 2] = vertexHelper[x + 1, y];
+                    triangles[ti + 3] = vertexHelper[x + 1, y];
+                    triangles[ti + 4] = vertexHelper[x, y + 1];
+                    triangles[ti + 5] = vertexHelper[x + 1, y + 1];
+                    ti += 6;
+                }
             }
         }
 
