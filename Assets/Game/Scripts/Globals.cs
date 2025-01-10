@@ -116,9 +116,14 @@ public class Globals : MonoBehaviour
         };
     }
 
-    public Vector3 GridToGlobalCoordinates((int x, int y) location)
+    static public Vector3 GridToGlobalCoordinates((int x, int y) location)
     {
-        return new Vector3(location.x, location.y, 0);
+        return new Vector3(location.x, 0, location.y);
+    }
+
+    static public Vector3 NewVector(float x, float y, float z = 0f)
+    {
+        return new Vector3(x, z, y);
     }
 
     // Singleton

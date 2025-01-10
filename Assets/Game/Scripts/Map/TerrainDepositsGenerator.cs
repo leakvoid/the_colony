@@ -173,7 +173,7 @@ public class TerrainDepositsGenerator : MonoBehaviour
 
                     float noiseValue = 0.05f + Mathf.PerlinNoise((x + noiseOffset) * noiseScale, (y + noiseOffset) * noiseScale) * 0.95f;
                     float height = (noiseValue - shift) * maxHeight;
-                    vertices[idx] = new Vector3((float)x / granularity, (float)y / granularity, -height);
+                    vertices[idx] = Globals.NewVector((float)x / granularity, (float)y / granularity, height);
                     vertexHelper[x, y] = idx;
                     idx++;
                 }
@@ -206,7 +206,7 @@ public class TerrainDepositsGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
 
-        var depositInstance = Instantiate(depositMeshPrefab, new Vector3(deposit.left, deposit.bottom, 0), Quaternion.identity);
+        var depositInstance = Instantiate(depositMeshPrefab, Globals.NewVector(deposit.left, deposit.bottom, 0), Quaternion.identity);
         MeshFilter meshFilter = depositInstance.GetComponent<MeshFilter>();
         meshFilter.mesh = mesh;
     }

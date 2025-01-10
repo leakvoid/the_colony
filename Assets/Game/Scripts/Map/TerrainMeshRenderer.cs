@@ -41,10 +41,10 @@ public class TerrainMeshRenderer : MonoBehaviour
             {
                 if (terrainGrid[i,j] == TerrainType.Water)
                 {
-                    heightMap[i,j] = 1f;
-                    heightMap[i + 1,j] = 1f;
-                    heightMap[i,j + 1] = 1f;
-                    heightMap[i + 1,j + 1] = 1f;
+                    heightMap[i,j] = -1f;
+                    heightMap[i + 1,j] = -1f;
+                    heightMap[i,j + 1] = -1f;
+                    heightMap[i + 1,j + 1] = -1f;
                 }
             }
         }
@@ -76,7 +76,7 @@ public class TerrainMeshRenderer : MonoBehaviour
         {
             for (int x = 0; x < vertexCountX; x++)
             {
-                vertices[vertexIndex] = new Vector3(x, y, heightMap[x, y]);
+                vertices[vertexIndex] = Globals.NewVector(x, y, heightMap[x, y]);
                 uvs[vertexIndex] = new Vector2 (x / (float)vertexCountX, y / (float)vertexCountY);
 
                 if (x < vertexCountX - 1 && y < vertexCountY - 1)
@@ -116,27 +116,27 @@ public class TerrainMeshRenderer : MonoBehaviour
                 {
                     case TerrainType.Forest:
                         Instantiate(forestIconPrefab,
-                            globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j)),
                             Quaternion.identity).transform.parent = mip.transform;
                         break;
                     case TerrainType.Water:
                         Instantiate(waterIconPrefab,
-                            globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j)),
                             Quaternion.identity).transform.parent = mip.transform;
                         break;
                     case TerrainType.IronDeposit:
                         Instantiate(ironIconPrefab,
-                            globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j)),
                             Quaternion.identity).transform.parent = mip.transform;
                         break;
                     case TerrainType.SaltDeposit:
                         Instantiate(saltIconPrefab,
-                            globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j)),
                             Quaternion.identity).transform.parent = mip.transform;
                         break;
                     case TerrainType.StoneDeposit:
                         Instantiate(stoneIconPrefab,
-                            globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j)),
                             Quaternion.identity).transform.parent = mip.transform;
                         break;
                 }
