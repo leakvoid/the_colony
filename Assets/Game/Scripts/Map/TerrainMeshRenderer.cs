@@ -117,27 +117,27 @@ public class TerrainMeshRenderer : MonoBehaviour
                     case TerrainType.Forest:
                         Instantiate(forestIconPrefab,
                             Globals.GridToGlobalCoordinates((i, j)),
-                            Quaternion.identity).transform.parent = mip.transform;
+                            Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.Water:
                         Instantiate(waterIconPrefab,
                             Globals.GridToGlobalCoordinates((i, j)),
-                            Quaternion.identity).transform.parent = mip.transform;
+                            Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.IronDeposit:
                         Instantiate(ironIconPrefab,
                             Globals.GridToGlobalCoordinates((i, j)),
-                            Quaternion.identity).transform.parent = mip.transform;
+                            Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.SaltDeposit:
                         Instantiate(saltIconPrefab,
                             Globals.GridToGlobalCoordinates((i, j)),
-                            Quaternion.identity).transform.parent = mip.transform;
+                            Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.StoneDeposit:
                         Instantiate(stoneIconPrefab,
                             Globals.GridToGlobalCoordinates((i, j)),
-                            Quaternion.identity).transform.parent = mip.transform;
+                            Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                 }
             }
