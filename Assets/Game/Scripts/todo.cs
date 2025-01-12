@@ -77,14 +77,15 @@
     citizen info on left click (bottom right panel) +
     clicking on nothing restores resource view +
     construction slider +
+    camera rotation +
 
     perlin noise for iron, stone, salt deposits +
     textures for terrain and water
     3d models for buildings
 
-    roads: shortest path vs already connected; shortest path to road network?
+    roads: shortest path vs already connected; shortest path to road network
     move camera on minimap click
-    camera rotation
+
 
     main menu
     pause menu

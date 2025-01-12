@@ -11,6 +11,7 @@ public class MainCameraController : MonoBehaviour
 
     Vector3 screenPosSnapshot;
     Plane groundPlane;
+    Vector3 rotationPoint;
 
     int gridX;
     int gridY;
@@ -34,27 +35,27 @@ public class MainCameraController : MonoBehaviour
 
     void UpdateCameraPosition()// TODO camera speed scales with zoom
     {
-        var screenPos = new Vector3(0.5f, 0.5f, 0);//Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
         var cameraPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (screenPos.x <= 0.02 || Input.GetButton("Left"))
         {
             if ((cameraPos.x - cameraPos.y) >= 0)
-                transform.position -= Globals.NewVector(cameraMoveSpeed * Time.deltaTime, 0);
+                transform.position -= transform.right * cameraMoveSpeed * Time.deltaTime;
         }
         else if (screenPos.x >= 0.98 || Input.GetButton("Right"))
         {
             if ((cameraPos.x + cameraPos.y) <= gridX)
-                transform.position += Globals.NewVector(cameraMoveSpeed * Time.deltaTime, 0);
+                transform.localPosition += transform.right * cameraMoveSpeed * Time.deltaTime;
         }
         if (screenPos.y <= 0.02 || Input.GetButton("Down"))
         {
-            if ((cameraPos.z + cameraPos.y / aspectRatio) >= 0)
-                transform.position -= Globals.NewVector(0, cameraMoveSpeed * Time.deltaTime);
+            if ((cameraPos.z - cameraPos.y / aspectRatio) >= 0)
+                transform.localPosition -= transform.up * cameraMoveSpeed * Time.deltaTime;
         }
         else if (screenPos.y >= 0.98 || Input.GetButton("Up"))
         {
-            if ((cameraPos.z - cameraPos.y / aspectRatio) <= gridY)
-                transform.position += Globals.NewVector(0, cameraMoveSpeed * Time.deltaTime);
+            if ((cameraPos.z + cameraPos.y / aspectRatio) <= gridY)
+                transform.localPosition += transform.up * cameraMoveSpeed * Time.deltaTime;
         }
     }
 
@@ -76,16 +77,6 @@ public class MainCameraController : MonoBehaviour
         }
     }
 
-    Vector3 target;
-    float zRotation;
-    float xRotation;
-    float distance = 0;
-    void Start()
-    {
-        zRotation = transform.eulerAngles.z;
-        xRotation = Camera.main.transform.eulerAngles.x;
-    }
-
     void UpdateCameraRotation()
     {
         var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
@@ -94,20 +85,14 @@ public class MainCameraController : MonoBehaviour
             screenPosSnapshot = screenPos;
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            print("mouse pos: " + Input.mousePosition);
             if (groundPlane.Raycast(ray, out float enter))
             {
-                target = ray.GetPoint(enter);
-                distance = Vector3.Distance(transform.position, target);
-                print("distance: " + distance);
-                print("YES:" + target);
+                rotationPoint = ray.GetPoint(enter);
             }
             else
             {
-                target = transform.position;
-                distance = target.y;
-                target.y = 0f;
-                print("NO");
+                rotationPoint = transform.position;
+                rotationPoint.y = 0f;
             }
         }
         if (Input.GetButton("HoldMiddleMouse"))
@@ -127,31 +112,8 @@ public class MainCameraController : MonoBehaviour
             else if (dy > 0)
                 dy = 1;
 
-            //transform.Rotate(0, dx * cameraRotationSpeed * Time.deltaTime, 0, Space.World);
-            //transform.Rotate(dy * cameraRotationSpeed * Time.deltaTime, 0, 0, Space.Self);
-
-            //Vector3 negDistance = new Vector3(0.0f, -distance, 0.0f);
-            //transform.position = transform.rotation * negDistance + target;
-
-
-            transform.RotateAround(target, Vector3.up, dx * cameraRotationSpeed * Time.deltaTime);
-            transform.RotateAround(target, Vector3.right, dy * cameraRotationSpeed * Time.deltaTime);
-
-
-            //zRotation += Input.GetAxis("Mouse X") * cameraRotationSpeed * Time.deltaTime / 10;
-            //xRotation -= Input.GetAxis("Mouse Y") * cameraRotationSpeed * Time.deltaTime / 10;
-
-            //Quaternion zQuaternion = Quaternion.Euler(0, 0, zRotation);
-            //cameraFlatRotationBody.transform.rotation = zQuaternion;
-
-            /*Quaternion xQuaternion = Quaternion.Euler(xRotation, 0, 0);
-            transform.rotation = xQuaternion;
-            Vector3 negDistance = new Vector3(0.0f, 0.0f, distance);
-            transform.position = xQuaternion * negDistance + target;*/
-
-
-
-            //y = ClampAngle(y, yMinLimit, yMaxLimit);
+            transform.RotateAround(rotationPoint, Vector3.up, dx * cameraRotationSpeed * Time.deltaTime);
+            transform.RotateAround(rotationPoint, transform.right, dy * cameraRotationSpeed * Time.deltaTime);// TODO clamp
         }
     }
 }
