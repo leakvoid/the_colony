@@ -89,6 +89,8 @@ public class Globals : MonoBehaviour
     [field: SerializeField] public ResourceGatheringBT SawmillTemplate { get; private set; }
     [field: SerializeField] public ResourceGatheringBT StoneMineTemplate { get; private set; }
 
+    public Plane GroundPlane { get; private set; }
+
     public BuildingTemplate NameToTemplate(BuildingTag buildingTag)
     {
         return buildingTag switch
@@ -127,11 +129,11 @@ public class Globals : MonoBehaviour
     }
 
     // Singleton
-    static Globals instance = null;
+    //static Globals instance = null;
 
     public void Initialize()
     {
-        if(instance != null)
+        /*if(instance != null)
         {
             gameObject.SetActive(false);
             Destroy(gameObject);
@@ -140,7 +142,9 @@ public class Globals : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-        }
+        }*/
+
+        GroundPlane = new Plane(new Vector3(0,0,0), new Vector3(1,0,0), new Vector3(0,0,1));
     }
 }
 

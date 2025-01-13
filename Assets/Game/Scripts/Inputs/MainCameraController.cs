@@ -5,25 +5,35 @@ using UnityEngine;
 
 public class MainCameraController : MonoBehaviour
 {
+    Globals globals;
+    MinimapCameraShadow mcs;
+
     [SerializeField] float cameraMoveSpeed = 100f;
     [SerializeField] float cameraZoomFactor = 0.8f;
     [SerializeField] float cameraRotationSpeed = 100f;
 
     Vector3 screenPosSnapshot;
-    Plane groundPlane;
     Vector3 rotationPoint;
 
     int gridX;
     int gridY;
-
     float aspectRatio = 16f/9f;
+    Vector3 currentPos;
+
+    void Awake()
+    {
+        globals = FindObjectOfType<Globals>();
+        mcs = FindObjectOfType<MinimapCameraShadow>();
+    }
 
     public void Initialize()
     {
         var grid = FindObjectOfType<AbstractMapGenerator>().GetTerrainGrid();
         gridX = grid.GetLength(0);
         gridY = grid.GetLength(1);
-        groundPlane = new Plane(new Vector3(0,0,0), new Vector3(1,0,0), new Vector3(0,0,1));
+
+        mcs.Initialize();
+        currentPos = transform.position;
     }
 
     void Update()
@@ -31,6 +41,11 @@ public class MainCameraController : MonoBehaviour
         UpdateCameraPosition();
         UpdateCameraSize();
         UpdateCameraRotation();
+        if (currentPos != transform.position)
+        {
+            currentPos = transform.position;
+            mcs.Redraw();
+        }
     }
 
     void UpdateCameraPosition()// TODO camera speed scales with zoom
@@ -50,12 +65,20 @@ public class MainCameraController : MonoBehaviour
         if (screenPos.y <= 0.02 || Input.GetButton("Down"))
         {
             if ((cameraPos.z - cameraPos.y / aspectRatio) >= 0)
-                transform.localPosition -= transform.up * cameraMoveSpeed * Time.deltaTime;
+            {
+                var direction = new Vector3(transform.up.x, 0, transform.up.z);
+                float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
+                transform.localPosition -= direction * correction * cameraMoveSpeed * Time.deltaTime;
+            }
         }
         else if (screenPos.y >= 0.98 || Input.GetButton("Up"))
         {
             if ((cameraPos.z + cameraPos.y / aspectRatio) <= gridY)
-                transform.localPosition += transform.up * cameraMoveSpeed * Time.deltaTime;
+            {
+                var direction = new Vector3(transform.up.x, 0, transform.up.z);
+                float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
+                transform.localPosition += direction * correction * cameraMoveSpeed * Time.deltaTime;
+            }
         }
     }
 
@@ -85,7 +108,7 @@ public class MainCameraController : MonoBehaviour
             screenPosSnapshot = screenPos;
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (groundPlane.Raycast(ray, out float enter))
+            if (globals.GroundPlane.Raycast(ray, out float enter))
             {
                 rotationPoint = ray.GetPoint(enter);
             }
@@ -115,5 +138,10 @@ public class MainCameraController : MonoBehaviour
             transform.RotateAround(rotationPoint, Vector3.up, dx * cameraRotationSpeed * Time.deltaTime);
             transform.RotateAround(rotationPoint, transform.right, dy * cameraRotationSpeed * Time.deltaTime);// TODO clamp
         }
+    }
+
+    public void MoveCameraViaMinimap(Vector3 minimapPos)
+    {
+        transform.position = new Vector3(gridX * minimapPos.x / 100, transform.position.y, gridY * minimapPos.z / 100);
     }
 }
