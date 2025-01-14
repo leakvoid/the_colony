@@ -13,12 +13,12 @@ public class RoadBuilder : MonoBehaviour
 
     public struct Pair
     {
-        public int first, second;
+        public int x, y;
 
-        public Pair(int x, int y)
+        public Pair(int _x, int _y)
         {
-            first = x;
-            second = y;
+            x = _x;
+            y = _y;
         }
     }
 
@@ -41,21 +41,21 @@ public class RoadBuilder : MonoBehaviour
         int COL = grid.GetLength(1);
 
         // If the source or destination is out of range
-        if (!IsValid(src.first, src.second, ROW, COL) || !IsValid(dest.first, dest.second, ROW, COL))
+        if (!IsValid(src.x, src.y, ROW, COL) || !IsValid(dest.x, dest.y, ROW, COL))
         {
             print("Source or destination is invalid");
             return;
         }
 
         // Either the source or the destination is blocked
-        if (!IsUnBlocked(grid, src.first, src.second) || !IsUnBlocked(grid, dest.first, dest.second))
+        if (!IsUnBlocked(grid, src.x, src.y) || !IsUnBlocked(grid, dest.x, dest.y))
         {
             print("Source or the destination is blocked");
             return;
         }
 
         // If the destination cell is the same as the source cell
-        if (src.first == dest.first && src.second == dest.second)
+        if (src.x == dest.x && src.y == dest.y)
         {
             print("We are already at the destination");
             return;
@@ -83,7 +83,7 @@ public class RoadBuilder : MonoBehaviour
         }
 
         // Initialising the parameters of the starting node
-        int x = src.first, y = src.second;
+        int x = src.x, y = src.y;
         cellDetails[x, y].f = 0.0;
         cellDetails[x, y].g = 0.0;
         cellDetails[x, y].h = 0.0;
@@ -116,8 +116,8 @@ public class RoadBuilder : MonoBehaviour
             openList.Remove(p);
 
             // Add this vertex to the closed list
-            x = p.pair.first;
-            y = p.pair.second;
+            x = p.pair.x;
+            y = p.pair.y;
             closedList[x, y] = true;
 
             // Generating all the 8 successors of this cell
@@ -205,14 +205,14 @@ public class RoadBuilder : MonoBehaviour
     // been reached or not
     public static bool IsDestination(int row, int col, Pair dest)
     {
-        return (row == dest.first && col == dest.second);
+        return (row == dest.x && col == dest.y);
     }
 
     // A Utility Function to calculate the 'h' heuristics.
     public static double CalculateHValue(int row, int col, Pair dest)
     {
         // Return using the distance formula
-        return Mathf.Sqrt(Mathf.Pow(row - dest.first, 2) + Mathf.Pow(col - dest.second, 2));
+        return Mathf.Sqrt(Mathf.Pow(row - dest.x, 2) + Mathf.Pow(col - dest.y, 2));
     }
 
     // A Utility Function to trace the path from the source
@@ -223,8 +223,8 @@ public class RoadBuilder : MonoBehaviour
         int ROW = cellDetails.GetLength(0);
         int COL = cellDetails.GetLength(1);
 
-        int row = dest.first;
-        int col = dest.second;
+        int row = dest.x;
+        int col = dest.y;
 
         Stack<Pair> Path = new Stack<Pair>();
 
@@ -242,7 +242,7 @@ public class RoadBuilder : MonoBehaviour
         {
             Pair p = Path.Peek();
             Path.Pop();
-            print(" -> (" + p.first + ", " + p.second);
+            print(" -> (" + p.x + ", " + p.y);
         }
     }
 

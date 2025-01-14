@@ -79,8 +79,8 @@
     construction slider +
     camera rotation +
     move camera on minimap click +
-
     perlin noise for iron, stone, salt deposits +
+    
     textures for terrain and water
     3d models for buildings
 

@@ -29,7 +29,13 @@ public class BuildingLocationModule : MonoBehaviour
     bool[,] stoneMineCaptureArea;
 
     // already taken spaces
-    bool[,] availableSpace;
+    public enum Availability
+    {
+        Empty,
+        RoadOnly,
+        Taken
+    }
+    Availability[,] availableSpace;
 
     TerrainType[,] terrainGrid;
     int gridX;
@@ -65,13 +71,13 @@ public class BuildingLocationModule : MonoBehaviour
         saltMineCaptureArea = new bool[gridX, gridY];
         stoneMineCaptureArea = new bool[gridX, gridY];
 
-        availableSpace = new bool[gridX, gridY];
+        availableSpace = new Availability[gridX, gridY];
 
         for (int i = 0; i < gridX; i++)
         {
             for (int j = 0; j < gridY; j++)
             {
-                availableSpace[i,j] = true;
+                availableSpace[i,j] = Availability.Empty;
             }
         }
 
@@ -89,7 +95,12 @@ public class BuildingLocationModule : MonoBehaviour
                         int posX = i + dx;
                         int posY = j + dy;
                         if (posX >= 0 && posX < gridX && posY >= 0 && posY < gridY)
-                            availableSpace[posX, posY] = false;
+                        {
+                            if (terrainGrid[posX, posY] == TerrainType.Ground)
+                                availableSpace[posX, posY] = Availability.RoadOnly;
+                            else
+                                availableSpace[posX, posY] = Availability.Taken;
+                        }
                     }
                 }
             }
@@ -158,7 +169,7 @@ public class BuildingLocationModule : MonoBehaviour
                 {
                     for (int l = 0; l < bt.SizeY; l++)
                     {
-                        if (!availableSpace[i + k,j + l])
+                        if (availableSpace[i + k,j + l] != Availability.Empty)
                         {
                             availableForBuilding[i,j] = false;
                             break;
@@ -476,11 +487,18 @@ public class BuildingLocationModule : MonoBehaviour
 
     void UpdateAvailableSpace((int x, int y) location, BuildingTemplate bt)
     {
-        for (int i = Math.Max(location.x - 1, 0); i < Math.Min(location.x + bt.SizeX + 1, gridX - 1); i++)// TODO available space yes, no, roads-only
+        int leftEdge = location.x - 1;
+        int rightEdge = location.x + bt.SizeX;
+        int bottomEdge = location.y - 1;
+        int topEdge = location.y + bt.SizeY;
+        for (int i = Math.Max(leftEdge, 0); i < Math.Min(rightEdge + 1, gridX - 1); i++)// TODO available space yes, no, roads-only
         {
-            for (int j = Math.Max(location.y - 1, 0); j < Math.Min(location.y + bt.SizeY + 1, gridY - 1); j++)
+            for (int j = Math.Max(bottomEdge, 0); j < Math.Min(topEdge + 1, gridY - 1); j++)
             {
-                availableSpace[i,j] = false;
+                if (i == leftEdge || i == rightEdge || j == bottomEdge || j == topEdge)
+                    availableSpace[i,j] = Availability.RoadOnly;
+                else
+                    availableSpace[i,j] = Availability.Taken;
             }
         }
     }
