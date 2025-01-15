@@ -4,7 +4,117 @@ using UnityEngine;
 
 public class RoadBuilder : MonoBehaviour
 {
+    public static void AStarr(int[,] grid, Pair src, Pair dest)
+    {
+        int row = grid.GetLength(0);
+        int col = grid.GetLength(1);
 
+        if (src.x == dest.x && src.y == dest.y)
+        {
+            print("We are already at the destination");
+            return;
+        }
+
+        bool[,] closedList = new bool[row, col];
+
+        Cell[,] cellDetails = new Cell[row, col];
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < col; j++)
+            {
+                cellDetails[i, j].f = double.MaxValue;
+                cellDetails[i, j].g = double.MaxValue;
+                cellDetails[i, j].h = double.MaxValue;
+                cellDetails[i, j].parent_i = -1;
+                cellDetails[i, j].parent_j = -1;
+            }
+        }
+
+        int x = src.x, y = src.y;
+        cellDetails[x, y].f = 0.0;
+        cellDetails[x, y].g = 0.0;
+        cellDetails[x, y].h = 0.0;
+        cellDetails[x, y].parent_i = x;
+        cellDetails[x, y].parent_j = y;
+
+        /*
+            Create an open list having information as-
+            <f, <i, j>>
+            where f = g + h,
+            and i, j are the row and column index of that cell
+            Note that 0 <= i <= ROW-1 & 0 <= j <= COL-1
+            This open list is implemented as a SortedSet of tuple (f, (i, j)).
+            We use a custom comparer to compare tuples based on their f values.
+        */
+        SortedSet<(double, Pair)> openList = new SortedSet<(double, Pair)>(
+            Comparer<(double, Pair)>.Create((a, b) => a.Item1.CompareTo(b.Item1)));
+
+        openList.Add((0.0, new Pair(x, y)));
+
+        while (openList.Count > 0)
+        {
+            (double f, Pair pair) p = openList.Min;
+            openList.Remove(p);
+
+            // Add this vertex to the closed list
+            x = p.pair.x;
+            y = p.pair.y;
+            closedList[x, y] = true;
+
+            // Generating all the 8 successors of this cell
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0)
+                        continue;
+
+                    int newX = x + i;
+                    int newY = y + j;
+
+                    // If this successor is a valid cell
+                    if (IsValid(newX, newY, row, col))
+                    {
+                        // If the destination cell is the same as the
+                        // current successor
+                        if (IsDestination(newX, newY, dest))
+                        {
+                            cellDetails[newX, newY].parent_i = x;
+                            cellDetails[newX, newY].parent_j = y;
+                            print("The destination cell is found");
+                            TracePath(cellDetails, dest);
+                            return;
+                        }
+
+                        // If the successor is already on the closed
+                        // list or if it is blocked, then ignore it.
+                        if (!closedList[newX, newY] && IsUnBlocked(grid, newX, newY))
+                        {
+                            double gNew = cellDetails[x, y].g + 1.0;
+                            double hNew = CalculateHValue(newX, newY, dest);
+                            double fNew = gNew + hNew;
+
+                            // If it isn’t on the open list, add it to
+                            // the open list. Make the current square
+                            // the parent of this square. Record the
+                            // f, g, and h costs of the square cell
+                            if (cellDetails[newX, newY].f == double.MaxValue || cellDetails[newX, newY].f > fNew)
+                            {
+                                openList.Add((fNew, new Pair(newX, newY)));
+
+                                // Update the details of this cell
+                                cellDetails[newX, newY].f = fNew;
+                                cellDetails[newX, newY].g = gNew;
+                                cellDetails[newX, newY].h = hNew;
+                                cellDetails[newX, newY].parent_i = x;
+                                cellDetails[newX, newY].parent_j = y;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 
