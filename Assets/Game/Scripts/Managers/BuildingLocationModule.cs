@@ -29,13 +29,7 @@ public class BuildingLocationModule : MonoBehaviour
     bool[,] stoneMineCaptureArea;
 
     // already taken spaces
-    public enum Availability
-    {
-        Empty,
-        RoadOnly,
-        Taken
-    }
-    Availability[,] availableSpace;
+    TileAvailability[,] availableSpace;
 
     TerrainType[,] terrainGrid;
     int gridX;
@@ -71,13 +65,13 @@ public class BuildingLocationModule : MonoBehaviour
         saltMineCaptureArea = new bool[gridX, gridY];
         stoneMineCaptureArea = new bool[gridX, gridY];
 
-        availableSpace = new Availability[gridX, gridY];
+        availableSpace = new TileAvailability[gridX, gridY];
 
         for (int i = 0; i < gridX; i++)
         {
             for (int j = 0; j < gridY; j++)
             {
-                availableSpace[i,j] = Availability.Empty;
+                availableSpace[i,j] = TileAvailability.Empty;
             }
         }
 
@@ -97,14 +91,19 @@ public class BuildingLocationModule : MonoBehaviour
                         if (posX >= 0 && posX < gridX && posY >= 0 && posY < gridY)
                         {
                             if (terrainGrid[posX, posY] == TerrainType.Ground)
-                                availableSpace[posX, posY] = Availability.RoadOnly;
+                                availableSpace[posX, posY] = TileAvailability.ForRoadOnly;
                             else
-                                availableSpace[posX, posY] = Availability.Taken;
+                                availableSpace[posX, posY] = TileAvailability.Taken;
                         }
                     }
                 }
             }
         }
+    }
+
+    public TileAvailability[,] GetAvailableSpace()
+    {
+        return availableSpace;
     }
 
     public (int x, int y) PickNewBuildingLocation(BuildingTemplate buildingTemplate)
@@ -169,7 +168,7 @@ public class BuildingLocationModule : MonoBehaviour
                 {
                     for (int l = 0; l < bt.SizeY; l++)
                     {
-                        if (availableSpace[i + k,j + l] != Availability.Empty)
+                        if (availableSpace[i + k,j + l] != TileAvailability.Empty)
                         {
                             availableForBuilding[i,j] = false;
                             break;
@@ -496,9 +495,9 @@ public class BuildingLocationModule : MonoBehaviour
             for (int j = Math.Max(bottomEdge, 0); j < Math.Min(topEdge + 1, gridY - 1); j++)
             {
                 if (i == leftEdge || i == rightEdge || j == bottomEdge || j == topEdge)
-                    availableSpace[i,j] = Availability.RoadOnly;
+                    availableSpace[i,j] = TileAvailability.ForRoadOnly;
                 else
-                    availableSpace[i,j] = Availability.Taken;
+                    availableSpace[i,j] = TileAvailability.Taken;
             }
         }
     }
@@ -616,4 +615,11 @@ public class BuildingLocationModule : MonoBehaviour
                 throw new Exception("Unknown service " + buildingTag.ToString());
         }
     }
+}
+
+public enum TileAvailability
+{
+    Empty,
+    ForRoadOnly,
+    Taken
 }
