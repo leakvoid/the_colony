@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class RoadPathModule : MonoBehaviour
@@ -23,6 +25,8 @@ public class RoadPathModule : MonoBehaviour
 
     BuildingLocationModule blm;
 
+    [SerializeField] GameObject roadPrefab;
+
     TileAvailability[,] availableSpace;
     bool[,] roads;
     int sizeX;
@@ -33,37 +37,56 @@ public class RoadPathModule : MonoBehaviour
         blm = FindObjectOfType<BuildingLocationModule>();
     }
 
-    void Initialize()
+    public void Initialize()
     {
         availableSpace = blm.GetAvailableSpace();
         sizeX = availableSpace.GetLength(0);
         sizeY = availableSpace.GetLength(1);
         roads = new bool[sizeX, sizeY];
-        // TODO place initial road tile
+    }
+
+    public void SetFirstRoad((int x, int y) pos)
+    {
+        roads[pos.x, pos.y] = true;
     }
 
     public void BuildRoad((int x, int y) from)
     {
         Pair start = new Pair(from.x, from.y);
 
-        Pair closestRoad = new Pair(-1, -1);
-        
+        Pair closestRoad = new Pair();
+        double minDistance = double.MaxValue;
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                if (roads[x, y])
+                {
+                    double distance = CalculateDistance(x, y, start);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestRoad.x = x;
+                        closestRoad.y = y;
+                    }
+                }
+            }
+        }
+
+        AStar(start, closestRoad);
     }
 
-    static void AStar(int[,] grid, Pair src, Pair dest)
+    void AStar(Pair start, Pair closestRoad)
     {
-        int row = grid.GetLength(0);
-        int col = grid.GetLength(1);
-
-        if (src.x == dest.x && src.y == dest.y)
+        if (start.x == closestRoad.x && start.y == closestRoad.y)
             return;
 
-        bool[,] closedList = new bool[row, col];
+        bool[,] closedList = new bool[sizeX, sizeY];
 
-        Cell[,] cellDetails = new Cell[row, col];
-        for (int i = 0; i < row; i++)
+        Cell[,] cellDetails = new Cell[sizeX, sizeY];
+        for (int i = 0; i < sizeX; i++)
         {
-            for (int j = 0; j < col; j++)
+            for (int j = 0; j < sizeY; j++)
             {
                 cellDetails[i, j].f = double.MaxValue;
                 cellDetails[i, j].g = double.MaxValue;
@@ -72,7 +95,7 @@ public class RoadPathModule : MonoBehaviour
             }
         }
 
-        int x = src.x, y = src.y;
+        int x = start.x, y = start.y;
         cellDetails[x, y].f = 0.0;
         cellDetails[x, y].g = 0.0;
         cellDetails[x, y].parentX = x;
@@ -92,140 +115,94 @@ public class RoadPathModule : MonoBehaviour
             y = p.pair.y;
             closedList[x, y] = true;
 
-            // Generating all the 8 successors of this cell
-            for (int i = -1; i <= 1; i++)
+            for (int i = 0; i < 4; i++)
             {
-                for (int j = -1; j <= 1; j++)
+                int newX, newY;
+                switch (i)
                 {
-                    if (i == 0 && j == 0)
-                        continue;
+                    case 0:
+                        newX = x + 1;
+                        newY = y;
+                        break;
+                    case 1:
+                        newX = x - 1;
+                        newY = y;
+                        break;
+                    case 2:
+                        newX = x;
+                        newY = y + 1;
+                        break;
+                    default:
+                        newX = x;
+                        newY = y - 1;
+                        break;
+                }
 
-                    int newX = x + i;
-                    int newY = y + j;
-
-                    if (IsValid(newX, newY, row, col))
+                if (IsValid(newX, newY))
+                {
+                    if (roads[newX, newY])
                     {
-                        if (IsDestination(newX, newY, dest))
+                        cellDetails[newX, newY].parentX = x;
+                        cellDetails[newX, newY].parentY = y;
+                        TracePath(cellDetails, new Pair(newX, newY));
+                        return;
+                    }
+
+                    if (!closedList[newX, newY] && !IsBlocked(newX, newY))
+                    {
+                        double gNew = cellDetails[x, y].g + 1.0;
+                        double fNew = gNew + CalculateDistance(newX, newY, closestRoad);
+
+                        if (cellDetails[newX, newY].f == double.MaxValue || cellDetails[newX, newY].f > fNew)
                         {
+                            openList.Add((fNew, new Pair(newX, newY)));
+
+                            cellDetails[newX, newY].f = fNew;
+                            cellDetails[newX, newY].g = gNew;
                             cellDetails[newX, newY].parentX = x;
                             cellDetails[newX, newY].parentY = y;
-                            TracePath(cellDetails, dest);
-                            return;
-                        }
-
-                        if (!closedList[newX, newY] && IsUnBlocked(grid, newX, newY))
-                        {
-                            double gNew = cellDetails[x, y].g + 1.0;
-                            double fNew = gNew + CalculateDistance(newX, newY, dest);
-
-                            if (cellDetails[newX, newY].f == double.MaxValue || cellDetails[newX, newY].f > fNew)
-                            {
-                                openList.Add((fNew, new Pair(newX, newY)));
-
-                                cellDetails[newX, newY].f = fNew;
-                                cellDetails[newX, newY].g = gNew;
-                                cellDetails[newX, newY].parentX = x;
-                                cellDetails[newX, newY].parentY = y;
-                            }
                         }
                     }
                 }
             }
         }
+        throw new Exception("path for " + start.x + ", " + start.y + " not found");
     }
 
-    // A Utility Function to check whether given cell (row, col)
-    // is a valid cell or not.
-    public static bool IsValid(int row, int col, int ROW, int COL)
+    bool IsValid(int x, int y)
     {
-        // Returns true if row number and column number
-        // is in range
-        return (row >= 0) && (row < ROW) && (col >= 0) && (col < COL);
+        return (x >= 0) && (x < sizeX) && (y >= 0) && (y < sizeY);
     }
 
-    // A Utility Function to check whether the given cell is
-    // blocked or not
-    public static bool IsUnBlocked(int[,] grid, int row, int col)
+    bool IsBlocked(int x, int y)
     {
-        // Returns true if the cell is not blocked else false
-        return grid[row, col] == 1;
+        return availableSpace[x, y] == TileAvailability.Taken;
     }
 
-    // A Utility Function to check whether destination cell has
-    // been reached or not
-    public static bool IsDestination(int row, int col, Pair dest)
+    double CalculateDistance(int x, int y, Pair dest)
     {
-        return (row == dest.x && col == dest.y);
+        return Mathf.Abs(x - dest.x) + Mathf.Abs(y - dest.y);
+        //return Mathf.Sqrt(Mathf.Pow(x - dest.x, 2) + Mathf.Pow(y - dest.y, 2));
     }
 
-    public static double CalculateDistance(int x, int y, Pair dest)
+    void TracePath(Cell[,] cellDetails, Pair dest)
     {
-        return Mathf.Sqrt(Mathf.Pow(x - dest.x, 2) + Mathf.Pow(y - dest.y, 2));
-    }
+        int x = dest.x;
+        int y = dest.y;
 
-    // A Utility Function to trace the path from the source
-    // to destination
-    public static void TracePath(Cell[,] cellDetails, Pair dest)
-    {
-        print("\nThe Path is ");
-        int ROW = cellDetails.GetLength(0);
-        int COL = cellDetails.GetLength(1);
-
-        int row = dest.x;
-        int col = dest.y;
-
-        Stack<Pair> Path = new Stack<Pair>();
-
-        while (!(cellDetails[row, col].parentX == row && cellDetails[row, col].parentY == col))
+        while (!(cellDetails[x, y].parentX == x && cellDetails[x, y].parentY == y))
         {
-            Path.Push(new Pair(row, col));
-            int temp_row = cellDetails[row, col].parentX;
-            int temp_col = cellDetails[row, col].parentY;
-            row = temp_row;
-            col = temp_col;
+            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y)), Quaternion.identity);
+            roads[x, y] = true;
+            availableSpace[x, y] = TileAvailability.Taken;
+
+            int tempX = cellDetails[x, y].parentX;
+            int tempY = cellDetails[x, y].parentY;
+            x = tempX;
+            y = tempY;
         }
-
-        Path.Push(new Pair(row, col));
-        while (Path.Count > 0)
-        {
-            Pair p = Path.Peek();
-            Path.Pop();
-            print(" -> (" + p.x + ", " + p.y);
-        }
+        Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y)), Quaternion.identity);
+        roads[x, y] = true;
+        availableSpace[x, y] = TileAvailability.Taken;
     }
-
-    // Driver method
-    public static void Main(string[] args)
-    {
-        /* Description of the Grid-
-            1--> The cell is not blocked
-            0--> The cell is blocked */
-        int[,] grid =
-        {
-            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1},
-            {1, 1, 1, 0, 1, 1, 1, 0, 1, 1},
-            {1, 1, 1, 0, 1, 1, 0, 1, 0, 1},
-            {0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
-            {1, 1, 1, 0, 1, 1, 1, 0, 1, 0},
-            {1, 0, 1, 1, 1, 1, 0, 1, 0, 0},
-            {1, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1},
-            {1, 1, 1, 0, 0, 0, 1, 0, 0, 1}
-        };
-
-        // Source is the left-most bottom-most corner
-        Pair src = new Pair(8, 0);
-
-        // Destination is the left-most top-most corner
-        Pair dest = new Pair(0, 0);
-
-        AStar(grid, src, dest);
-    }
-
-
-
-
-
-
-
 }

@@ -12,6 +12,7 @@ public class BuildingManager : MonoBehaviour
     BuildingLocationModule blm;
     ColonistManager cm;
     ConstructionScheduler constructionScheduler;
+    RoadPathModule rpm;
 
     List<BuildingData> allBuildings;
     List<BuildingData> allHouses;
@@ -23,6 +24,7 @@ public class BuildingManager : MonoBehaviour
         blm = FindObjectOfType<BuildingLocationModule>();
         cm = FindObjectOfType<ColonistManager>();
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
+        rpm = FindObjectOfType<RoadPathModule>();
 
         allBuildings = new List<BuildingData>();
         allHouses = new List<BuildingData>();
@@ -38,7 +40,7 @@ public class BuildingManager : MonoBehaviour
     {
         BuildingTemplate bt = globals.HouseTemplate;
 
-        (int, int) location = blm.PickNewBuildingLocation(bt);
+        (int x, int y) location = blm.PickNewBuildingLocation(bt);
 
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
@@ -56,6 +58,8 @@ public class BuildingManager : MonoBehaviour
         allBuildings.Add(buildingData);
         allHouses.Add(buildingData);
 
+        rpm.SetFirstRoad((location.x - 1, location.y - 1));
+
         FinishBuildingConstruction(buildingData);
     }
 
@@ -70,7 +74,7 @@ public class BuildingManager : MonoBehaviour
         if (cm.GetJoblessColonistCount() < 1)
             return null;
 
-        (int, int) location = blm.PickNewBuildingLocation(bt);
+        (int x, int y) location = blm.PickNewBuildingLocation(bt);
         if (location == (-1, -1))
             return null;
 
@@ -95,6 +99,8 @@ public class BuildingManager : MonoBehaviour
         globals.woodAmount -= bt.WoodCost;
         globals.stoneAmount -= bt.StoneCost;
         globals.toolsAmount -= bt.ToolsCost;
+
+        rpm.BuildRoad((location.x - 1, location.y - 1));
 
         cm.SendColonistToBuild(buildingData);
 
