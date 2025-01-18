@@ -170,7 +170,7 @@ public class BuildingLocationModule : MonoBehaviour
                     {
                         if (availableSpace[i + k,j + l] != TileAvailability.Empty)
                         {
-                            availableForBuilding[i,j] = false;
+                            availableForBuilding[i, j] = false;
                             break;
                         }
                     }

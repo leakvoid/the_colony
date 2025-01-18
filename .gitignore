@@ -73,4 +73,3 @@ crashlytics-build.properties
 
 Assets/*
 !Assets/Game/
-Assets/Game/Art/*

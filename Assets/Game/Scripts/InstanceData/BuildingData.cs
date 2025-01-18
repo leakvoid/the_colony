@@ -11,4 +11,5 @@ public class BuildingData : MonoBehaviour
     public bool isConstructed = false;
     public float buildStartTime = 0;
     public GameObject modelReference;
+    public (int x, int y) roadLocation;
 }

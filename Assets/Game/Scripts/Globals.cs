@@ -118,9 +118,9 @@ public class Globals : MonoBehaviour
         };
     }
 
-    static public Vector3 GridToGlobalCoordinates((int x, int y) location)
+    static public Vector3 GridToGlobalCoordinates((int x, int y) location, (int x, int y) size, float height)
     {
-        return new Vector3(location.x, 0, location.y);
+        return new Vector3(location.x + (float)size.x / 2, height / 2, location.y + (float)size.y / 2);
     }
 
     static public Vector3 NewVector(float x, float y, float z = 0f)

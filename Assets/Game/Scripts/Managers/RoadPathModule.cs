@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using UnityEngine;
+using Utils;
 
 public class RoadPathModule : MonoBehaviour
 {
@@ -45,12 +47,21 @@ public class RoadPathModule : MonoBehaviour
         roads = new bool[sizeX, sizeY];
     }
 
-    public void SetFirstRoad((int x, int y) pos)
+    public (int x, int y) SetFirstRoad((int x, int y) pos, BuildingTemplate bt)
     {
-        roads[pos.x, pos.y] = true;
+        if (pos.x > 0)
+        {
+            roads[pos.x - 1, pos.y] = true;
+            return (pos.x - 1, pos.y);
+        }
+        else
+        {
+            roads[pos.x + bt.SizeX, pos.y] = true;
+            return (pos.x + bt.SizeX, pos.y);
+        }
     }
 
-    public void BuildRoad((int x, int y) from)
+    public (int x, int y) BuildRoad((int x, int y) from, BuildingTemplate bt)
     {
         Pair start = new Pair(from.x, from.y);
 
@@ -73,7 +84,58 @@ public class RoadPathModule : MonoBehaviour
             }
         }
 
+        Pair res = new Pair();
+        for (int x = start.x; x < start.x + bt.SizeX; x++)
+        {
+            if (start.y > 0)
+            {
+                double distance = CalculateDistance(x, start.y - 1, closestRoad);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    res.x = x;
+                    res.y = start.y - 1;
+                }
+            }
+            if (start.y + bt.SizeY < sizeY)
+            {
+                double distance = CalculateDistance(x, start.y + bt.SizeY, closestRoad);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    res.x = x;
+                    res.y = start.y + bt.SizeY;
+                }
+            }
+        }
+
+        for (int y = start.y; y < start.y + bt.SizeY; y++)
+        {
+            if (start.x > 0)
+            {
+                double distance = CalculateDistance(start.x - 1, y, closestRoad);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    res.x = start.x - 1;
+                    res.y = y;
+                }
+            }
+            if (start.x + bt.SizeX < sizeX)
+            {
+                double distance = CalculateDistance(start.x + bt.SizeX, y, closestRoad);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    res.x = start.x + bt.SizeX;
+                    res.y = y;
+                }
+            }
+        }
+        start = res;
+
         AStar(start, closestRoad);
+        return (start.x, start.y);
     }
 
     void AStar(Pair start, Pair closestRoad)
@@ -101,18 +163,15 @@ public class RoadPathModule : MonoBehaviour
         cellDetails[x, y].parentX = x;
         cellDetails[x, y].parentY = y;
 
-        SortedSet<(double, Pair)> openList = new SortedSet<(double, Pair)>(
-            Comparer<(double, Pair)>.Create((a, b) => a.Item1.CompareTo(b.Item1)));// TODO priority queue
-
-        openList.Add((0.0, new Pair(x, y)));
+        var openList = new PriorityQueue<Pair, double>();
+        openList.Enqueue(new Pair(x, y), 0.0);
 
         while (openList.Count > 0)
         {
-            (double f, Pair pair) p = openList.Min;
-            openList.Remove(p);
+            var pair = openList.Dequeue();
 
-            x = p.pair.x;
-            y = p.pair.y;
+            x = pair.x;
+            y = pair.y;
             closedList[x, y] = true;
 
             for (int i = 0; i < 4; i++)
@@ -138,7 +197,7 @@ public class RoadPathModule : MonoBehaviour
                         break;
                 }
 
-                if (IsValid(newX, newY))
+                if ((newX >= 0) && (newX < sizeX) && (newY >= 0) && (newY < sizeY))
                 {
                     if (roads[newX, newY])
                     {
@@ -148,14 +207,14 @@ public class RoadPathModule : MonoBehaviour
                         return;
                     }
 
-                    if (!closedList[newX, newY] && !IsBlocked(newX, newY))
+                    if (!closedList[newX, newY] && availableSpace[newX, newY] != TileAvailability.Taken)
                     {
                         double gNew = cellDetails[x, y].g + 1.0;
                         double fNew = gNew + CalculateDistance(newX, newY, closestRoad);
 
-                        if (cellDetails[newX, newY].f == double.MaxValue || cellDetails[newX, newY].f > fNew)
+                        if (cellDetails[newX, newY].f > fNew)
                         {
-                            openList.Add((fNew, new Pair(newX, newY)));
+                            openList.Enqueue(new Pair(newX, newY), fNew);
 
                             cellDetails[newX, newY].f = fNew;
                             cellDetails[newX, newY].g = gNew;
@@ -169,20 +228,9 @@ public class RoadPathModule : MonoBehaviour
         throw new Exception("path for " + start.x + ", " + start.y + " not found");
     }
 
-    bool IsValid(int x, int y)
-    {
-        return (x >= 0) && (x < sizeX) && (y >= 0) && (y < sizeY);
-    }
-
-    bool IsBlocked(int x, int y)
-    {
-        return availableSpace[x, y] == TileAvailability.Taken;
-    }
-
     double CalculateDistance(int x, int y, Pair dest)
     {
         return Mathf.Abs(x - dest.x) + Mathf.Abs(y - dest.y);
-        //return Mathf.Sqrt(Mathf.Pow(x - dest.x, 2) + Mathf.Pow(y - dest.y, 2));
     }
 
     void TracePath(Cell[,] cellDetails, Pair dest)
@@ -192,7 +240,7 @@ public class RoadPathModule : MonoBehaviour
 
         while (!(cellDetails[x, y].parentX == x && cellDetails[x, y].parentY == y))
         {
-            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y)), Quaternion.identity);
+            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), (1, 1), roadPrefab.transform.localScale.y), Quaternion.identity);
             roads[x, y] = true;
             availableSpace[x, y] = TileAvailability.Taken;
 
@@ -201,8 +249,10 @@ public class RoadPathModule : MonoBehaviour
             x = tempX;
             y = tempY;
         }
-        Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y)), Quaternion.identity);
+        Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), (1, 1), roadPrefab.transform.localScale.y), Quaternion.identity);
         roads[x, y] = true;
         availableSpace[x, y] = TileAvailability.Taken;
     }
+
+    
 }

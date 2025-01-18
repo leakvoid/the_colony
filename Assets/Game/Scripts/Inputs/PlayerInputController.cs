@@ -45,24 +45,27 @@ public class PlayerInputController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 100))// TODO refactor
+        bool stateChanged = false;
+        if (Physics.Raycast(ray, out hit, 100))
         {
-            var selectedObject = hit.transform.gameObject.transform.parent.transform.parent.gameObject;
+            if (hit.transform.parent && hit.transform.parent.transform.parent)
+            {
+                var selectedObject = hit.transform.parent.transform.parent;
 
-            if (selectedObject.name == "BuildingData(Clone)")
-            {
-                bpc.ShowBuildingInfoPanel(selectedObject.GetComponent<BuildingData>());
-            }
-            else if (selectedObject.name == "ColonistData(Clone)")
-            {
-                bpc.ShowColonistInfoPanel(selectedObject.GetComponent<ColonistData>());
-            }
-            else
-            {
-                bpc.ShowSecondaryResourcePanel();
+                if (selectedObject.name == "BuildingData(Clone)")
+                {
+                    bpc.ShowBuildingInfoPanel(selectedObject.GetComponent<BuildingData>());
+                    stateChanged = true;
+                }
+                else if (selectedObject.name == "ColonistData(Clone)")
+                {
+                    bpc.ShowColonistInfoPanel(selectedObject.GetComponent<ColonistData>());
+                    stateChanged = true;
+                }
             }
         }
-        else
+        
+        if (!stateChanged)
         {
             bpc.ShowSecondaryResourcePanel();
         }

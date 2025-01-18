@@ -47,8 +47,8 @@ public class BuildingManager : MonoBehaviour
         buildingData.gridLocation = location;
         buildingData.isConstructed = true;
         buildingData.modelReference = Instantiate(
-            buildingData.template.UnfinishedModel,
-            Globals.GridToGlobalCoordinates(location),
+            bt.FinishedModel,
+            Globals.GridToGlobalCoordinates(location, (bt.SizeX, bt.SizeY), bt.FinishedModel.transform.localScale.y),
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
@@ -58,7 +58,7 @@ public class BuildingManager : MonoBehaviour
         allBuildings.Add(buildingData);
         allHouses.Add(buildingData);
 
-        rpm.SetFirstRoad((location.x - 1, location.y - 1));
+        buildingData.roadLocation = rpm.SetFirstRoad(location, bt);
 
         FinishBuildingConstruction(buildingData);
     }
@@ -83,8 +83,8 @@ public class BuildingManager : MonoBehaviour
         buildingData.template = bt;
         buildingData.gridLocation = location;
         buildingData.modelReference = Instantiate(
-            buildingData.template.UnfinishedModel,
-            Globals.GridToGlobalCoordinates(location),
+            bt.UnfinishedModel,
+            Globals.GridToGlobalCoordinates(location, (bt.SizeX, bt.SizeY), bt.UnfinishedModel.transform.localScale.y),
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
@@ -100,7 +100,7 @@ public class BuildingManager : MonoBehaviour
         globals.stoneAmount -= bt.StoneCost;
         globals.toolsAmount -= bt.ToolsCost;
 
-        rpm.BuildRoad((location.x - 1, location.y - 1));
+        buildingData.roadLocation = rpm.BuildRoad(location, bt);
 
         cm.SendColonistToBuild(buildingData);
 
@@ -113,7 +113,9 @@ public class BuildingManager : MonoBehaviour
         Destroy(buildingData.modelReference);
         buildingData.modelReference = Instantiate(
             buildingData.template.FinishedModel,
-            Globals.GridToGlobalCoordinates(buildingData.gridLocation),
+            Globals.GridToGlobalCoordinates(buildingData.gridLocation, 
+                (buildingData.template.SizeX, buildingData.template.SizeY),
+                buildingData.template.FinishedModel.transform.localScale.y),
             Quaternion.identity
         );
 

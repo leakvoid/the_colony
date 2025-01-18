@@ -116,30 +116,63 @@ public class TerrainMeshRenderer : MonoBehaviour
                 {
                     case TerrainType.Forest:
                         Instantiate(forestIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.Water:
                         Instantiate(waterIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.IronDeposit:
                         Instantiate(ironIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.SaltDeposit:
                         Instantiate(saltIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.StoneDeposit:
                         Instantiate(stoneIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j)),
+                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                 }
+            }
+        }
+    }
+
+    public void TestMap((int x, int y) start, (int x, int y) closestRoad, TileAvailability[,] availableSpace)
+    {
+        int sizeX = availableSpace.GetLength(0);
+        int sizeY = availableSpace.GetLength(1);
+
+        for (int i = 0; i < sizeX; i++)
+        {
+            for (int j = 0; j < sizeY; j++)
+            {
+                if (i == start.x && j == start.y)
+                    Instantiate(forestIconPrefab,
+                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
+                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
+                else if (i == closestRoad.x && j == closestRoad.y)
+                    Instantiate(waterIconPrefab,
+                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
+                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
+                else if (availableSpace[i, j] == TileAvailability.Empty)
+                    Instantiate(ironIconPrefab,
+                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
+                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
+                else if (availableSpace[i,j] == TileAvailability.ForRoadOnly)
+                    Instantiate(saltIconPrefab,
+                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
+                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
+                else if (availableSpace[i, j] == TileAvailability.Taken)
+                    Instantiate(stoneIconPrefab,
+                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
+                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
             }
         }
     }

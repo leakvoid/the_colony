@@ -80,12 +80,10 @@
     camera rotation +
     move camera on minimap click +
     perlin noise for iron, stone, salt deposits +
-    
+    roads: shortest path vs already connected; shortest path to road network +
+
     textures for terrain and water
     3d models for buildings
-
-    roads: shortest path vs already connected; shortest path to road network
-
 
     main menu
     pause menu
