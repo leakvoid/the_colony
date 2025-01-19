@@ -123,6 +123,21 @@ public class Globals : MonoBehaviour
         return new Vector3(location.x + (float)size.x / 2, height / 2, location.y + (float)size.y / 2);
     }
 
+    static public Vector3 GridToGlobalCoordinates((int x, int y) location, GameObject model, bool randomized = false)
+    {
+        float factorX = 1;
+        float factorZ = 1;
+        if (randomized)
+        {
+            factorX = UnityEngine.Random.Range(0.7f, 1.3f);
+            factorZ = UnityEngine.Random.Range(0.7f, 1.3f);
+        }
+
+        return new Vector3(location.x + model.transform.localScale.x * factorX / 2,
+            model.transform.localScale.y / 2,
+            location.y + model.transform.localScale.z * factorZ / 2);
+    }
+
     static public Vector3 NewVector(float x, float y, float z = 0f)
     {
         return new Vector3(x, z, y);

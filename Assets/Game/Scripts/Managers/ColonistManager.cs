@@ -11,6 +11,7 @@ public class ColonistManager : MonoBehaviour
     BuildingManager bm;
     BuildingLocationModule blm;
     ConstructionScheduler constructionScheduler;
+    RoadPathModule rpm;
 
     List<ColonistData> allColonists;
     Queue<ColonistData> joblessColonists;
@@ -25,6 +26,7 @@ public class ColonistManager : MonoBehaviour
         bm = FindObjectOfType<BuildingManager>();
         blm = FindObjectOfType<BuildingLocationModule>();
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
+        rpm = FindObjectOfType<RoadPathModule>();
 
         allColonists = new List<ColonistData>();
         joblessColonists = new Queue<ColonistData>();
@@ -338,12 +340,11 @@ public class ColonistManager : MonoBehaviour
         yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination, false);
     }
 
-    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO road traversal + spawn location, animations
+    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO animations
     {
         var model = Instantiate(colonistModelPrefab,
-            source.modelReference.transform.position,// TODO spawn position
+            Globals.GridToGlobalCoordinates(source.roadLocation, colonistModelPrefab),
             Quaternion.identity);
-        
         model.transform.parent = colonistData.transform;
         
         if (isWorker)
@@ -351,12 +352,7 @@ public class ColonistManager : MonoBehaviour
         else
             colonistData.consumerModelReference = model;
 
-        var end = destination.modelReference.transform.position;// TODO spawn position
-        while (model.transform.position != end)
-        {
-            model.transform.position = Vector3.MoveTowards(model.transform.position, end, globals.ColonistMovementSpeed * Time.deltaTime);
-            yield return null;
-        }
+        yield return rpm.MoveColonist(source.roadLocation, destination.roadLocation, model);
 
         Destroy(model);
         colonistData.consumerCurrentlyInside = destination;

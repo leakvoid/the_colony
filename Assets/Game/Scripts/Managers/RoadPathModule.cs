@@ -25,6 +25,7 @@ public class RoadPathModule : MonoBehaviour
         public double f, g;
     }
 
+    Globals globals;
     BuildingLocationModule blm;
 
     [SerializeField] GameObject roadPrefab;
@@ -36,6 +37,7 @@ public class RoadPathModule : MonoBehaviour
 
     void Awake()
     {
+        globals = FindObjectOfType<Globals>();
         blm = FindObjectOfType<BuildingLocationModule>();
     }
 
@@ -45,6 +47,7 @@ public class RoadPathModule : MonoBehaviour
         sizeX = availableSpace.GetLength(0);
         sizeY = availableSpace.GetLength(1);
         roads = new bool[sizeX, sizeY];
+        savedPaths = new Dictionary<(Pair, Pair), Stack<Pair>>();
     }
 
     public (int x, int y) SetFirstRoad((int x, int y) pos, BuildingTemplate bt)
@@ -254,5 +257,61 @@ public class RoadPathModule : MonoBehaviour
         availableSpace[x, y] = TileAvailability.Taken;
     }
 
-    
+    Dictionary<(Pair, Pair), Stack<Pair>> savedPaths;
+
+    public IEnumerator MoveColonist((int x, int y) _from, (int x, int y) _to, GameObject colonistModel)
+    {
+        Pair from = new Pair(_from.x, _from.y);
+        Pair to = new Pair(_to.x, _to.y);
+
+        Stack<Pair> path;
+        if (savedPaths.ContainsKey((from, to)))
+            path = savedPaths[(from, to)];
+        else
+            path = CreateNewPath(from, to);
+
+        foreach (var p in path)
+        {
+            var end = Globals.GridToGlobalCoordinates((p.x, p.y), colonistModel);
+            while (colonistModel.transform.position != end)
+            {
+                colonistModel.transform.position = Vector3.MoveTowards(colonistModel.transform.position,
+                    end, globals.ColonistMovementSpeed * Time.deltaTime);
+                yield return null;
+            }
+        }
+    }
+
+    Stack<Pair> CreateNewPath(Pair from, Pair to)
+    {
+        bool RecursivePath(Pair pos, Pair target, Stack<Pair> path, bool[,] traversed)
+        {
+            if (pos.x < 0 || pos.x >= sizeX || pos.y < 0 || pos.y >= sizeY ||
+                !roads[pos.x, pos.y] || traversed[pos.x, pos.y])
+                return false;
+            
+            path.Push(pos);
+            traversed[pos.x, pos.y] = true;
+
+            if (pos.x == target.x && pos.y == target.y)
+                return true;
+
+            if (RecursivePath(new Pair(pos.x + 1, pos.y), target, path, traversed) ||
+                RecursivePath(new Pair(pos.x - 1, pos.y), target, path, traversed) ||
+                RecursivePath(new Pair(pos.x, pos.y + 1), target, path, traversed) ||
+                RecursivePath(new Pair(pos.x, pos.y - 1), target, path, traversed))
+                return true;
+
+            path.Pop();
+            return false;
+        }
+
+        var path = new Stack<Pair>();// TODO improve stack space and logic for remaking road when building placed on top of road
+        var traversed = new bool[sizeX, sizeY];
+        RecursivePath(to, from, path, traversed);
+
+        savedPaths[(from, to)] = path;
+        savedPaths[(to, from)] = new Stack<Pair>(path);
+        return path;
+    }
 }

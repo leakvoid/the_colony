@@ -10,7 +10,10 @@ public class TerrainMeshRenderer : MonoBehaviour
 
     Globals globals;
     AbstractMapGenerator amg;
+
     TerrainType[,] terrainGrid;
+    int sizeX;
+    int sizeY;
 
     Mesh mesh;
     float[,] heightMap;
@@ -24,20 +27,23 @@ public class TerrainMeshRenderer : MonoBehaviour
     public void Initialize()
     {
         terrainGrid = amg.GetTerrainGrid();
+        sizeX = terrainGrid.GetLength(0);
+        sizeY = terrainGrid.GetLength(1);
 
         CreateHeightMap();
         CreateTerrainMesh();
         AddMinimapIcons();
+        SpawnTrees();
 
         meshFilter.sharedMesh = mesh;
     }
 
     void CreateHeightMap()
     {
-        heightMap = new float[terrainGrid.GetLength(0) + 1, terrainGrid.GetLength(1) + 1];
-        for (int i = 0; i < terrainGrid.GetLength(0); i++)
+        heightMap = new float[sizeX + 1, sizeY + 1];
+        for (int i = 0; i < sizeX; i++)
         {
-            for (int j = 0; j < terrainGrid.GetLength(1); j++)
+            for (int j = 0; j < sizeY; j++)
             {
                 if (terrainGrid[i,j] == TerrainType.Water)
                 {
@@ -108,9 +114,9 @@ public class TerrainMeshRenderer : MonoBehaviour
     {
         mip = new GameObject("Minimap Icons");
 
-        for (int i = 0; i < terrainGrid.GetLength(0); i++)
+        for (int i = 0; i < sizeX; i++)
         {
-            for (int j = 0; j < terrainGrid.GetLength(1); j++)
+            for (int j = 0; j < sizeY; j++)
             {
                 switch (terrainGrid[i, j])
                 {
@@ -144,35 +150,18 @@ public class TerrainMeshRenderer : MonoBehaviour
         }
     }
 
-    public void TestMap((int x, int y) start, (int x, int y) closestRoad, TileAvailability[,] availableSpace)
-    {
-        int sizeX = availableSpace.GetLength(0);
-        int sizeY = availableSpace.GetLength(1);
+    [SerializeField] GameObject treePrefab;
 
-        for (int i = 0; i < sizeX; i++)
+    void SpawnTrees()
+    {
+        for (int x = 0; x < sizeX; x++)
         {
-            for (int j = 0; j < sizeY; j++)
+            for (int y = 0; y < sizeY; y++)
             {
-                if (i == start.x && j == start.y)
-                    Instantiate(forestIconPrefab,
-                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
-                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
-                else if (i == closestRoad.x && j == closestRoad.y)
-                    Instantiate(waterIconPrefab,
-                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
-                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
-                else if (availableSpace[i, j] == TileAvailability.Empty)
-                    Instantiate(ironIconPrefab,
-                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
-                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
-                else if (availableSpace[i,j] == TileAvailability.ForRoadOnly)
-                    Instantiate(saltIconPrefab,
-                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
-                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
-                else if (availableSpace[i, j] == TileAvailability.Taken)
-                    Instantiate(stoneIconPrefab,
-                        Globals.GridToGlobalCoordinates((i, j), (1, 1), 10),
-                        Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
+                if (terrainGrid[x, y] == TerrainType.Forest)
+                {
+                    Instantiate(treePrefab, Globals.GridToGlobalCoordinates((x, y), treePrefab, true), Quaternion.identity);
+                }
             }
         }
     }

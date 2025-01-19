@@ -5597,6 +5597,7 @@ MonoBehaviour:
   ironIconPrefab: {fileID: 4923445812951440458, guid: 74f69b41bf204179d913dfbeb10fed0c, type: 3}
   saltIconPrefab: {fileID: 3033842239229528082, guid: 95cb3394fe81ab1ff89991a8843bcfe5, type: 3}
   stoneIconPrefab: {fileID: 748287172455148913, guid: 1e111346da62bb452a5e7795aa9561dc, type: 3}
+  treePrefab: {fileID: 8308991218684248068, guid: fed9becbafed1fe63827302715a474c4, type: 3}
 --- !u!114 &915405259
 MonoBehaviour:
   m_ObjectHideFlags: 0
