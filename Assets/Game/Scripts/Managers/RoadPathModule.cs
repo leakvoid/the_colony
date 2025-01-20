@@ -243,7 +243,7 @@ public class RoadPathModule : MonoBehaviour
 
         while (!(cellDetails[x, y].parentX == x && cellDetails[x, y].parentY == y))
         {
-            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), (1, 1), roadPrefab.transform.localScale.y), Quaternion.identity);
+            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), roadPrefab), Quaternion.identity);
             roads[x, y] = true;
             availableSpace[x, y] = TileAvailability.Taken;
 
@@ -252,7 +252,7 @@ public class RoadPathModule : MonoBehaviour
             x = tempX;
             y = tempY;
         }
-        Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), (1, 1), roadPrefab.transform.localScale.y), Quaternion.identity);
+        Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), roadPrefab), Quaternion.identity);
         roads[x, y] = true;
         availableSpace[x, y] = TileAvailability.Taken;
     }

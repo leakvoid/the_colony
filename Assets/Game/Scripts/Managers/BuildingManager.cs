@@ -48,7 +48,7 @@ public class BuildingManager : MonoBehaviour
         buildingData.isConstructed = true;
         buildingData.modelReference = Instantiate(
             bt.FinishedModel,
-            Globals.GridToGlobalCoordinates(location, (bt.SizeX, bt.SizeY), bt.FinishedModel.transform.localScale.y),
+            Globals.GridToGlobalCoordinates(location, bt.FinishedModel),
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
@@ -84,7 +84,7 @@ public class BuildingManager : MonoBehaviour
         buildingData.gridLocation = location;
         buildingData.modelReference = Instantiate(
             bt.UnfinishedModel,
-            Globals.GridToGlobalCoordinates(location, (bt.SizeX, bt.SizeY), bt.UnfinishedModel.transform.localScale.y),
+            Globals.GridToGlobalCoordinates(location, bt.UnfinishedModel),
             Quaternion.identity
         );
         blm.UpdateAfterBuildingCreation(buildingData, bt);
@@ -114,8 +114,7 @@ public class BuildingManager : MonoBehaviour
         buildingData.modelReference = Instantiate(
             buildingData.template.FinishedModel,
             Globals.GridToGlobalCoordinates(buildingData.gridLocation, 
-                (buildingData.template.SizeX, buildingData.template.SizeY),
-                buildingData.template.FinishedModel.transform.localScale.y),
+                buildingData.template.FinishedModel),
             Quaternion.identity
         );
 

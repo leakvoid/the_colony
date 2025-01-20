@@ -122,27 +122,27 @@ public class TerrainMeshRenderer : MonoBehaviour
                 {
                     case TerrainType.Forest:
                         Instantiate(forestIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
+                            Globals.GridToGlobalCoordinates((i, j), forestIconPrefab),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.Water:
                         Instantiate(waterIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
+                            Globals.GridToGlobalCoordinates((i, j), waterIconPrefab),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.IronDeposit:
                         Instantiate(ironIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
+                            Globals.GridToGlobalCoordinates((i, j), ironIconPrefab),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.SaltDeposit:
                         Instantiate(saltIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
+                            Globals.GridToGlobalCoordinates((i, j), saltIconPrefab),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                     case TerrainType.StoneDeposit:
                         Instantiate(stoneIconPrefab,
-                            Globals.GridToGlobalCoordinates((i, j), (1, 1), 0),
+                            Globals.GridToGlobalCoordinates((i, j), stoneIconPrefab),
                             Quaternion.Euler(90, 0, 0)).transform.parent = mip.transform;
                         break;
                 }

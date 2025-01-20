@@ -118,10 +118,10 @@ public class Globals : MonoBehaviour
         };
     }
 
-    static public Vector3 GridToGlobalCoordinates((int x, int y) location, (int x, int y) size, float height)
+    /*static public Vector3 GridToGlobalCoordinates((int x, int y) location, (int x, int y) size, float height)
     {
         return new Vector3(location.x + (float)size.x / 2, height / 2, location.y + (float)size.y / 2);
-    }
+    }*/
 
     static public Vector3 GridToGlobalCoordinates((int x, int y) location, GameObject model, bool randomized = false)
     {
@@ -133,9 +133,15 @@ public class Globals : MonoBehaviour
             factorZ = UnityEngine.Random.Range(0.7f, 1.3f);
         }
 
-        return new Vector3(location.x + model.transform.localScale.x * factorX / 2,
-            model.transform.localScale.y / 2,
-            location.y + model.transform.localScale.z * factorZ / 2);
+        Renderer renderer;
+        if (model.transform.childCount > 0)
+            renderer = model.transform.GetChild(0).GetComponent<Renderer>();
+        else
+            renderer = model.GetComponent<Renderer>();
+
+        return new Vector3(location.x + renderer.bounds.extents.x * factorX,
+            renderer.bounds.extents.y,
+            location.y + renderer.bounds.extents.z * factorZ);
     }
 
     static public Vector3 NewVector(float x, float y, float z = 0f)
