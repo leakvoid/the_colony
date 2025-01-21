@@ -311,7 +311,8 @@ public class RoadPathModule : MonoBehaviour
         RecursivePath(to, from, path, traversed);
 
         savedPaths[(from, to)] = path;
-        savedPaths[(to, from)] = new Stack<Pair>(path);
+        savedPaths[(from, to)].Pop();
+        //savedPaths[(to, from)] = new Stack<Pair>(path);
         return path;
     }
 }

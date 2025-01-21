@@ -22,7 +22,7 @@ MonoBehaviour:
   <GoldCost>k__BackingField: 100
   <ConstructionTime>k__BackingField: 5
   <FinishedModel>k__BackingField: {fileID: 2712444041067125745, guid: f42abbc36a8f6650994674d6450ce426, type: 3}
-  <UnfinishedModel>k__BackingField: {fileID: 2115481439548520979, guid: 364ca6850963a47c098f43461adb1cfc, type: 3}
+  <UnfinishedModel>k__BackingField: {fileID: 1724097351977541209, guid: d4befe64a76c924d79761bf481345cac, type: 3}
   <Tier0ColonistCapacity>k__BackingField: 4
   <Tier1ColonistCapacity>k__BackingField: 6
   <Tier2ColonistCapacity>k__BackingField: 8

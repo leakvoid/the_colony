@@ -12,7 +12,9 @@ public class TerrainDepositsGenerator : MonoBehaviour
     int terrainGridX;
     int terrainGridY;
 
-    [SerializeField] GameObject depositMeshPrefab;
+    [SerializeField] GameObject stoneMeshPrefab;
+    [SerializeField] GameObject ironMeshPrefab;
+    [SerializeField] GameObject saltMeshPrefab;
 
     class DepositInfo
     {
@@ -206,7 +208,15 @@ public class TerrainDepositsGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
 
-        var depositInstance = Instantiate(depositMeshPrefab, Globals.NewVector(deposit.left, deposit.bottom, 0), Quaternion.identity);
+        GameObject prefab;
+        if (deposit.type == TerrainType.StoneDeposit)
+            prefab = stoneMeshPrefab;
+        else if (deposit.type == TerrainType.IronDeposit)
+            prefab = ironMeshPrefab;
+        else
+            prefab = saltMeshPrefab;
+
+        var depositInstance = Instantiate(prefab, Globals.NewVector(deposit.left, deposit.bottom, 0), Quaternion.identity);
         MeshFilter meshFilter = depositInstance.GetComponent<MeshFilter>();
         meshFilter.mesh = mesh;
     }

@@ -337,7 +337,8 @@ public class ColonistManager : MonoBehaviour
 
     IEnumerator ConsumerMoveTo(ColonistData colonistData, BuildingData destination)
     {
-        yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination, false);
+        if (colonistData.consumerCurrentlyInside != destination)
+            yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination, false);
     }
 
     IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO animations
