@@ -145,6 +145,7 @@ public class TerrainDepositsGenerator : MonoBehaviour
 
         Vector3[] vertices = new Vector3[totalVertices];
         int[,] vertexHelper = new int[refinedSizeX + 1,refinedSizeY + 1];
+        var uvs = new Vector2[totalVertices];
         for (int idx = 0, y = 0; y <= refinedSizeY; y++)
         {
             int gridY = deposit.bottom + y / granularity;
@@ -177,6 +178,7 @@ public class TerrainDepositsGenerator : MonoBehaviour
                     float height = (noiseValue - shift) * maxHeight;
                     vertices[idx] = Globals.NewVector((float)x / granularity, (float)y / granularity, height);
                     vertexHelper[x, y] = idx;
+                    uvs[idx] = new Vector2 (x / (float)refinedSizeX, y / (float)refinedSizeY);
                     idx++;
                 }
             }
@@ -205,6 +207,7 @@ public class TerrainDepositsGenerator : MonoBehaviour
 
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
+        mesh.uv = uvs;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
 

@@ -9248,7 +9248,7 @@ MonoBehaviour:
   fishAmount: 0
   breadAmount: 0
   beerAmount: 0
-  <ColonistMovementSpeed>k__BackingField: 6
+  <ColonistMovementSpeed>k__BackingField: 4
   <SleepDuration>k__BackingField: 2
   <PrayerDuration>k__BackingField: 2
   <NeedReplenishThreshold>k__BackingField: 20
@@ -11990,7 +11990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colonistDataPrefab: {fileID: 25098427878284524, guid: 141c2a57a9b01a4dda9d76512abe7b8e, type: 3}
-  colonistModelPrefab: {fileID: 2090671699045426009, guid: 794acb20999f5a70b98b861785fb635c, type: 3}
+  colonistModelPrefab: {fileID: 2669372775266760516, guid: c6a5240e05afaf44eb4897daf43cc066, type: 3}
 --- !u!114 &1987594265
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -341,11 +341,9 @@ public class ColonistManager : MonoBehaviour
             yield return MoveTo(colonistData, colonistData.consumerCurrentlyInside, destination, false);
     }
 
-    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)// TODO animations
+    IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)
     {
-        var model = Instantiate(colonistModelPrefab,
-            Globals.GridToGlobalCoordinates(source.roadLocation, colonistModelPrefab),
-            Quaternion.identity);
+        var model = Instantiate(colonistModelPrefab);
         model.transform.parent = colonistData.transform;
         
         if (isWorker)

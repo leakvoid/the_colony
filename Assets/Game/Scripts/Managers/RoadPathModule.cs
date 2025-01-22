@@ -47,7 +47,7 @@ public class RoadPathModule : MonoBehaviour
         sizeX = availableSpace.GetLength(0);
         sizeY = availableSpace.GetLength(1);
         roads = new bool[sizeX, sizeY];
-        savedPaths = new Dictionary<(Pair, Pair), Stack<Pair>>();
+        savedPaths = new Dictionary<(Pair, Pair), Pair[]>();
     }
 
     public (int x, int y) SetFirstRoad((int x, int y) pos, BuildingTemplate bt)
@@ -257,18 +257,27 @@ public class RoadPathModule : MonoBehaviour
         availableSpace[x, y] = TileAvailability.Taken;
     }
 
-    Dictionary<(Pair, Pair), Stack<Pair>> savedPaths;
+    Dictionary<(Pair, Pair), Pair[]> savedPaths;
+    float colonistX = 0.2f;
+    float colonistY = -0.45f;
+    float colonistZ = 0.2f;
+    float roadShift = 0.7f;
 
     public IEnumerator MoveColonist((int x, int y) _from, (int x, int y) _to, GameObject colonistModel)
     {
         Pair from = new Pair(_from.x, _from.y);
         Pair to = new Pair(_to.x, _to.y);
 
-        Stack<Pair> path;
+        Pair[] path;
         if (savedPaths.ContainsKey((from, to)))
             path = savedPaths[(from, to)];
         else
             path = CreateNewPath(from, to);
+
+        //colonistModel.transform.position = Globals.GridToGlobalCoordinates(_from, colonistModel);
+        colonistModel.transform.position = new Vector3(from.x + colonistX,
+            colonistY, from.y + colonistZ);
+        colonistModel.SetActive(true);
 
         foreach (var p in path)
         {
@@ -282,7 +291,20 @@ public class RoadPathModule : MonoBehaviour
         }
     }
 
-    Stack<Pair> CreateNewPath(Pair from, Pair to)
+    Vector3 GetPosition(Pair from, Pair to)
+    {
+        float shiftY;
+        if (to.x - from.x > 0)
+            shiftY = 0;
+        else if (to.x - from.x < 0)
+            shiftY = 0;
+        else
+            shiftY = 0;
+
+        return new Vector3(0,0,0);
+    }
+
+    Pair[] CreateNewPath(Pair from, Pair to)
     {
         bool RecursivePath(Pair pos, Pair target, Stack<Pair> path, bool[,] traversed)
         {
@@ -310,9 +332,8 @@ public class RoadPathModule : MonoBehaviour
         var traversed = new bool[sizeX, sizeY];
         RecursivePath(to, from, path, traversed);
 
-        savedPaths[(from, to)] = path;
-        savedPaths[(from, to)].Pop();
-        //savedPaths[(to, from)] = new Stack<Pair>(path);
-        return path;
+        Pair[] pathArray = path.ToArray();
+        savedPaths[(from, to)] = pathArray;
+        return pathArray;
     }
 }

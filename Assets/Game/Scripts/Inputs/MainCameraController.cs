@@ -50,7 +50,7 @@ public class MainCameraController : MonoBehaviour
 
     void UpdateCameraPosition()// TODO camera speed scales with zoom
     {
-        var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        var screenPos = new Vector3(0.5f, 0.5f);//Camera.main.ScreenToViewportPoint(Input.mousePosition);
         var cameraPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (screenPos.x <= 0.02 || Input.GetButton("Left"))
         {

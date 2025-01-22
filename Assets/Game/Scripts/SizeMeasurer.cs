@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SizeMeasurer : MonoBehaviour
 {
-    [SerializeField] int sizeX = 4;
-    [SerializeField] int sizeY = 3;
+    [SerializeField] float sizeX = 4;
+    [SerializeField] float sizeY = 3;
 
     void Start()
     {
@@ -24,7 +24,7 @@ public class SizeMeasurer : MonoBehaviour
         if (transform.childCount > 0)
         {
             var child = transform.GetChild(0);
-            var mr = child.GetComponent<MeshRenderer>();
+            var mr = child.GetComponent<Renderer>();
             if(mr)
             {
                 Debug.Log("Child Mesh Bounds: " + mr.bounds);
