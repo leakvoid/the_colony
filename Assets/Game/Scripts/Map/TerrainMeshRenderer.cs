@@ -7,8 +7,8 @@ public class TerrainMeshRenderer : MonoBehaviour
 {
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] MeshRenderer meshRenderer;
+    [SerializeField] GameObject waterPrefab;
 
-    Globals globals;
     AbstractMapGenerator amg;
 
     TerrainType[,] terrainGrid;
@@ -20,7 +20,6 @@ public class TerrainMeshRenderer : MonoBehaviour
 
     void Awake()
     {
-        globals = FindObjectOfType<Globals>();
         amg = FindObjectOfType<AbstractMapGenerator>();
     }
 
@@ -34,6 +33,7 @@ public class TerrainMeshRenderer : MonoBehaviour
         CreateTerrainMesh();
         AddMinimapIcons();
         SpawnTrees();
+        CreateWater();
 
         meshFilter.sharedMesh = mesh;
     }
@@ -161,6 +161,38 @@ public class TerrainMeshRenderer : MonoBehaviour
                 if (terrainGrid[x, y] == TerrainType.Forest)
                 {
                     Instantiate(treePrefab, Globals.GridToGlobalCoordinates((x, y), treePrefab, true), Quaternion.identity);
+                }
+            }
+        }
+    }
+
+    class WaterRegion
+    {
+        public int left;
+        public int right;
+        public int top;
+        public int bottom;
+
+        public WaterRegion(int _left, int _bottom)
+        {
+            left = _left;
+            right = _left;
+            top = _bottom;
+            bottom = _bottom;
+        }
+    }
+
+    void CreateWater()
+    {
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                if (terrainGrid[x, y] == TerrainType.Water)
+                {
+                    var water = Instantiate(waterPrefab,
+                        new Vector3(x + 0.5f, -0.4f, y + 0.5f),
+                        Quaternion.Euler(new Vector3(90,0,0)));
                 }
             }
         }

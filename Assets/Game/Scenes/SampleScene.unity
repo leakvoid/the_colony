@@ -5621,6 +5621,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshFilter: {fileID: 1116115221}
   meshRenderer: {fileID: 1116115220}
+  waterPrefab: {fileID: 5059715575397279024, guid: 7c8aa3d6bedf6bcb79842cc290a16b94, type: 3}
   forestIconPrefab: {fileID: 7389945477528355987, guid: 4ac5623300ffde6a4824f401319afcff, type: 3}
   waterIconPrefab: {fileID: 2813335897115257411, guid: 41e515d5f23d9f3f491aa42ebc75b5c5, type: 3}
   ironIconPrefab: {fileID: 4923445812951440458, guid: 74f69b41bf204179d913dfbeb10fed0c, type: 3}
@@ -12697,10 +12698,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 33966410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 301, y: -69}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchorMin: {x: 0.6244792, y: 0.21700001}
+  m_AnchorMax: {x: 0.7088542, y: 0.36469394}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2085919819
 MonoBehaviour:
@@ -12785,7 +12786,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 1.3458632}
+  m_margin: {x: 0.12932205, y: 0, z: 0, w: 1.3458632}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

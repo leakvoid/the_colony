@@ -52,16 +52,20 @@ public class RoadPathModule : MonoBehaviour
 
     public (int x, int y) SetFirstRoad((int x, int y) pos, BuildingTemplate bt)
     {
+        int x, y;
         if (pos.x > 0)
         {
-            roads[pos.x - 1, pos.y] = true;
-            return (pos.x - 1, pos.y);
+            x = pos.x - 1;
+            y = pos.y;
         }
         else
         {
-            roads[pos.x + bt.SizeX, pos.y] = true;
-            return (pos.x + bt.SizeX, pos.y);
+            x = pos.x + bt.SizeX;
+            y = pos.y;
         }
+
+        InstantiateRoad(x, y);
+        return (x, y);
     }
 
     public (int x, int y) BuildRoad((int x, int y) from, BuildingTemplate bt)
@@ -243,25 +247,34 @@ public class RoadPathModule : MonoBehaviour
 
         while (!(cellDetails[x, y].parentX == x && cellDetails[x, y].parentY == y))
         {
-            Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), roadPrefab), Quaternion.identity);
-            roads[x, y] = true;
-            availableSpace[x, y] = TileAvailability.Taken;
+            if (!roads[x, y])
+            {
+                InstantiateRoad(x, y);
+            }
 
             int tempX = cellDetails[x, y].parentX;
             int tempY = cellDetails[x, y].parentY;
             x = tempX;
             y = tempY;
         }
+        if (!roads[x, y])
+        {
+            InstantiateRoad(x, y);
+        }
+    }
+
+    void InstantiateRoad(int x, int y)
+    {
         Instantiate(roadPrefab, Globals.GridToGlobalCoordinates((x, y), roadPrefab), Quaternion.identity);
         roads[x, y] = true;
         availableSpace[x, y] = TileAvailability.Taken;
     }
 
     Dictionary<(Pair, Pair), Pair[]> savedPaths;
-    float colonistX = 0.2f;
-    float colonistY = -0.45f;
-    float colonistZ = 0.2f;
-    float roadShift = 0.7f;
+    float colonistX = 0.25f;
+    float colonistY = 0;
+    float colonistZ = 0.25f;
+    float roadShift = 0.5f;
 
     public IEnumerator MoveColonist((int x, int y) _from, (int x, int y) _to, GameObject colonistModel)
     {
@@ -273,15 +286,14 @@ public class RoadPathModule : MonoBehaviour
             path = savedPaths[(from, to)];
         else
             path = CreateNewPath(from, to);
+        var pathLen = path.GetLength(0);
 
-        //colonistModel.transform.position = Globals.GridToGlobalCoordinates(_from, colonistModel);
-        colonistModel.transform.position = new Vector3(from.x + colonistX,
-            colonistY, from.y + colonistZ);
+        colonistModel.transform.position = SpawnPosition(path[0], (pathLen > 1) ? path[1] : path[0], colonistModel);
         colonistModel.SetActive(true);
-
-        foreach (var p in path)
+        
+        for (int i = 1; i < pathLen; i++)
         {
-            var end = Globals.GridToGlobalCoordinates((p.x, p.y), colonistModel);
+            var end = TargetPosition(path[i - 1], path[i], (i + 1 < pathLen) ? path[i + 1] : path[i], colonistModel);
             while (colonistModel.transform.position != end)
             {
                 colonistModel.transform.position = Vector3.MoveTowards(colonistModel.transform.position,
@@ -291,17 +303,84 @@ public class RoadPathModule : MonoBehaviour
         }
     }
 
-    Vector3 GetPosition(Pair from, Pair to)
+    Vector3 SpawnPosition(Pair from, Pair to, GameObject model)
     {
-        float shiftY;
-        if (to.x - from.x > 0)
+        float shiftX, shiftY;
+        if (to.x - from.x > 0)// to right
+        {
+            shiftX = 0;
             shiftY = 0;
-        else if (to.x - from.x < 0)
+            model.transform.rotation = Quaternion.Euler(0, 90, 0);
+        }
+        else if (to.x - from.x < 0)// to left
+        {
+            shiftX = roadShift;
+            shiftY = roadShift;
+            model.transform.rotation = Quaternion.Euler(0, -90, 0);
+        }
+        else if (to.y - from.y > 0)// to top
+        {
+            shiftX = roadShift;
             shiftY = 0;
-        else
-            shiftY = 0;
+            model.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else// to bottom
+        {
+            shiftX = 0;
+            shiftY = roadShift;
+            model.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
 
-        return new Vector3(0,0,0);
+        return new Vector3(from.x + shiftX + colonistX,
+            colonistY, from.y + shiftY + colonistZ);
+    }
+
+    Vector3 TargetPosition(Pair from, Pair to, Pair next, GameObject model)
+    {
+        float shiftX, shiftY;
+        if (to.x - from.x > 0)// to right
+        {
+            shiftX = 0;
+            shiftY = 0;
+            if (next.y - to.y > 0)// then top
+            {
+                shiftX = roadShift;
+            }
+            model.transform.rotation = Quaternion.Euler(0, 90, 0);
+        }
+        else if (to.x - from.x < 0)// to left
+        {
+            shiftX = roadShift;
+            shiftY = roadShift;
+            if (next.y - to.y < 0)// then bottom
+            {
+                shiftX = 0;
+            }
+            model.transform.rotation = Quaternion.Euler(0, -90, 0);
+        }
+        else if (to.y - from.y > 0)// to top
+        {
+            shiftX = roadShift;
+            shiftY = 0;
+            if (next.x - to.x < 0)// then left
+            {
+                shiftY = roadShift;
+            }
+            model.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else// to bottom
+        {
+            shiftX = 0;
+            shiftY = roadShift;
+            if (next.x - to.x > 0)// then right
+            {
+                shiftY = 0;
+            }
+            model.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+
+        return new Vector3(to.x + shiftX + colonistX,
+            colonistY, to.y + shiftY + colonistZ);
     }
 
     Pair[] CreateNewPath(Pair from, Pair to)
