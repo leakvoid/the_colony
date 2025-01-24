@@ -78,7 +78,7 @@ public class BuildingManager : MonoBehaviour
         if (location == (-1, -1))
             return null;
 
-        //print("DEBUG Build: " + bt.BuildingTag.ToString());
+        print("DEBUG Build: " + bt.BuildingTag.ToString());
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
@@ -242,7 +242,7 @@ public class BuildingManager : MonoBehaviour
         HousingBT bt = (HousingBT)house.template;
         if (house.upgradeTier == 0)
         {
-            //print("DEBUG upgrade wood");
+            print("DEBUG upgrade wood");
             if (globals.goldAmount < bt.Tier1UpgradeGoldCost || globals.woodAmount < bt.Tier1UpgradeWoodCost)
                 return;
 
@@ -255,10 +255,17 @@ public class BuildingManager : MonoBehaviour
             globals.goldAmount -= bt.Tier1UpgradeGoldCost;
             globals.woodAmount -= bt.Tier1UpgradeWoodCost;
 
+            Destroy(house.modelReference);
+            house.modelReference = Instantiate(
+                bt.Tier1ModelPrefab,
+                Globals.GridToGlobalCoordinates(house.gridLocation, bt.Tier1ModelPrefab),
+                Quaternion.identity
+            );
+
         }
         else if (house.upgradeTier == 1)
         {
-            //print("DEBUG upgrade stone");
+            print("DEBUG upgrade stone");
             if (globals.goldAmount < bt.Tier2UpgradeGoldCost || globals.stoneAmount < bt.Tier2UpgradeStoneCost)
                 return;
 
@@ -270,8 +277,15 @@ public class BuildingManager : MonoBehaviour
             
             globals.goldAmount -= bt.Tier2UpgradeGoldCost;
             globals.stoneAmount -= bt.Tier2UpgradeStoneCost;
+
+            Destroy(house.modelReference);
+            house.modelReference = Instantiate(
+                bt.Tier2ModelPrefab,
+                Globals.GridToGlobalCoordinates(house.gridLocation, bt.Tier2ModelPrefab),
+                Quaternion.identity
+            );
         }
         else
-            throw new Exception("House already full upgraded");
+            throw new Exception("House already fully upgraded");
     }
 }

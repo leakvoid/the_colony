@@ -140,6 +140,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BakeryFinished
       objectReference: {fileID: 0}
+    - target: {fileID: 3351010397087084706, guid: 48c4335c9b485ce49a9ab4f4f6f52150, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6571601888481611912, guid: 48c4335c9b485ce49a9ab4f4f6f52150, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.21
@@ -155,6 +159,10 @@ PrefabInstance:
     - target: {fileID: 6571601888481611912, guid: 48c4335c9b485ce49a9ab4f4f6f52150, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 6571601888481643688, guid: 48c4335c9b485ce49a9ab4f4f6f52150, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 203974341589630241, guid: 48c4335c9b485ce49a9ab4f4f6f52150, type: 3}

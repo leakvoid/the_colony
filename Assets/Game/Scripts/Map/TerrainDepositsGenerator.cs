@@ -222,6 +222,8 @@ public class TerrainDepositsGenerator : MonoBehaviour
         var depositInstance = Instantiate(prefab, Globals.NewVector(deposit.left, deposit.bottom, 0), Quaternion.identity);
         MeshFilter meshFilter = depositInstance.GetComponent<MeshFilter>();
         meshFilter.mesh = mesh;
+        MeshCollider meshCollider = depositInstance.GetComponent<MeshCollider>();// TODO simplified mesh?
+        meshCollider.sharedMesh = mesh;
     }
 
     float GetEdgeFalloff(int x, int y, int posInCell)

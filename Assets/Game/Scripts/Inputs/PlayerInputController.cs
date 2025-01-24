@@ -48,7 +48,22 @@ public class PlayerInputController : MonoBehaviour
         bool stateChanged = false;
         if (Physics.Raycast(ray, out hit, 100))
         {
-            if (hit.transform.parent && hit.transform.parent.transform.parent)
+            if (hit.transform.name == "StoneDepositMesh(Clone)")
+            {
+                bpc.ShowDepositInfoPanel(ResourceType.Stone);
+                stateChanged = true;
+            }
+            else if (hit.transform.name == "IronDepositMesh(Clone)")
+            {
+                bpc.ShowDepositInfoPanel(ResourceType.Iron);
+                stateChanged = true;
+            }
+            else if (hit.transform.name == "SaltDepositMesh(Clone)")
+            {
+                bpc.ShowDepositInfoPanel(ResourceType.Salt);
+                stateChanged = true;
+            }
+            else if (hit.transform.parent && hit.transform.parent.transform.parent)
             {
                 var selectedObject = hit.transform.parent.transform.parent;
 

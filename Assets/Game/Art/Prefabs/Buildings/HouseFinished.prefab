@@ -129,6 +129,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: tent_purple_05
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3f1022cb7067660429cfeadc49481911, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3f1022cb7067660429cfeadc49481911, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.47

@@ -72,10 +72,15 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] TextMeshProUGUI numberOfWorkersText;
     [SerializeField] TextMeshProUGUI salaryText;
 
+    [Header("Deposit info panel")]
+    [SerializeField] TextMeshProUGUI depositNameText;
+    [SerializeField] Image depositResourceImage;
+
     [Header("Panels")]
     [SerializeField] GameObject secondaryResourcePanel;
     [SerializeField] GameObject buildingInfoPanel;
     [SerializeField] GameObject colonistInfoPanel;
+    [SerializeField] GameObject depositInfoPanel;
 
     [Header("FPS")]
     [SerializeField] TextMeshProUGUI fpsText;
@@ -83,6 +88,7 @@ public class BottomPanelController : MonoBehaviour
 
     BuildingData building;
     ColonistData colonist;
+    ResourceType resource;
 
     void Awake()
     {
@@ -97,6 +103,7 @@ public class BottomPanelController : MonoBehaviour
         UpdateSecondaryResourcePanel();
         UpdateColonistInfoPanel();
         UpdateBuildingInfoPanel();
+        UpdateDepositInfoPanel();
 
         // fps
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
@@ -407,6 +414,32 @@ public class BottomPanelController : MonoBehaviour
         }
     }
 
+    void UpdateDepositInfoPanel()
+    {
+        if (depositInfoPanel.activeSelf)
+        {
+
+            if (resource == ResourceType.Stone)
+            {
+                depositNameText.text = "Stone deposit";
+                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                    "Assets/StrategyGameResourceIcons/Icons/stoneblock.png", typeof(Sprite));
+            }
+            else if (resource == ResourceType.Iron)
+            {
+                depositNameText.text = "Iron deposit";
+                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                    "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
+            }
+            else
+            {
+                depositNameText.text = "Salt deposit";
+                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                    "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+            }
+        }
+    }
+
     public void ShowBuildingInfoPanel(BuildingData buildingData)
     {
         if (buildingData.template.BuildingTag != BuildingTag.House || !buildingData.isConstructed)
@@ -420,6 +453,7 @@ public class BottomPanelController : MonoBehaviour
             colonistInfoPanel.SetActive(true);
         }
         secondaryResourcePanel.SetActive(false);
+        depositInfoPanel.SetActive(false);
 
         building = buildingData;
         colonist = null;
@@ -430,6 +464,7 @@ public class BottomPanelController : MonoBehaviour
         buildingInfoPanel.SetActive(false);
         colonistInfoPanel.SetActive(true);
         secondaryResourcePanel.SetActive(false);
+        depositInfoPanel.SetActive(false);
 
         colonist = colonistData;
         building = null;
@@ -440,8 +475,21 @@ public class BottomPanelController : MonoBehaviour
         buildingInfoPanel.SetActive(false);
         colonistInfoPanel.SetActive(false);
         secondaryResourcePanel.SetActive(true);
+        depositInfoPanel.SetActive(false);
 
         building = null;
         colonist = null;
+    }
+
+    public void ShowDepositInfoPanel(ResourceType resourceType)
+    {
+        buildingInfoPanel.SetActive(false);
+        colonistInfoPanel.SetActive(false);
+        secondaryResourcePanel.SetActive(false);
+        depositInfoPanel.SetActive(true);
+
+        building = null;
+        colonist = null;
+        resource = resourceType;
     }
 }

@@ -169,6 +169,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: fan
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 92c136c4b65f9d467821b7c3b09c074e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -242,6 +246,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: c515f14caae09995e99742d0254c7c88, type: 3}
       propertyPath: m_Name
       value: windmill
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c515f14caae09995e99742d0254c7c88, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

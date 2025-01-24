@@ -129,6 +129,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConstructionSite
       objectReference: {fileID: 0}
+    - target: {fileID: 247420036806614579, guid: b72b8f32108d4d7318d319f769d44e58, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 586826513980867721, guid: b72b8f32108d4d7318d319f769d44e58, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
