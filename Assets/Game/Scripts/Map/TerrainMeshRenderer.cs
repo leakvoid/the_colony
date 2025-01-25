@@ -29,16 +29,17 @@ public class TerrainMeshRenderer : MonoBehaviour
         sizeX = terrainGrid.GetLength(0);
         sizeY = terrainGrid.GetLength(1);
 
-        CreateHeightMap();
-        CreateTerrainMesh();
+        //CreateHeightMap();
+        //CreateTerrainMesh();
+        Implementation();
         AddMinimapIcons();
         SpawnTrees();
-        CreateWater();
+        //CreateWater();
 
         meshFilter.sharedMesh = mesh;
     }
 
-    void CreateHeightMap()
+    /*void CreateHeightMap()
     {
         heightMap = new float[sizeX + 1, sizeY + 1];
         for (int i = 0; i < sizeX; i++)
@@ -100,7 +101,79 @@ public class TerrainMeshRenderer : MonoBehaviour
         mesh.triangles = triangles;
         mesh.uv = uvs;
         mesh.RecalculateNormals();
+    }*/
+
+
+
+    void Implementation()
+    {
+        void AddTriangle(int first, int second, int third, List<int> triangles)
+        {
+            triangles.Add(first);
+            triangles.Add(second);
+            triangles.Add(third);
+        }
+
+        var vertices = new List<Vector3>();
+        var triangles = new List<int>();
+        var uvs = new List<Vector2>();
+
+        int vertX = sizeX + 1;
+        int vertY = sizeY + 1;
+        for (int y = 0; y < vertY; y++)
+        {
+            for (int x = 0; x < vertX; x++)
+            {
+                if ((x > 0 && y < sizeY && terrainGrid[x - 1, y] != TerrainType.Water) ||
+                    (x < sizeX && y > 0 && terrainGrid[x, y - 1] != TerrainType.Water) ||
+                    (x > 0 && y > 0 && terrainGrid[x - 1, y - 1] != TerrainType.Water) ||
+                    (x < sizeX && y < sizeY && terrainGrid[x, y] != TerrainType.Water))
+                {
+                    vertices.Add(new Vector3(x, 0f, y));
+                }
+                else
+                {
+                    vertices.Add(new Vector3(x, -1f, y));
+                }
+                uvs.Add(new Vector2 (x / (float)vertX, y / (float)vertY));
+            }
+        }
+
+        int foo = 0, index = 0;
+
+        for (int y = 0; y < sizeY; y++)
+        {
+            for (int x = 0; x < sizeX; x++)
+            {
+                if(terrainGrid[x, y] == TerrainType.Water &&
+                    ((x > 0 && terrainGrid[x - 1, y] != TerrainType.Water) ||
+                    (x + 1 < sizeX && terrainGrid[x + 1, y] != TerrainType.Water) ||
+                    (y > 0 && terrainGrid[x, y - 1] != TerrainType.Water) ||
+                    (y + 1 < sizeY && terrainGrid[x, y + 1] != TerrainType.Water)))
+                {
+                    foo++;
+                }
+                else
+                {
+                    AddTriangle(index, index + vertX + 1, index + 1, triangles);
+                    AddTriangle(index, index + vertX, index + vertX + 1, triangles);
+                }
+                index++;
+            }
+            index++;
+        }
+
+        mesh = new Mesh();
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles.ToArray();
+        mesh.uv = uvs.ToArray();
+        mesh.RecalculateNormals();
     }
+
+
+
+
+
 
     [SerializeField] GameObject forestIconPrefab;
     [SerializeField] GameObject waterIconPrefab;
@@ -163,22 +236,6 @@ public class TerrainMeshRenderer : MonoBehaviour
                     Instantiate(treePrefab, Globals.GridToGlobalCoordinates((x, y), treePrefab, true), Quaternion.identity);
                 }
             }
-        }
-    }
-
-    class WaterRegion
-    {
-        public int left;
-        public int right;
-        public int top;
-        public int bottom;
-
-        public WaterRegion(int _left, int _bottom)
-        {
-            left = _left;
-            right = _left;
-            top = _bottom;
-            bottom = _bottom;
         }
     }
 
