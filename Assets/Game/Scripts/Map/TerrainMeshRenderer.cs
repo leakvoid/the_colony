@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.VisualScripting;
+using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
+using DelaunayTriangulation;
 
 public class TerrainMeshRenderer : MonoBehaviour
 {
@@ -32,11 +34,9 @@ public class TerrainMeshRenderer : MonoBehaviour
         sizeX = terrainGrid.GetLength(0);
         sizeY = terrainGrid.GetLength(1);
 
-        //CreateHeightMap();
-        //CreateTerrainMesh();
-        Implementation();
-        AddMinimapIcons();
-        SpawnTrees();
+        CreateTerrainMesh();
+        //AddMinimapIcons();
+        //SpawnTrees();
         //CreateWater();
 
         meshFilter.sharedMesh = mesh;
@@ -49,12 +49,12 @@ public class TerrainMeshRenderer : MonoBehaviour
     int vertY;
     float center = 0.5f;
 
-    struct Vertex
+    struct Vertex3d
     {
         public Vector3 v;
         public int index;
 
-        public Vertex(Vector3 _v, int _index)
+        public Vertex3d(Vector3 _v, int _index)
         {
             v = _v;
             index = _index;
@@ -67,9 +67,9 @@ public class TerrainMeshRenderer : MonoBehaviour
         Top,
         Bottom
     }
-    Dictionary<(int x, int y, Direction d), List<Vertex>> splitSideVertices;
+    Dictionary<(int x, int y, Direction d), List<Vertex3d>> tileSidePoints;
 
-    void Implementation()
+    void CreateTerrainMesh()
     {
         void AddTriangle(int first, int second, int third)
         {
@@ -83,7 +83,7 @@ public class TerrainMeshRenderer : MonoBehaviour
         uvs = new List<Vector2>();
         vertX = sizeX + 1;
         vertY = sizeY + 1;
-        splitSideVertices = new Dictionary<(int x, int y, Direction d), List<Vertex>>();
+        tileSidePoints = new Dictionary<(int x, int y, Direction d), List<Vertex3d>>();
 
         for (int y = 0; y < vertY; y++)
         {
@@ -131,6 +131,7 @@ public class TerrainMeshRenderer : MonoBehaviour
                 if (splitTile)
                 {
                     //SplitWaterTile(x, y);
+                    DelaunayTriangulation((x, y));
                 }
                 else
                 {
@@ -149,49 +150,272 @@ public class TerrainMeshRenderer : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
+
+    /*void FillEdges((int, int, Direction) key, Direction direction, Vector3 start, float xIncrement, float zIncrement, Func<int, bool> comparator)
+    {
+        FillEdges((tile.x - 1, tile.y, Direction.Right), Direction.Left, bottomLeft.v, 0, RandomStep());
+
+        if (tileSidePoints.ContainsKey(key))
+        {
+            allTilePoints.AddRange(tileSidePoints[key]);
+        }
+        else
+        {
+            key = (tile.x, tile.y, direction);
+            tileSidePoints[key] = new List<Vertex>();
+
+            var point = start;
+            point.x += 0;
+            point.y = FindVertexHeight(point.x, point.z, tile);
+            point.z += RandomStep();
+            while(point.z < topLeft.v.z)
+            {
+                Vertex v = new Vertex(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+                tileSidePoints[key].Add(v);
+
+                point.x += 0;
+                point.y = FindVertexHeight(point.x, point.z, tile);
+                point.z += RandomStep();
+            }
+        }
+    }*/
+
+    float RandomStep()
+    {
+        return UnityEngine.Random.Range(0.1f, 0.2f);
+    }
+
+    void DelaunayTriangulation((int x, int y) tile)
+    {
+        int index = tile.x + tile.y * vertX;
+        Vertex3d bottomLeft = new Vertex3d(vertices[index], index);
+        index = index + 1;
+        Vertex3d bottomRight = new Vertex3d(vertices[index], index);
+        index = tile.x + (tile.y + 1) * vertX;
+        Vertex3d topLeft = new Vertex3d(vertices[index], index);
+        index = index + 1;
+        Vertex3d topRight = new Vertex3d(vertices[index], index);
+
+        List<Vertex3d> allTilePoints = new List<Vertex3d>();
+        allTilePoints.Add(bottomLeft);
+        allTilePoints.Add(bottomRight);
+        allTilePoints.Add(topLeft);
+        allTilePoints.Add(topRight);
+
+        var key = (tile.x - 1, tile.y, Direction.Right);
+        if (tileSidePoints.ContainsKey(key))
+        {
+            allTilePoints.AddRange(tileSidePoints[key]);
+        }
+        else
+        {
+            key = (tile.x, tile.y, Direction.Left);
+            tileSidePoints[key] = new List<Vertex3d>();
+
+            var point = bottomLeft.v;
+            point.z += RandomStep();
+            point.y = FindVertexHeight(point.x, point.z, tile);
+            while(point.z < topLeft.v.z)
+            {
+                Vertex3d v = new Vertex3d(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+                tileSidePoints[key].Add(v);
+
+                point.z += RandomStep();
+                point.y = FindVertexHeight(point.x, point.z, tile);
+            }
+        }
+
+        key = (tile.x + 1, tile.y, Direction.Left);
+        if (tileSidePoints.ContainsKey(key))
+        {
+            allTilePoints.AddRange(tileSidePoints[key]);
+        }
+        else
+        {
+            key = (tile.x, tile.y, Direction.Right);
+            tileSidePoints[key] = new List<Vertex3d>();
+
+            var point = bottomRight.v;
+            point.z += RandomStep();
+            point.y = FindVertexHeight(point.x, point.z, tile);
+            while(point.z < topRight.v.z)
+            {
+                Vertex3d v = new Vertex3d(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+                tileSidePoints[key].Add(v);
+
+                point.z += RandomStep();
+                point.y = FindVertexHeight(point.x, point.z, tile);
+            }
+        }
+
+        key = (tile.x, tile.y - 1, Direction.Top);
+        if (tileSidePoints.ContainsKey(key))
+        {
+            allTilePoints.AddRange(tileSidePoints[key]);
+        }
+        else
+        {
+            key = (tile.x, tile.y, Direction.Bottom);
+            tileSidePoints[key] = new List<Vertex3d>();
+
+            var point = bottomLeft.v;
+            point.x += RandomStep();
+            point.y = FindVertexHeight(point.x, point.z, tile);
+            while(point.x < bottomRight.v.x)
+            {
+                Vertex3d v = new Vertex3d(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+                tileSidePoints[key].Add(v);
+
+                point.x += RandomStep();
+                point.y = FindVertexHeight(point.x, point.z, tile);
+            }
+        }
+
+        key = (tile.x, tile.y + 1, Direction.Bottom);
+        if (tileSidePoints.ContainsKey(key))
+        {
+            allTilePoints.AddRange(tileSidePoints[key]);
+        }
+        else
+        {
+            key = (tile.x, tile.y, Direction.Top);
+            tileSidePoints[key] = new List<Vertex3d>();
+
+            var point = topLeft.v;
+            point.x += RandomStep();
+            point.y = FindVertexHeight(point.x, point.z, tile);
+            while(point.x < topRight.v.x)
+            {
+                Vertex3d v = new Vertex3d(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+                tileSidePoints[key].Add(v);
+
+                point.x += RandomStep();
+                point.y = FindVertexHeight(point.x, point.z, tile);
+            }
+        }
+
+        float pY = tile.y + RandomStep();
+        while(pY + 0.05f < tile.y + 1)
+        {
+            float pX = tile.x + RandomStep();
+            while(pX < tile.x + 1)
+            {
+                var shiftedY = pY + UnityEngine.Random.Range(-0.05f, 0.05f);
+                var point = new Vector3(pX, FindVertexHeight(pX, shiftedY, tile), shiftedY);
+
+                Vertex3d v = new Vertex3d(point, vertices.Count);
+
+                vertices.Add(point);
+                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+                allTilePoints.Add(v);
+
+                pX += RandomStep();
+            }
+            pY += RandomStep();
+        }
+
+        List<Vertex> points = new List<Vertex>();
+        foreach(var point in allTilePoints)
+        {
+            points.Add(new Vertex(new Vector2(point.v.x, point.v.z), point.index));
+        }
+        var triangulator = new Triangulation(points);
+        var tr = triangulator.triangles;
+        foreach(var triangle in tr)
+        {
+            var a = new Vertex3d(vertices[triangle.vertex0.index], triangle.vertex0.index);
+            var b = new Vertex3d(vertices[triangle.vertex1.index], triangle.vertex1.index);
+            var c = new Vertex3d(vertices[triangle.vertex2.index], triangle.vertex2.index);
+
+            if (Vector3.Cross(b.v - a.v, c.v - a.v).y > 0)
+            {   
+                triangles.Add(a.index);
+                triangles.Add(b.index);
+                triangles.Add(c.index);
+            }
+            else
+            {
+                triangles.Add(a.index);
+                triangles.Add(c.index);
+                triangles.Add(b.index);
+            }
+        }
+    }
+
+
+
+
     void SplitWaterTile(int tileX, int tileY)
     {
-        float x = tileX + UnityEngine.Random.Range(0.3f, 0.7f);
-        float y = tileY + UnityEngine.Random.Range(0.3f, 0.7f);
+        float x = tileX + 0.5f;//UnityEngine.Random.Range(0.3f, 0.7f);
+        float y = tileY + 0.5f;//UnityEngine.Random.Range(0.3f, 0.7f);
         var vec = new Vector3(x, FindVertexHeight(x, y, (tileX, tileY)), y);
-        Vertex center = new Vertex(vec, vertices.Count);
+        Vertex3d center = new Vertex3d(vec, vertices.Count);
 
         vertices.Add(vec);
         uvs.Add(new Vector2 (x / (float)vertX, y / (float)vertY));
 
         int index = tileX + tileY * vertX;
-        Vertex bottomLeft = new Vertex(vertices[index], index);
+        Vertex3d bottomLeft = new Vertex3d(vertices[index], index);
         index = index + 1;
-        Vertex bottomRight = new Vertex(vertices[index], index);
+        Vertex3d bottomRight = new Vertex3d(vertices[index], index);
         index = tileX + (tileY + 1) * vertX;
-        Vertex topLeft = new Vertex(vertices[index], index);
+        Vertex3d topLeft = new Vertex3d(vertices[index], index);
         index = index + 1;
-        Vertex topRight = new Vertex(vertices[index], index);
+        Vertex3d topRight = new Vertex3d(vertices[index], index);
 
         SplitDirection((tileX - 1, tileY, Direction.Right), (tileX, tileY), Direction.Left, bottomLeft, topLeft);
         SplitDirection((tileX + 1, tileY, Direction.Left), (tileX, tileY), Direction.Right, bottomRight, topRight);
         SplitDirection((tileX, tileY - 1, Direction.Top), (tileX, tileY), Direction.Bottom, bottomLeft, bottomRight);
         SplitDirection((tileX, tileY + 1, Direction.Bottom), (tileX, tileY), Direction.Top, topLeft, topRight);
 
-        void SplitDirection((int, int, Direction) firstKey, (int x, int y) tile, Direction direction, Vertex v1, Vertex v2)
+        void SplitDirection((int, int, Direction) firstKey, (int x, int y) tile, Direction direction, Vertex3d v1, Vertex3d v2)
         {
-            if (splitSideVertices.ContainsKey(firstKey))
+            if (tileSidePoints.ContainsKey(firstKey))
             {
-                var sideVertices = splitSideVertices[firstKey];
+                var sideVertices = tileSidePoints[firstKey];
                 if (direction == Direction.Left || direction == Direction.Right)
-                    sideVertices.Sort((a, b) => a.v.y.CompareTo(b.v.y));
+                    sideVertices.Sort((a, b) => a.v.z.CompareTo(b.v.z));
                 else
                     sideVertices.Sort((a, b) => a.v.x.CompareTo(b.v.x));
 
                 for (int i = 0; i < sideVertices.Count - 1; i++)
+                {
                     SplitTriangle(sideVertices[i], sideVertices[i + 1], center, tile, direction);
+                }
             }
             else
             {
                 var secondKey = (tile.x, tile.y, direction);
-                splitSideVertices[secondKey] = new List<Vertex>();
-                splitSideVertices[secondKey].Add(v1);
-                splitSideVertices[secondKey].Add(v2);
+                tileSidePoints[secondKey] = new List<Vertex3d>();
+                tileSidePoints[secondKey].Add(v1);
+                tileSidePoints[secondKey].Add(v2);
 
                 SplitTriangle(v1, v2, center, tile, direction);
             }
@@ -200,7 +424,7 @@ public class TerrainMeshRenderer : MonoBehaviour
 
     float FindVertexHeight(float x, float y, (int x, int y) tile)
     {
-        var coastDistance = UnityEngine.Random.Range(0, 0.2f);
+        var coastDistance = UnityEngine.Random.Range(0, 0.3f);
         float minDepth = maxDepth;
 
         void FindDepth(bool condition, float diff)
@@ -233,22 +457,113 @@ public class TerrainMeshRenderer : MonoBehaviour
         Vector2 pos = new Vector2(x, y);
 
         FindDepth(bottomLeft.y == 0,
-            Vector2.Distance(new Vector2(bottomLeft.x, bottomLeft.z), pos));
+            Vector2.Distance(v3tov2(bottomLeft), pos));
         FindDepth(bottomRight.y == 0,
-            Vector2.Distance(new Vector2(bottomRight.x, bottomRight.z), pos));
+            Vector2.Distance(v3tov2(bottomRight), pos));
         FindDepth(topLeft.y == 0,
-            Vector2.Distance(new Vector2(topLeft.x, topLeft.z), pos));
+            Vector2.Distance(v3tov2(topLeft), pos));
         FindDepth(topRight.y == 0,
-            Vector2.Distance(new Vector2(topRight.x, topRight.z), pos));
+            Vector2.Distance(v3tov2(topRight), pos));
 
         return minDepth;
     }
 
-    void SplitTriangle(Vertex a, Vertex b, Vertex c, (int x, int y) tile, Direction direction)
+    float PickSide(float a, float b, float c)
     {
-        triangles.Add(a.index);
-        triangles.Add(b.index);
-        triangles.Add(c.index);
+        if (a < 0.5f && b < 0.5f && c < 0.5f)
+            return 0;
+        if (a > b && a > c)
+            return a;
+        if (b > a && b > c)
+            return b;
+        return c;
+
+        /*List<float> validNumbers = new List<float>();
+        if (a >= 0.5f)
+            validNumbers.Add(a);
+        if (b >= 0.5f)
+            validNumbers.Add(b);
+        if (c >= 0.5f)
+            validNumbers.Add(c);
+
+        float s = (a + b + c) / 2.0f;
+        float area = Mathf.Sqrt(s * (s - a) * (s - b) * (s - c));
+
+        if (validNumbers.Count == 0 || area < 0.05f)
+            return 0;
+
+        int index = UnityEngine.Random.Range(0, validNumbers.Count);
+        return validNumbers[index];*/
+    }
+
+    Vector2 v3tov2(Vector3 v)
+    {
+        return new Vector2(v.x, v.z);
+    }
+
+    void SplitTriangle(Vertex3d a, Vertex3d b, Vertex3d c, (int x, int y) tile, Direction direction)
+    {
+        float ab = Vector2.Distance(v3tov2(a.v), v3tov2(b.v));
+        float ac = Vector2.Distance(v3tov2(a.v), v3tov2(c.v));
+        float bc = Vector2.Distance(v3tov2(b.v), v3tov2(c.v));
+
+        float side = PickSide(ab, ac, bc);
+        if (side == 0)
+        {
+            if (Vector3.Cross(b.v - a.v, c.v - a.v).y > 0)
+            {   
+                triangles.Add(a.index);
+                triangles.Add(b.index);
+                triangles.Add(c.index);
+            }
+            else
+            {
+                triangles.Add(a.index);
+                triangles.Add(c.index);
+                triangles.Add(b.index);
+            }
+            return;
+        }
+
+        float split = UnityEngine.Random.Range(0.3f, 0.7f);
+        Vector3 p;
+        Vertex3d first, second, third;
+        if (side == ab)
+        {
+            p = a.v + (b.v - a.v) * split;
+            first = a;
+            second = b;
+            third = c;
+        }
+        else if (side == ac)
+        {
+            p = a.v + (c.v - a.v) * split;
+            first = c;
+            second = a;
+            third = b;
+        }
+        else
+        {
+            p = b.v + (c.v - b.v) * split;
+            first = b;
+            second = c;
+            third = a;
+        }
+
+        p.y = FindVertexHeight(p.x, p.z, tile);
+        Vertex3d v = new Vertex3d(p, vertices.Count);
+
+        vertices.Add(p);
+        uvs.Add(new Vector2 (p.x / (float)vertX, p.z / (float)vertY));
+
+        if ((direction == Direction.Left && p.x == (float)tile.x) ||
+            (direction == Direction.Right && p.x == (float)tile.x + 1) ||
+            (direction == Direction.Bottom && p.z == (float)tile.y) ||
+            (direction == Direction.Top && p.z == (float)tile.y + 1))
+            tileSidePoints[(tile.x, tile.y, direction)].Add(v);
+        
+        SplitTriangle(first, v, third, tile, direction);
+        SplitTriangle(second, v, third, tile, direction);
     }
 
 

@@ -5835,6 +5835,7 @@ MonoBehaviour:
   meshFilter: {fileID: 1116115221}
   meshRenderer: {fileID: 1116115220}
   waterPrefab: {fileID: 5059715575397279024, guid: 7c8aa3d6bedf6bcb79842cc290a16b94, type: 3}
+  maxDepth: -1
   forestIconPrefab: {fileID: 7389945477528355987, guid: 4ac5623300ffde6a4824f401319afcff, type: 3}
   waterIconPrefab: {fileID: 2813335897115257411, guid: 41e515d5f23d9f3f491aa42ebc75b5c5, type: 3}
   ironIconPrefab: {fileID: 4923445812951440458, guid: 74f69b41bf204179d913dfbeb10fed0c, type: 3}

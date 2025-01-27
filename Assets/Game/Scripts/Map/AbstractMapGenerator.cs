@@ -14,13 +14,13 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] float lakePercentage = 10;
     [SerializeField] int numberOfLakes = 6;
 
-    [SerializeField] float ironDepositPercentage = 1;
+    [SerializeField] float ironDepositPercentage = 0.5f;
     [SerializeField] int numberOfIronDeposits = 5;
 
-    [SerializeField] float stoneDepositPercentage = 1;
+    [SerializeField] float stoneDepositPercentage = 0.5f;
     [SerializeField] int numberOfStoneDeposits = 5;
 
-    [SerializeField] float saltDepositPercentage = 1;
+    [SerializeField] float saltDepositPercentage = 0.5f;
     [SerializeField] int numberOfSaltDeposits = 5;
 
     TerrainType[,] grid;
