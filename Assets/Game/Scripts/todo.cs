@@ -82,7 +82,7 @@
     perlin noise for iron, stone, salt deposits +
     roads: shortest path vs already connected; shortest path to road network +
 
-    textures for terrain and water
+    textures for terrain and water +
     3d models for buildings
 
     main menu

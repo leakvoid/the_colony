@@ -11,7 +11,7 @@ public class AbstractMapGenerator : MonoBehaviour
     [SerializeField] float forestPercentage = 15;
     [SerializeField] int numberOfForests = 8;
 
-    [SerializeField] float lakePercentage = 10;
+    [SerializeField] float lakePercentage = 8;
     [SerializeField] int numberOfLakes = 6;
 
     [SerializeField] float ironDepositPercentage = 0.5f;

@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using DelaunayTriangulation;
+using TreeEditor;
 
 public class TerrainMeshRenderer : MonoBehaviour
 {
@@ -35,9 +36,9 @@ public class TerrainMeshRenderer : MonoBehaviour
         sizeY = terrainGrid.GetLength(1);
 
         CreateTerrainMesh();
-        //AddMinimapIcons();
-        //SpawnTrees();
-        //CreateWater();
+        AddMinimapIcons();
+        SpawnTrees();
+        CreateWater();
 
         meshFilter.sharedMesh = mesh;
     }
@@ -47,7 +48,6 @@ public class TerrainMeshRenderer : MonoBehaviour
     List<Vector2> uvs;
     int vertX;
     int vertY;
-    float center = 0.5f;
 
     struct Vertex3d
     {
@@ -69,15 +69,15 @@ public class TerrainMeshRenderer : MonoBehaviour
     }
     Dictionary<(int x, int y, Direction d), List<Vertex3d>> tileSidePoints;
 
+    void AddTriangle(int first, int second, int third)
+    {
+        triangles.Add(first);
+        triangles.Add(second);
+        triangles.Add(third);
+    }
+
     void CreateTerrainMesh()
     {
-        void AddTriangle(int first, int second, int third)
-        {
-            triangles.Add(first);
-            triangles.Add(second);
-            triangles.Add(third);
-        }
-
         vertices = new List<Vector3>();
         triangles = new List<int>();
         uvs = new List<Vector2>();
@@ -130,8 +130,8 @@ public class TerrainMeshRenderer : MonoBehaviour
                 }
                 if (splitTile)
                 {
-                    //SplitWaterTile(x, y);
-                    DelaunayTriangulation((x, y));
+                    //DelaunayTriangulation((x, y));
+                    MakeShoreline((x, y));
                 }
                 else
                 {
@@ -143,6 +143,8 @@ public class TerrainMeshRenderer : MonoBehaviour
             index++;
         }
 
+        print(vertices.Count);
+
         mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
@@ -150,40 +152,221 @@ public class TerrainMeshRenderer : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
+    /* triangulation */
+    float splitFactor = 0.25f;
+    float noiseScale = 1.5f;
+    float shoreDistance = 0.4f;
 
-    /*void FillEdges((int, int, Direction) key, Direction direction, Vector3 start, float xIncrement, float zIncrement, Func<int, bool> comparator)
+    void MakeShoreline((int x, int y) tile)
     {
-        FillEdges((tile.x - 1, tile.y, Direction.Right), Direction.Left, bottomLeft.v, 0, RandomStep());
+        int index = tile.x + tile.y * vertX;
+        Vertex3d bottomLeft = new Vertex3d(vertices[index], index);
+        index = index + 1;
+        Vertex3d bottomRight = new Vertex3d(vertices[index], index);
+        index = tile.x + (tile.y + 1) * vertX;
+        Vertex3d topLeft = new Vertex3d(vertices[index], index);
+        index = index + 1;
+        Vertex3d topRight = new Vertex3d(vertices[index], index);
 
-        if (tileSidePoints.ContainsKey(key))
+        List<Vertex3d> sidePoints = new List<Vertex3d>();
+        sidePoints.Add(bottomLeft);
+        sidePoints.Add(bottomRight);
+        sidePoints.Add(topLeft);
+        sidePoints.Add(topRight);
+
+        var keys = new List<(int, int, Direction)>() {
+            (tile.x - 1, tile.y, Direction.Right),
+            (tile.x + 1, tile.y, Direction.Left),
+            (tile.x, tile.y - 1, Direction.Top),
+            (tile.x, tile.y + 1, Direction.Bottom)
+        };
+        foreach (var key in keys)
         {
-            allTilePoints.AddRange(tileSidePoints[key]);
+            if (tileSidePoints.ContainsKey(key))
+            {
+                sidePoints.AddRange(tileSidePoints[key]);
+            }
+        }
+        tileSidePoints[(tile.x, tile.y, Direction.Left)] = new List<Vertex3d>();
+        tileSidePoints[(tile.x, tile.y, Direction.Right)] = new List<Vertex3d>();
+        tileSidePoints[(tile.x, tile.y, Direction.Top)] = new List<Vertex3d>();
+        tileSidePoints[(tile.x, tile.y, Direction.Bottom)] = new List<Vertex3d>();
+
+        var quadCenter = FindOrCreateVertex(0.5f, 0.5f);
+        var leftMid = FindOrCreateVertex(0, 0.5f);
+        var rightMid = FindOrCreateVertex(1, 0.5f);
+        var bottomMid = FindOrCreateVertex(0.5f, 0);
+        var topMid = FindOrCreateVertex(0.5f, 1);
+        if (bottomLeft.v.y == 0)
+        {
+            SplitQuad(0, 0);
         }
         else
         {
-            key = (tile.x, tile.y, direction);
-            tileSidePoints[key] = new List<Vertex>();
+            AddTriangle(bottomLeft.index, quadCenter.index, bottomMid.index);
+            AddTriangle(bottomLeft.index, leftMid.index, quadCenter.index);
+        }
+        if (bottomRight.v.y == 0)
+        {
+            SplitQuad(1, 0);
+        }
+        else
+        {
+            AddTriangle(bottomMid.index, rightMid.index, bottomRight.index);
+            AddTriangle(bottomMid.index, quadCenter.index, rightMid.index);
+        }
+        if (topLeft.v.y == 0)
+        {
+            SplitQuad(0, 1);
+        }
+        else
+        {
+            AddTriangle(leftMid.index, topMid.index, quadCenter.index);
+            AddTriangle(leftMid.index, topLeft.index, topMid.index);
+        }
+        if (topRight.v.y == 0)
+        {
+            SplitQuad(1, 1);
+        }
+        else
+        {
+            AddTriangle(quadCenter.index, topRight.index, rightMid.index);
+            AddTriangle(quadCenter.index, topMid.index, topRight.index);
+        }
+        
 
-            var point = start;
-            point.x += 0;
-            point.y = FindVertexHeight(point.x, point.z, tile);
-            point.z += RandomStep();
-            while(point.z < topLeft.v.z)
+        void SplitQuad(int quadX, int quadY)
+        {
+            int shiftX = quadX * 2;
+            int shiftY = quadY * 2;
+            for (int i = shiftX; i < 2 + shiftX; i++)
             {
-                Vertex v = new Vertex(point, vertices.Count);
+                for (int j = shiftY; j < 2 + shiftY; j++)
+                {
+                    Vertex3d bl = FindOrCreateVertex(i * splitFactor, j * splitFactor);
+                    Vertex3d br = FindOrCreateVertex((i + 1) * splitFactor, j * splitFactor);
+                    Vertex3d tl = FindOrCreateVertex(i * splitFactor, (j + 1) * splitFactor);
+                    Vertex3d tr = FindOrCreateVertex((i + 1) * splitFactor, (j + 1) * splitFactor);
 
-                vertices.Add(point);
-                uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+                    float x = bl.v.x + UnityEngine.Random.Range(0.3f, 0.7f) * splitFactor;
+                    float y = bl.v.z + UnityEngine.Random.Range(0.3f, 0.7f) * splitFactor;
+                    var p = new Vector3(x, FindVertexHeight(x, y, tile), y);
+                    Vertex3d center = new Vertex3d(p, vertices.Count);
+                    vertices.Add(p);
+                    uvs.Add(new Vector2 (x / (float)vertX, y / (float)vertY));
 
-                allTilePoints.Add(v);
-                tileSidePoints[key].Add(v);
-
-                point.x += 0;
-                point.y = FindVertexHeight(point.x, point.z, tile);
-                point.z += RandomStep();
+                    DrawTriangle(bl, tl, center);
+                    DrawTriangle(br, tr, center);
+                    DrawTriangle(bl, br, center);
+                    DrawTriangle(tl, tr, center);
+                }
             }
         }
-    }*/
+
+        Vertex3d FindOrCreateVertex(float shiftX, float shiftY)
+        {
+            float x = tile.x + shiftX;
+            float y = tile.y + shiftY;
+            foreach(var p in sidePoints)
+            {
+                if (p.v.x == x && p.v.y == y)
+                    return p;
+            }
+
+            Vector3 point = new Vector3(x, FindVertexHeight(x, y, tile), y);
+
+            Vertex3d v = new Vertex3d(point, vertices.Count);
+            vertices.Add(point);
+            uvs.Add(new Vector2 (point.x / (float)vertX, point.z / (float)vertY));
+
+            if (x == (float)tile.x)
+            {
+                tileSidePoints[(tile.x, tile.y, Direction.Left)].Add(v);
+                sidePoints.Add(v);
+            }
+            else if (x == (float)tile.x + 1)
+            {
+                tileSidePoints[(tile.x, tile.y, Direction.Right)].Add(v);
+                sidePoints.Add(v);
+            }
+            else if (y == (float)tile.y)
+            {
+                tileSidePoints[(tile.x, tile.y, Direction.Bottom)].Add(v);
+                sidePoints.Add(v);
+            }
+            else if (y == (float)tile.y + 1)
+            {
+                tileSidePoints[(tile.x, tile.y, Direction.Top)].Add(v);
+                sidePoints.Add(v);
+            }
+
+            return v;
+        }
+    }
+
+    void DrawTriangle(Vertex3d a, Vertex3d b, Vertex3d c)
+    {
+        if (Vector3.Cross(b.v - a.v, c.v - a.v).y > 0)
+        {
+            triangles.Add(a.index);
+            triangles.Add(b.index);
+            triangles.Add(c.index);
+        }
+        else
+        {
+            triangles.Add(a.index);
+            triangles.Add(c.index);
+            triangles.Add(b.index);
+        }
+    }
+
+    float FindVertexHeight(float x, float y, (int x, int y) tile)
+    {
+        var coastDistance = Mathf.PerlinNoise(x * noiseScale, y * noiseScale) * shoreDistance;
+        float minDepth = maxDepth;
+
+        void FindDepth(bool condition, float diff)
+        {
+            if (condition)
+            {
+                float depth = Mathf.InverseLerp(coastDistance, 0.5f, diff) * maxDepth;
+                if (depth > minDepth)
+                    minDepth = depth;
+            }
+        }
+
+        FindDepth(tile.x > 0 && terrainGrid[tile.x - 1, tile.y] != TerrainType.Water,
+            x - tile.x);
+        FindDepth(tile.x + 1 < sizeX && terrainGrid[tile.x + 1, tile.y] != TerrainType.Water,
+            tile.x + 1 - x);
+        FindDepth(tile.y > 0 && terrainGrid[tile.x, tile.y - 1] != TerrainType.Water,
+            y - tile.y);
+        FindDepth(tile.y + 1 < sizeY && terrainGrid[tile.x, tile.y + 1] != TerrainType.Water,
+            tile.y + 1 - y);
+
+        int index = tile.x + tile.y * vertX;
+        Vector3 bottomLeft = vertices[index];
+        index += 1;
+        Vector3 bottomRight = vertices[index];
+        index = tile.x + (tile.y + 1) * vertX;
+        Vector3 topLeft = vertices[index];
+        index += 1;
+        Vector3 topRight = vertices[index];
+        Vector2 pos = new Vector2(x, y);
+
+        FindDepth(bottomLeft.y == 0,
+            Vector2.Distance(v3tov2(bottomLeft), pos));
+        FindDepth(bottomRight.y == 0,
+            Vector2.Distance(v3tov2(bottomRight), pos));
+        FindDepth(topLeft.y == 0,
+            Vector2.Distance(v3tov2(topLeft), pos));
+        FindDepth(topRight.y == 0,
+            Vector2.Distance(v3tov2(topRight), pos));
+
+        return minDepth;
+    }
+
+    /* Delaunay version */
 
     float RandomStep()
     {
@@ -325,7 +508,7 @@ public class TerrainMeshRenderer : MonoBehaviour
             float pX = tile.x + RandomStep();
             while(pX < tile.x + 1)
             {
-                var shiftedY = pY + UnityEngine.Random.Range(-0.05f, 0.05f);
+                var shiftedY = pY + 0;//UnityEngine.Random.Range(-0.05f, 0.05f);
                 var point = new Vector3(pX, FindVertexHeight(pX, shiftedY, tile), shiftedY);
 
                 Vertex3d v = new Vertex3d(point, vertices.Count);
@@ -368,8 +551,7 @@ public class TerrainMeshRenderer : MonoBehaviour
         }
     }
 
-
-
+    /* Incorrect implementation */
 
     void SplitWaterTile(int tileX, int tileY)
     {
@@ -422,52 +604,6 @@ public class TerrainMeshRenderer : MonoBehaviour
         }
     }
 
-    float FindVertexHeight(float x, float y, (int x, int y) tile)
-    {
-        var coastDistance = UnityEngine.Random.Range(0, 0.3f);
-        float minDepth = maxDepth;
-
-        void FindDepth(bool condition, float diff)
-        {
-            if (condition)
-            {
-                float depth = Mathf.InverseLerp(coastDistance, center, diff) * maxDepth;
-                if (depth > minDepth)
-                    minDepth = depth;
-            }
-        }
-
-        FindDepth(tile.x > 0 && terrainGrid[tile.x - 1, tile.y] != TerrainType.Water,
-            x - tile.x);
-        FindDepth(tile.x + 1 < sizeX && terrainGrid[tile.x + 1, tile.y] != TerrainType.Water,
-            tile.x + 1 - x);
-        FindDepth(tile.y > 0 && terrainGrid[tile.x, tile.y - 1] != TerrainType.Water,
-            y - tile.y);
-        FindDepth(tile.y + 1 < sizeY && terrainGrid[tile.x, tile.y + 1] != TerrainType.Water,
-            tile.y + 1 - y);
-
-        int index = tile.x + tile.y * vertX;
-        Vector3 bottomLeft = vertices[index];
-        index += 1;
-        Vector3 bottomRight = vertices[index];
-        index = tile.x + (tile.y + 1) * vertX;
-        Vector3 topLeft = vertices[index];
-        index += 1;
-        Vector3 topRight = vertices[index];
-        Vector2 pos = new Vector2(x, y);
-
-        FindDepth(bottomLeft.y == 0,
-            Vector2.Distance(v3tov2(bottomLeft), pos));
-        FindDepth(bottomRight.y == 0,
-            Vector2.Distance(v3tov2(bottomRight), pos));
-        FindDepth(topLeft.y == 0,
-            Vector2.Distance(v3tov2(topLeft), pos));
-        FindDepth(topRight.y == 0,
-            Vector2.Distance(v3tov2(topRight), pos));
-
-        return minDepth;
-    }
-
     float PickSide(float a, float b, float c)
     {
         if (a < 0.5f && b < 0.5f && c < 0.5f)
@@ -477,23 +613,6 @@ public class TerrainMeshRenderer : MonoBehaviour
         if (b > a && b > c)
             return b;
         return c;
-
-        /*List<float> validNumbers = new List<float>();
-        if (a >= 0.5f)
-            validNumbers.Add(a);
-        if (b >= 0.5f)
-            validNumbers.Add(b);
-        if (c >= 0.5f)
-            validNumbers.Add(c);
-
-        float s = (a + b + c) / 2.0f;
-        float area = Mathf.Sqrt(s * (s - a) * (s - b) * (s - c));
-
-        if (validNumbers.Count == 0 || area < 0.05f)
-            return 0;
-
-        int index = UnityEngine.Random.Range(0, validNumbers.Count);
-        return validNumbers[index];*/
     }
 
     Vector2 v3tov2(Vector3 v)
@@ -566,7 +685,7 @@ public class TerrainMeshRenderer : MonoBehaviour
         SplitTriangle(second, v, third, tile, direction);
     }
 
-
+    /* other methods */
 
     [SerializeField] GameObject forestIconPrefab;
     [SerializeField] GameObject waterIconPrefab;
@@ -641,7 +760,7 @@ public class TerrainMeshRenderer : MonoBehaviour
                 if (terrainGrid[x, y] == TerrainType.Water)
                 {
                     var water = Instantiate(waterPrefab,
-                        new Vector3(x + 0.5f, -0.4f, y + 0.5f),
+                        new Vector3(x + 0.5f, -0.2f, y + 0.5f),
                         Quaternion.Euler(new Vector3(90,0,0)));
                 }
             }

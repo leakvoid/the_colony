@@ -17,7 +17,6 @@ public class MainCameraController : MonoBehaviour
 
     int gridX;
     int gridY;
-    float aspectRatio = 16f/9f;
     Vector3 currentPos;
 
     void Awake()
@@ -50,34 +49,53 @@ public class MainCameraController : MonoBehaviour
 
     void UpdateCameraPosition()// TODO camera speed scales with zoom
     {
+        bool IsValidMovement(Vector3 shift)
+        {
+            var edges = mcs.GetEdges();
+            Vector3 center = (edges[0] + edges[1] + edges[2] + edges[3]) / 4;
+
+            if (center.x < 0 || center.x > 150 || center.z < 0 || center.z > 150)
+                return true;
+            
+            var shifted = center + shift;
+            if (shifted.x < 0 || shifted.x > 150 || shifted.z < 0 || shifted.z > 150)
+                return false;
+
+            return true;
+        }
+
         var screenPos = new Vector3(0.5f, 0.5f);//Camera.main.ScreenToViewportPoint(Input.mousePosition);
         var cameraPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (screenPos.x <= 0.02 || Input.GetButton("Left"))
         {
-            if ((cameraPos.x - cameraPos.y) >= 0)
-                transform.position -= transform.right * cameraMoveSpeed * Time.deltaTime;
+            var shift = transform.right * cameraMoveSpeed * Time.deltaTime * -1;
+            if (IsValidMovement(shift))
+                transform.position += shift;
         }
         else if (screenPos.x >= 0.98 || Input.GetButton("Right"))
         {
-            if ((cameraPos.x + cameraPos.y) <= gridX)
-                transform.localPosition += transform.right * cameraMoveSpeed * Time.deltaTime;
+            var shift = transform.right * cameraMoveSpeed * Time.deltaTime;
+            if (IsValidMovement(shift))
+                transform.position += shift;
         }
         if (screenPos.y <= 0.02 || Input.GetButton("Down"))
         {
-            if ((cameraPos.z - cameraPos.y / aspectRatio) >= 0)
+            var direction = new Vector3(transform.up.x, 0, transform.up.z);
+            float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
+            var shift = direction * correction * cameraMoveSpeed * Time.deltaTime * -1;
+            if (IsValidMovement(shift))
             {
-                var direction = new Vector3(transform.up.x, 0, transform.up.z);
-                float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
-                transform.localPosition -= direction * correction * cameraMoveSpeed * Time.deltaTime;
+                transform.position += shift;
             }
         }
         else if (screenPos.y >= 0.98 || Input.GetButton("Up"))
         {
-            if ((cameraPos.z + cameraPos.y / aspectRatio) <= gridY)
+            var direction = new Vector3(transform.up.x, 0, transform.up.z);
+            float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
+            var shift = direction * correction * cameraMoveSpeed * Time.deltaTime;
+            if (IsValidMovement(shift))
             {
-                var direction = new Vector3(transform.up.x, 0, transform.up.z);
-                float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
-                transform.localPosition += direction * correction * cameraMoveSpeed * Time.deltaTime;
+                transform.position += shift;
             }
         }
     }

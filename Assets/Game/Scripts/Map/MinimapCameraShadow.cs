@@ -38,6 +38,11 @@ public class MinimapCameraShadow : MonoBehaviour
         Redraw();
     }
 
+    public Vector3[] GetEdges()
+    {
+        return vertices;
+    }
+
     public void Redraw()
     {
         Vector3 GetScreenEdge(Vector3 corner)
