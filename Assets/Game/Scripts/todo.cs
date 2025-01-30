@@ -83,7 +83,13 @@
     roads: shortest path vs already connected; shortest path to road network +
 
     textures for terrain and water +
-    3d models for buildings
+    3d models for buildings +
+
+    upgraded house clicking +
+    farm alignment +
+    fix price reduction calc with roads +
+    don't destroy worker while moving +
+    profile
 
     main menu
     pause menu

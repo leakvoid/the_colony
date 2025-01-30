@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3713680451143122201}
   - component: {fileID: 25098427878284524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ColonistData
   m_TagString: Untagged
   m_Icon: {fileID: 0}

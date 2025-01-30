@@ -195,7 +195,7 @@ namespace DelaunayTriangulation
             float len2Square = (vertex2.position.x * vertex2.position.x) + (vertex2.position.y * vertex2.position.y);
 
             // Compute the circumcircle of the triangle.
-            // TODO: Find better solution for this.
+            // ??? Find better solution for this.
             Vector2 circleCenter = new Vector2();
 
             circleCenter.x = (len0Square * (vertex2.position.y - vertex1.position.y) + len1Square * (vertex0.position.y - vertex2.position.y) + len2Square * (vertex1.position.y - vertex0.position.y)) / (vertex0.position.x * (vertex2.position.y - vertex1.position.y) + vertex1.position.x * (vertex0.position.y - vertex2.position.y) + vertex2.position.x * (vertex1.position.y - vertex0.position.y)) / 2f;

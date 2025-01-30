@@ -21,8 +21,8 @@ MonoBehaviour:
   <ToolsCost>k__BackingField: 30
   <GoldCost>k__BackingField: 800
   <ConstructionTime>k__BackingField: 20
-  <FinishedModel>k__BackingField: {fileID: 1988872704843617820, guid: cd89c82a4a3c2211fa24f342930cb310, type: 3}
-  <UnfinishedModel>k__BackingField: {fileID: 1427650454397667682, guid: a184726c11fd59b21bfe7097c205d3eb, type: 3}
+  <FinishedModel>k__BackingField: {fileID: 4587014148703394591, guid: ed9b5f614fe1f103c956898e105be720, type: 3}
+  <UnfinishedModel>k__BackingField: {fileID: 703705520179748133, guid: bfe8f0dfff3fb8607953591e9391ca7e, type: 3}
   <MaxNumberOfWorkers>k__BackingField: 3
   <Salary>k__BackingField: 30
   <TimeInterval>k__BackingField: 10

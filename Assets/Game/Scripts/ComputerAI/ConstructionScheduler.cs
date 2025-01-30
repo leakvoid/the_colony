@@ -293,14 +293,23 @@ public class ConstructionScheduler : MonoBehaviour
 
     void UpgradeRandomHouses()
     {
+        int maxT1Upgrades = 0, maxT2Upgrades = 0;
+        var houses = bm.GetAllHouses();
+        foreach(var house in houses)
+        {
+            if (house.upgradeTier == 0)
+                maxT1Upgrades++;
+            else if (house.upgradeTier == 1)
+                maxT2Upgrades++;
+        }
+
         int tier1Wood = globals.woodAmount / globals.HouseTemplate.Tier1UpgradeWoodCost;
         int tier1Gold = globals.goldAmount / globals.HouseTemplate.Tier1UpgradeGoldCost;
-        int tier1Upgraded = Math.Min(tier1Wood, tier1Gold);
+        int tier1Upgraded = Mathf.Min(tier1Wood, tier1Gold, maxT1Upgrades);
         int tier2Stone = globals.stoneAmount / globals.HouseTemplate.Tier2UpgradeStoneCost;
         int tier2Gold = (globals.goldAmount - tier1Upgraded * globals.HouseTemplate.Tier1UpgradeGoldCost) / globals.HouseTemplate.Tier2UpgradeGoldCost;
-        int tier2Upgraded = Math.Min(tier2Stone, tier2Gold);
+        int tier2Upgraded = Mathf.Min(tier2Stone, tier2Gold, maxT2Upgrades);
 
-        var houses = bm.GetAllHouses();
         foreach(var house in houses)
         {
             if (tier1Upgraded > 0 && house.upgradeTier == 0)

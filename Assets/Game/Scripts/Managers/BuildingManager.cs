@@ -36,7 +36,7 @@ public class BuildingManager : MonoBehaviour
         return allHouses;
     }
 
-    public void PlaceStartingHouse()// TODO should be center of the map
+    public void PlaceStartingHouse()
     {
         BuildingTemplate bt = globals.HouseTemplate;
 
@@ -59,6 +59,7 @@ public class BuildingManager : MonoBehaviour
         allHouses.Add(buildingData);
 
         buildingData.roadLocation = rpm.SetFirstRoad(location, bt);
+        Camera.main.transform.position = new Vector3(location.x, 20f, location.y);
 
         FinishBuildingConstruction(buildingData);
     }
@@ -90,8 +91,6 @@ public class BuildingManager : MonoBehaviour
         blm.UpdateAfterBuildingCreation(buildingData, bt);
 
         allBuildings.Add(buildingData);
-        if (bt.BuildingTag == BuildingTag.House)
-            allHouses.Add(buildingData);
 
         buildingData.modelReference.transform.parent = buildingData.transform;
 
@@ -125,6 +124,8 @@ public class BuildingManager : MonoBehaviour
             HousingBT bt = (HousingBT)buildingData.template;
             for (int i = 0; i < bt.Tier0ColonistCapacity; i++)
                 buildingData.colonists.Add(cm.CreateColonist(buildingData));
+            
+            allHouses.Add(buildingData);
         }
         else
         {
@@ -242,7 +243,6 @@ public class BuildingManager : MonoBehaviour
         HousingBT bt = (HousingBT)house.template;
         if (house.upgradeTier == 0)
         {
-            print("DEBUG upgrade wood");
             if (globals.goldAmount < bt.Tier1UpgradeGoldCost || globals.woodAmount < bt.Tier1UpgradeWoodCost)
                 return;
 
@@ -261,11 +261,10 @@ public class BuildingManager : MonoBehaviour
                 Globals.GridToGlobalCoordinates(house.gridLocation, bt.Tier1ModelPrefab),
                 Quaternion.identity
             );
-
+            house.modelReference.transform.parent = house.transform;
         }
         else if (house.upgradeTier == 1)
         {
-            print("DEBUG upgrade stone");
             if (globals.goldAmount < bt.Tier2UpgradeGoldCost || globals.stoneAmount < bt.Tier2UpgradeStoneCost)
                 return;
 
@@ -284,6 +283,7 @@ public class BuildingManager : MonoBehaviour
                 Globals.GridToGlobalCoordinates(house.gridLocation, bt.Tier2ModelPrefab),
                 Quaternion.identity
             );
+            house.modelReference.transform.parent = house.transform;
         }
         else
             throw new Exception("House already fully upgraded");

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <BuildingTag>k__BackingField: 9
   <BuildingType>k__BackingField: 2
-  <SizeX>k__BackingField: 3
+  <SizeX>k__BackingField: 4
   <SizeY>k__BackingField: 4
   <WoodCost>k__BackingField: 20
   <StoneCost>k__BackingField: 20

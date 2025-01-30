@@ -276,6 +276,20 @@ public class RoadPathModule : MonoBehaviour
     float colonistZ = 0.25f;
     float roadShift = 0.5f;
 
+    public int GetPathDistance((int x, int y) _from, (int x, int y) _to)
+    {
+        Pair from = new Pair(_from.x, _from.y);
+        Pair to = new Pair(_to.x, _to.y);
+
+        Pair[] path;
+        if (savedPaths.ContainsKey((from, to)))
+            path = savedPaths[(from, to)];
+        else
+            path = CreateNewPath(from, to);
+        
+        return path.Length;
+    }
+
     public IEnumerator MoveColonist((int x, int y) _from, (int x, int y) _to, GameObject colonistModel)
     {
         Pair from = new Pair(_from.x, _from.y);
@@ -288,7 +302,7 @@ public class RoadPathModule : MonoBehaviour
             path = CreateNewPath(from, to);
         var pathLen = path.GetLength(0);
 
-        colonistModel.transform.position = SpawnPosition(path[0], (pathLen > 1) ? path[1] : path[0], colonistModel);
+        colonistModel.transform.position = SpawnPosition(path[0], (pathLen > 1) ? path[1] : path[0], colonistModel);// pathLen == 1 ?
         colonistModel.SetActive(true);
         
         for (int i = 1; i < pathLen; i++)

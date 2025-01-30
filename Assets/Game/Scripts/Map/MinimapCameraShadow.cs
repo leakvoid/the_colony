@@ -35,6 +35,11 @@ public class MinimapCameraShadow : MonoBehaviour
         mesh = new Mesh();
         meshFilter = minimapCameraMesh.GetComponent<MeshFilter>();
 
+        var grid = FindObjectOfType<AbstractMapGenerator>().GetTerrainGrid();
+        var sizeX = grid.GetLength(0);
+        var sizeY = grid.GetLength(1);
+        
+
         Redraw();
     }
 

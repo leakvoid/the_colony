@@ -45,6 +45,9 @@ public class ColonistManager : MonoBehaviour
         colonistData.livesAt = livesAt;
         colonistData.consumerCurrentlyInside = livesAt;
 
+        colonistData.consumerModelReference = Instantiate(colonistModelPrefab);
+        colonistData.consumerModelReference.transform.parent = colonistData.transform;
+
         InitiateConsumerRoutine(colonistData);
 
         joblessColonists.Enqueue(colonistData);
@@ -82,10 +85,9 @@ public class ColonistManager : MonoBehaviour
             StartCoroutine(ProcessWorkerActionQueue(colonistData));
     }
 
-    float CalculateWalkingTime(ColonistData colonistData)// TODO for roads
+    float CalculateWalkingTime(ColonistData colonistData)
     {
-        float distance = Vector3.Distance(colonistData.livesAt.modelReference.transform.position,
-            colonistData.worksAt.modelReference.transform.position);
+        float distance = rpm.GetPathDistance(colonistData.livesAt.roadLocation, colonistData.worksAt.roadLocation);
         return distance / globals.ColonistMovementSpeed;
     }
 
@@ -342,18 +344,16 @@ public class ColonistManager : MonoBehaviour
     }
 
     IEnumerator MoveTo(ColonistData colonistData, BuildingData source, BuildingData destination, bool isWorker)
-    {
-        var model = Instantiate(colonistModelPrefab);
-        model.transform.parent = colonistData.transform;
-        
+    {        
+        GameObject model;
         if (isWorker)
-            colonistData.workerModelReference = model;
+            model = colonistData.workerModelReference;
         else
-            colonistData.consumerModelReference = model;
+            model = colonistData.consumerModelReference;
 
         yield return rpm.MoveColonist(source.roadLocation, destination.roadLocation, model);
 
-        Destroy(model);
+        model.SetActive(false);
         colonistData.consumerCurrentlyInside = destination;
     }
 
@@ -366,6 +366,9 @@ public class ColonistManager : MonoBehaviour
     IEnumerator ProcessWorkerActionQueue(ColonistData colonistData)
     {
         colonistData.isWorkerRoutineActive = true;
+
+        colonistData.workerModelReference = Instantiate(colonistModelPrefab);
+        colonistData.workerModelReference.transform.parent = colonistData.transform;
 
         while (colonistData.workerActions.Count > 0)
         {
@@ -399,6 +402,7 @@ public class ColonistManager : MonoBehaviour
             }
         }
 
+        Destroy(colonistData.workerModelReference);
         colonistData.isWorkerRoutineActive = false;
     }
 }

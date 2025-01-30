@@ -18,6 +18,7 @@ public class MainCameraController : MonoBehaviour
     int gridX;
     int gridY;
     Vector3 currentPos;
+    float currentZoomValue = 0;
 
     void Awake()
     {
@@ -33,6 +34,10 @@ public class MainCameraController : MonoBehaviour
 
         mcs.Initialize();
         currentPos = transform.position;
+
+        float[] distances = new float[32];
+        distances[7] = 20;
+        Camera.main.layerCullDistances = distances;
     }
 
     void Update()
@@ -40,6 +45,24 @@ public class MainCameraController : MonoBehaviour
         UpdateCameraPosition();
         UpdateCameraSize();
         UpdateCameraRotation();
+        UpdateCameraClipping();
+        UpdateMinimapShadow();
+    }
+
+    void UpdateCameraClipping()
+    {
+        if (currentZoomValue != transform.position.y)
+        {
+            currentZoomValue = transform.position.y;
+
+            // 90 -> 1, 0 -> 4, 180 -> 4
+            float angleCoefficient = Mathf.Lerp(1f, 10f, Mathf.Abs(transform.eulerAngles.x - 90) / 90);
+            Camera.main.farClipPlane = (currentZoomValue + 5) * angleCoefficient;
+        }
+    }
+
+    void UpdateMinimapShadow()
+    {
         if (currentPos != transform.position)
         {
             currentPos = transform.position;
@@ -113,7 +136,7 @@ public class MainCameraController : MonoBehaviour
         {
             var zoom = transform.position;
             zoom.y /= cameraZoomFactor;
-            if (zoom.y < 50f)
+            if (zoom.y < 30f)
                 transform.position = zoom;
         }
     }
@@ -154,7 +177,13 @@ public class MainCameraController : MonoBehaviour
                 dy = 1;
 
             transform.RotateAround(rotationPoint, Vector3.up, dx * cameraRotationSpeed * Time.deltaTime);
-            transform.RotateAround(rotationPoint, transform.right, dy * cameraRotationSpeed * Time.deltaTime);// TODO clamp
+
+            if ((transform.eulerAngles.x < 30 || transform.eulerAngles.x > 330) &&
+                ((Mathf.Abs(transform.eulerAngles.z) < 0.001f && dy == -1) ||
+                (Mathf.Abs(transform.eulerAngles.z - 180) < 0.001f && dy == 1)))
+                return;
+
+            transform.RotateAround(rotationPoint, transform.right, dy * cameraRotationSpeed * Time.deltaTime);
         }
     }
 

@@ -6233,7 +6233,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 183
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -7646,54 +7646,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1160714481}
   m_CullTransparentMesh: 1
---- !u!1 &1161911595
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1161911597}
-  - component: {fileID: 1161911596}
-  m_Layer: 0
-  m_Name: ForTesting
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1161911596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1161911595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d85941991150921648df1b34a11eb885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myPrefab: {fileID: 330314635827307569, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
-  myPrefab2: {fileID: 3187569466758911184, guid: 2fcfefc18886eae34817c846ab578733, type: 3}
-  abstractWorker: {fileID: 2430357669995396686, guid: 2f25b91bba55c3ded842253b9f9dda1e, type: 3}
-  workerModel: {fileID: 1280535102969009803, guid: fb6a762f344d254e5a341bd496c74619, type: 3}
---- !u!4 &1161911597
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1161911595}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1180629109
 GameObject:
   m_ObjectHideFlags: 0
@@ -9150,7 +9102,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 1
   orthographic size: 76
@@ -9525,10 +9477,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464286222190e16e0b94e3e2a4211805, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 3000
-  woodAmount: 20
-  stoneAmount: 20
-  toolsAmount: 0
+  goldAmount: 300000
+  woodAmount: 20000
+  stoneAmount: 20000
+  toolsAmount: 20000
   ironAmount: 0
   cottonAmount: 0
   wheatAmount: 0
@@ -12569,7 +12521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colonistDataPrefab: {fileID: 25098427878284524, guid: 141c2a57a9b01a4dda9d76512abe7b8e, type: 3}
-  colonistModelPrefab: {fileID: 2669372775266760516, guid: c6a5240e05afaf44eb4897daf43cc066, type: 3}
+  colonistModelPrefab: {fileID: 993849971621315820, guid: 7a9267ccd705a5c56a6a8b45a2eccdff, type: 3}
 --- !u!114 &1987594265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13665,4 +13617,3 @@ SceneRoots:
   - {fileID: 329559958}
   - {fileID: 1094949817}
   - {fileID: 865720563}
-  - {fileID: 1161911597}
