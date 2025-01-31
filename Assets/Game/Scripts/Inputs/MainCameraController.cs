@@ -77,11 +77,11 @@ public class MainCameraController : MonoBehaviour
             var edges = mcs.GetEdges();
             Vector3 center = (edges[0] + edges[1] + edges[2] + edges[3]) / 4;
 
-            if (center.x < 0 || center.x > 150 || center.z < 0 || center.z > 150)
+            if (center.x < 0 || center.x > gridX || center.z < 0 || center.z > gridY)
                 return true;
             
             var shifted = center + shift;
-            if (shifted.x < 0 || shifted.x > 150 || shifted.z < 0 || shifted.z > 150)
+            if (shifted.x < 0 || shifted.x > gridY || shifted.z < 0 || shifted.z > gridY)
                 return false;
 
             return true;
@@ -189,6 +189,8 @@ public class MainCameraController : MonoBehaviour
 
     public void MoveCameraViaMinimap(Vector3 minimapPos)
     {
-        transform.position = new Vector3(gridX * minimapPos.x / 100, transform.position.y, gridY * minimapPos.z / 100);
+        float shiftX = Mathf.InverseLerp(0, 65f, minimapPos.x);
+        float shiftY = Mathf.InverseLerp(0, 65f, minimapPos.z);
+        transform.position = new Vector3(gridX * shiftX, transform.position.y, gridY * shiftY);
     }
 }

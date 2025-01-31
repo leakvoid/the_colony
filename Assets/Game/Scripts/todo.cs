@@ -89,7 +89,7 @@
     farm alignment +
     fix price reduction calc with roads +
     don't destroy worker while moving +
-    profile
+    profile +
 
     main menu
     pause menu

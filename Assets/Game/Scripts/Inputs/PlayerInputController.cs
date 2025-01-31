@@ -22,7 +22,7 @@ public class PlayerInputController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var minimapPos = minimapCamera.ScreenToViewportPoint(Input.mousePosition);
-            if (minimapPos.x <= 0.6 && minimapPos.y <= 0.6)
+            if (minimapPos.x <= 0.65 && minimapPos.y <= 0.65)
             {
                 //print("main ScreenToViewportPoint: " + Camera.main.ScreenToViewportPoint(Input.mousePosition));
                 //print("minimap ScreenToViewportPoint: " + minimapCamera.ScreenToViewportPoint(Input.mousePosition));

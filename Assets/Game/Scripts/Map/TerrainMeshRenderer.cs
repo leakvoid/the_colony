@@ -10,8 +10,8 @@ using TreeEditor;
 
 public class TerrainMeshRenderer : MonoBehaviour
 {
-    [SerializeField] MeshFilter meshFilter;
-    [SerializeField] MeshRenderer meshRenderer;
+    [SerializeField] GameObject terrainPrefab;
+    [SerializeField] GameObject outsideTerrainPrefab;
     [SerializeField] GameObject waterPrefab;
     [SerializeField] float maxDepth = -1f;
 
@@ -36,11 +36,10 @@ public class TerrainMeshRenderer : MonoBehaviour
         sizeY = terrainGrid.GetLength(1);
 
         CreateTerrainMesh();
+        CreateSideTerrain();
         AddMinimapIcons();
         SpawnTrees();
         CreateWater();
-
-        meshFilter.sharedMesh = mesh;
     }
 
     List<Vector3> vertices;
@@ -150,6 +149,50 @@ public class TerrainMeshRenderer : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.uv = uvs.ToArray();
         mesh.RecalculateNormals();
+        var terrainMesh = Instantiate(terrainPrefab);
+        terrainMesh.GetComponent<MeshFilter>().sharedMesh = mesh;
+    }
+
+    void CreateSideTerrain()
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (i == 0 && j == 0)
+                    continue;
+
+                var nVertices = new Vector3[4];
+                var nUvs = new Vector2[4];
+                var nTriangles = new int[6];
+
+                int index = 0;
+                for (int y = 0; y <= sizeY; y += sizeY)
+                {
+                    for (int x = 0; x <= sizeX; x += sizeX)
+                    {
+                        nVertices[index] = new Vector3(x, 0f, y);
+                        nUvs[index] = new Vector2 (x / (float)vertX, y / (float)vertY);
+
+                        index++;
+                    }
+                }
+                nTriangles[0] = 0;
+                nTriangles[1] = 3;
+                nTriangles[2] = 1;
+                nTriangles[3] = 0;
+                nTriangles[4] = 2;
+                nTriangles[5] = 3;
+
+                mesh = new Mesh();
+                mesh.vertices = nVertices;
+                mesh.triangles = nTriangles;
+                mesh.uv = nUvs;
+                mesh.RecalculateNormals();
+                var terrainMesh = Instantiate(outsideTerrainPrefab, new Vector3(i * sizeX, 0, j * sizeY), Quaternion.identity);
+                terrainMesh.GetComponent<MeshFilter>().sharedMesh = mesh;
+            }
+        }
     }
 
     /* triangulation */

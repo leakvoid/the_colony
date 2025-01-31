@@ -38,7 +38,8 @@ public class MinimapCameraShadow : MonoBehaviour
         var grid = FindObjectOfType<AbstractMapGenerator>().GetTerrainGrid();
         var sizeX = grid.GetLength(0);
         var sizeY = grid.GetLength(1);
-        
+        transform.position = new Vector3(sizeX / 2, 10, sizeY / 2);
+        GetComponent<Camera>().orthographicSize = sizeX / 2 + 1;
 
         Redraw();
     }

@@ -157,27 +157,62 @@ public class BuildingLocationModule : MonoBehaviour
 
     bool[,] GetAvailableBuildingSpots(BuildingTemplate bt)
     {
-        // TODO O(x^4) can be optimized
-        var availableForBuilding = new bool[gridX - bt.SizeX + 1, gridY - bt.SizeY + 1];
-        for (int i = 0; i < availableForBuilding.GetLength(0); i++)
+        var canBuild = new bool[gridX - bt.SizeX + 1, gridY - bt.SizeY + 1];
+        for (int x = 0; x < canBuild.GetLength(0); x++)
         {
-            for (int j = 0; j < availableForBuilding.GetLength(1); j++)
+            for (int y = 0; y < canBuild.GetLength(1); y++)
             {
-                availableForBuilding[i,j] = true;
-                for (int k = 0; k < bt.SizeX; k++)
+                if (x > 0 && y > 0 && canBuild[x - 1, y] && canBuild[x, y - 1])
                 {
-                    for (int l = 0; l < bt.SizeY; l++)
+                    if (availableSpace[x + bt.SizeX - 1, y + bt.SizeY - 1] == TileAvailability.Empty)
+                        canBuild[x, y] = true;
+                }
+                else if (x > 0 && canBuild[x - 1, y])
+                {
+                    canBuild[x, y] = true;
+                    for (int j = 0; j < bt.SizeY; j++)
                     {
-                        if (availableSpace[i + k,j + l] != TileAvailability.Empty)
+                        if (availableSpace[x + bt.SizeX - 1, y + j] != TileAvailability.Empty)
                         {
-                            availableForBuilding[i, j] = false;
+                            canBuild[x, y] = false;
                             break;
                         }
                     }
                 }
+                else if (y > 0 && canBuild[x, y - 1])
+                {
+                    canBuild[x, y] = true;
+                    for (int i = 0; i < bt.SizeX; i++)
+                    {
+                        if (availableSpace[x + i, y + bt.SizeY - 1] != TileAvailability.Empty)
+                        {
+                            canBuild[x, y] = false;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    void CheckSpace()
+                    {
+                        canBuild[x, y] = true;
+                        for (int i = 0; i < bt.SizeX; i++)
+                        {
+                            for (int j = 0; j < bt.SizeY; j++)
+                            {
+                                if (availableSpace[x + i, y + j] != TileAvailability.Empty)
+                                {
+                                    canBuild[x, y] = false;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    CheckSpace();
+                }
             }
         }
-        return availableForBuilding;
+        return canBuild;
     }
 
     (int, int) PickBestHousingLocation(BuildingTemplate bt)
@@ -292,7 +327,53 @@ public class BuildingLocationModule : MonoBehaviour
                 if (!availableForBuilding[i,j])
                     continue;
                 
-                int coverValue = GetServiceCoverAreaValue(i, j, uncoveredHouses, bt);
+                int GetServiceCoverAreaValue(int x, int y)
+                {
+                    int count;
+                    if (x > 0)
+                    {
+                        count = coverValueGrid[x - 1, y];
+                        int leftEdge = x - 1 - bt.CoverArea;
+                        int rightEdge = x + bt.CoverArea;
+                        for (int j = Math.Max(y - bt.CoverArea, 0); j < Math.Min(y + bt.CoverArea, gridY); j++)
+                        {
+                            if (leftEdge >= 0 && uncoveredHouses[leftEdge, j])
+                                count--;
+                            
+                            if (rightEdge < gridX && uncoveredHouses[rightEdge, j])
+                                count++;
+                        }
+                    }
+                    else if (y > 0)
+                    {
+                        count = coverValueGrid[x, y - 1];
+                        int bottomEdge = y - 1 - bt.CoverArea;
+                        int topEdge = y + bt.CoverArea;
+                        for (int i = Math.Max(x - bt.CoverArea, 0); i < Math.Min(x + bt.CoverArea, gridX); i++)
+                        {
+                            if (bottomEdge >= 0 && uncoveredHouses[i, bottomEdge])
+                                count--;
+                            
+                            if (topEdge < gridY && uncoveredHouses[i, topEdge])
+                                count++;
+                        }
+                    }
+                    else
+                    {
+                        count = 0;
+                        for (int i = Math.Max(x - bt.CoverArea, 0); i < Math.Min(x + bt.CoverArea, gridX); i++)
+                        {
+                            for (int j = Math.Max(y - bt.CoverArea, 0); j < Math.Min(y + bt.CoverArea, gridY); j++)
+                            {
+                                if (uncoveredHouses[i, j])
+                                    count++;
+                            }
+                        }
+                    }
+                    return count;
+                }
+                
+                int coverValue = GetServiceCoverAreaValue(i, j);
                 if (coverValue > bestCoverValue)
                 {
                     bestCoverValue = coverValue;
@@ -302,7 +383,7 @@ public class BuildingLocationModule : MonoBehaviour
                 {
                     numberOfBestSpots++;
                 }
-                coverValueGrid[i,j] = coverValue;
+                coverValueGrid[i, j] = coverValue;
             }
         }
 
@@ -331,21 +412,6 @@ public class BuildingLocationModule : MonoBehaviour
         }
 
         throw new Exception("Should never happen. Picked random service position not found");
-    }
-
-    int GetServiceCoverAreaValue(int x, int y, bool[,] uncoveredHouses, ServiceBT bt)
-    {
-        // TODO O(x^4) can be optimized; center around entire building
-        int count = 0;
-        for (int i = Math.Max(x - bt.CoverArea, 0); i < Math.Min(x + bt.CoverArea, gridX); i++)
-        {
-            for (int j = Math.Max(y - bt.CoverArea, 0); j < Math.Min(y + bt.CoverArea, gridY); j++)
-            {
-                if (uncoveredHouses[i,j])
-                    count++;
-            }
-        }
-        return count;
     }
 
     // TODO logic is wrong, any building space, not just top left corner; similar problem in other cases
