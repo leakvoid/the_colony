@@ -29,5 +29,5 @@ MonoBehaviour:
   <AmountProducedPerInterval>k__BackingField: 40
   <ProducedResource>k__BackingField: 8
   <GroundResource>k__BackingField: 4
-  <MinDistanceToResource>k__BackingField: 3
+  <MinDistanceToResource>k__BackingField: 2
   <CaptureGatheringArea>k__BackingField: 8

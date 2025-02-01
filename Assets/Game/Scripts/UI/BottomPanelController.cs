@@ -61,6 +61,9 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] TextMeshProUGUI leftResourceText;
     [SerializeField] Image rightResourceImage;
     [SerializeField] TextMeshProUGUI rightResourceText;
+    [SerializeField] GameObject gatheringGroup;
+    [SerializeField] Image centerResourceImage;
+    [SerializeField] TextMeshProUGUI centerResourceText;
 
     [SerializeField] GameObject serviceGroup;
     [SerializeField] GameObject marketGroup;
@@ -320,6 +323,7 @@ public class BottomPanelController : MonoBehaviour
                 if (building.template.BuildingType == BuildingType.Processing)
                 {
                     processingGroup.SetActive(true);
+                    gatheringGroup.SetActive(false);
 
                     ProcessingBT bt = (ProcessingBT)building.template;
                     leftResourceText.text = bt.AmountConsumedPerInterval.ToString();
@@ -364,46 +368,47 @@ public class BottomPanelController : MonoBehaviour
                 else
                 {
                     processingGroup.SetActive(false);
+                    gatheringGroup.SetActive(true);
 
                     ProductionBT bt = (ProductionBT)building.template;
-                    leftResourceText.text = bt.AmountProducedPerInterval.ToString();
+                    centerResourceText.text = bt.AmountProducedPerInterval.ToString();
 
                     switch (bt.BuildingTag)
                     {
                         case BuildingTag.CottonPlantation:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/cotton.png", typeof(Sprite));
                             break;
                         case BuildingTag.HopsFarm:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/Game/Art/Images/hops.png", typeof(Sprite));
                             break;
                         case BuildingTag.WheatFarm:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/wheat.png", typeof(Sprite));
                             break;
                         case BuildingTag.FishingHut:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/fish.png", typeof(Sprite));
                             break;
                         case BuildingTag.HuntersCabin:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/ham.png", typeof(Sprite));
                             break;
                         case BuildingTag.IronMine:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
                             break;
                         case BuildingTag.SaltMine:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
                             break;
                         case BuildingTag.Sawmill:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/logs.png", typeof(Sprite));
                             break;
                         case BuildingTag.StoneMine:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
+                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
                                 "Assets/StrategyGameResourceIcons/Icons/stoneblock.png", typeof(Sprite));
                             break;
                         default:

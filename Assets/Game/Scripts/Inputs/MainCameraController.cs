@@ -19,6 +19,7 @@ public class MainCameraController : MonoBehaviour
     int gridY;
     Vector3 currentPos;
     float currentZoomValue = 0;
+    float cameraSpeedFactor = 1;
 
     void Awake()
     {
@@ -58,6 +59,8 @@ public class MainCameraController : MonoBehaviour
             // 90 -> 1, 0 -> 4, 180 -> 4
             float angleCoefficient = Mathf.Lerp(1f, 10f, Mathf.Abs(transform.eulerAngles.x - 90) / 90);
             Camera.main.farClipPlane = (currentZoomValue + 5) * angleCoefficient;
+
+            cameraSpeedFactor = 0.3f + Mathf.InverseLerp(5f, 25f, transform.position.y) * 0.7f;
         }
     }
 
@@ -70,7 +73,7 @@ public class MainCameraController : MonoBehaviour
         }
     }
 
-    void UpdateCameraPosition()// TODO camera speed scales with zoom
+    void UpdateCameraPosition()
     {
         bool IsValidMovement(Vector3 shift)
         {
@@ -87,17 +90,16 @@ public class MainCameraController : MonoBehaviour
             return true;
         }
 
-        var screenPos = new Vector3(0.5f, 0.5f);//Camera.main.ScreenToViewportPoint(Input.mousePosition);
-        var cameraPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var screenPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);// new Vector3(0.5f, 0.5f);
         if (screenPos.x <= 0.02 || Input.GetButton("Left"))
         {
-            var shift = transform.right * cameraMoveSpeed * Time.deltaTime * -1;
+            var shift = transform.right * cameraMoveSpeed * cameraSpeedFactor * Time.deltaTime * -1;
             if (IsValidMovement(shift))
                 transform.position += shift;
         }
         else if (screenPos.x >= 0.98 || Input.GetButton("Right"))
         {
-            var shift = transform.right * cameraMoveSpeed * Time.deltaTime;
+            var shift = transform.right * cameraMoveSpeed * cameraSpeedFactor * Time.deltaTime;
             if (IsValidMovement(shift))
                 transform.position += shift;
         }
@@ -105,7 +107,7 @@ public class MainCameraController : MonoBehaviour
         {
             var direction = new Vector3(transform.up.x, 0, transform.up.z);
             float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
-            var shift = direction * correction * cameraMoveSpeed * Time.deltaTime * -1;
+            var shift = direction * correction * cameraMoveSpeed * cameraSpeedFactor * Time.deltaTime * -1;
             if (IsValidMovement(shift))
             {
                 transform.position += shift;
@@ -115,7 +117,7 @@ public class MainCameraController : MonoBehaviour
         {
             var direction = new Vector3(transform.up.x, 0, transform.up.z);
             float correction = 1 / (Mathf.Abs(transform.up.x) + Mathf.Abs(transform.up.z));
-            var shift = direction * correction * cameraMoveSpeed * Time.deltaTime;
+            var shift = direction * correction * cameraMoveSpeed * cameraSpeedFactor * Time.deltaTime;
             if (IsValidMovement(shift))
             {
                 transform.position += shift;

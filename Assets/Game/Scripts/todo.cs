@@ -90,6 +90,7 @@
     fix price reduction calc with roads +
     don't destroy worker while moving +
     profile +
+    outline for buildings and citizens +
 
     main menu
     pause menu

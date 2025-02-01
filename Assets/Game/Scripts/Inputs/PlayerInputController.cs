@@ -8,6 +8,7 @@ public class PlayerInputController : MonoBehaviour
 {
     BottomPanelController bpc;
     MainCameraController mcc;
+    ObjectSelectionHandler osh;
 
     [SerializeField] Camera minimapCamera;
 
@@ -15,6 +16,7 @@ public class PlayerInputController : MonoBehaviour
     {
         bpc = FindObjectOfType<BottomPanelController>();
         mcc = FindObjectOfType<MainCameraController>();
+        osh = FindObjectOfType<ObjectSelectionHandler>();
     }
 
     void Update()
@@ -71,11 +73,17 @@ public class PlayerInputController : MonoBehaviour
                 {
                     bpc.ShowBuildingInfoPanel(selectedObject.GetComponent<BuildingData>());
                     stateChanged = true;
+
+                    osh.SelectBuilding(selectedObject.GetComponent<BuildingData>());
+                    return;
                 }
                 else if (selectedObject.name == "ColonistData(Clone)")
                 {
                     bpc.ShowColonistInfoPanel(selectedObject.GetComponent<ColonistData>());
                     stateChanged = true;
+
+                    osh.SelectColonist(hit.transform.parent.gameObject);
+                    return;
                 }
             }
         }
@@ -84,5 +92,7 @@ public class PlayerInputController : MonoBehaviour
         {
             bpc.ShowSecondaryResourcePanel();
         }
+
+        osh.DeselectObject();
     }
 }

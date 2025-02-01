@@ -12,6 +12,7 @@ public class ColonistManager : MonoBehaviour
     BuildingLocationModule blm;
     ConstructionScheduler constructionScheduler;
     RoadPathModule rpm;
+    ObjectSelectionHandler osh;
 
     List<ColonistData> allColonists;
     Queue<ColonistData> joblessColonists;
@@ -27,6 +28,7 @@ public class ColonistManager : MonoBehaviour
         blm = FindObjectOfType<BuildingLocationModule>();
         constructionScheduler = FindObjectOfType<ConstructionScheduler>();// TODO only for computer player
         rpm = FindObjectOfType<RoadPathModule>();
+        osh = FindObjectOfType<ObjectSelectionHandler>();
 
         allColonists = new List<ColonistData>();
         joblessColonists = new Queue<ColonistData>();
@@ -402,6 +404,7 @@ public class ColonistManager : MonoBehaviour
             }
         }
 
+        osh.DisconnectBorder(colonistData.workerModelReference);
         Destroy(colonistData.workerModelReference);
         colonistData.isWorkerRoutineActive = false;
     }

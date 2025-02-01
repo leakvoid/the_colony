@@ -127,6 +127,11 @@ public class ConstructionScheduler : MonoBehaviour
                 pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
                 pressure[(int)BuildingTag.FishingHut] -= reducedAmount;
                 pressure[(int)BuildingTag.Bakery] -= reducedAmount;
+                if (buildingTemplate.BuildingTag == BuildingTag.Bakery)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Windmill, 1);
+                    IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, 1);
+                }
                 break;
         }
     }
@@ -150,6 +155,7 @@ public class ConstructionScheduler : MonoBehaviour
                 break;
             case ResourceType.Tools:
                 IncreaseResourceBuildingPressure(BuildingTag.Forge, amount);
+                IncreaseResourceBuildingPressure(BuildingTag.IronMine, amount);
                 break;
             // Raw
             case ResourceType.Iron:
@@ -166,6 +172,7 @@ public class ConstructionScheduler : MonoBehaviour
                 break;
             case ResourceType.Flour:
                 IncreaseResourceBuildingPressure(BuildingTag.Windmill, amount);
+                IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, amount);
                 break;
             // Consumption
             case ResourceType.Salt:
@@ -173,6 +180,7 @@ public class ConstructionScheduler : MonoBehaviour
                 break;
             case ResourceType.Cloth:
                 IncreaseResourceBuildingPressure(BuildingTag.Clothier, amount);
+                IncreaseResourceBuildingPressure(BuildingTag.CottonPlantation, amount);
                 break;
             case ResourceType.Food:
                 IncreaseResourceBuildingPressure(BuildingTag.HuntersCabin, amount);
@@ -181,6 +189,7 @@ public class ConstructionScheduler : MonoBehaviour
                 break;
             case ResourceType.Beer:
                 IncreaseResourceBuildingPressure(BuildingTag.Brewery, amount);
+                IncreaseResourceBuildingPressure(BuildingTag.HopsFarm, amount);
                 break;
             default:
                 throw new Exception("Resource " + resourceType.ToString() + " not handled");
@@ -203,7 +212,7 @@ public class ConstructionScheduler : MonoBehaviour
     bool stonePressureOccurred;
     bool toolsPressureOccurred;
 
-    bool TryBuilding(BuildingTag buildingTag)// TODO needs refactoring
+    bool TryBuilding(BuildingTag buildingTag)
     {
         if (pressure[(int)buildingTag] < GetPressureThreshold(buildingTag))
             return false;
