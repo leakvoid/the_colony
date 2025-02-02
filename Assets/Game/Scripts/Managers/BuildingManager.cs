@@ -79,7 +79,6 @@ public class BuildingManager : MonoBehaviour
         if (location == (-1, -1))
             return null;
 
-        print("DEBUG Build: " + bt.BuildingTag.ToString());
         BuildingData buildingData = Instantiate(buildingDataPrefab);
         buildingData.template = bt;
         buildingData.gridLocation = location;
