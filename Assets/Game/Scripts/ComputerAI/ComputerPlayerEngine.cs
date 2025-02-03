@@ -59,7 +59,7 @@ public class ComputerPlayerEngine : MonoBehaviour
         while (true)
         {
             int workerDeficit = 20 - cm.GetJoblessColonistCount() - cm.GetFutureColonistCount() -
-                cs.GetBuildingPressure(BuildingTag.House) * globals.HouseTemplate.Tier0ColonistCapacity;
+                (int)cs.GetBuildingPressure(BuildingTag.House) * globals.HouseTemplate.Tier0ColonistCapacity;
             
             if (workerDeficit > 0)
             {

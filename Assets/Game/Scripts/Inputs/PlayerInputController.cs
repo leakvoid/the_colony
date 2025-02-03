@@ -24,7 +24,7 @@ public class PlayerInputController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var minimapPos = minimapCamera.ScreenToViewportPoint(Input.mousePosition);
-            if (minimapPos.x <= 0.65 && minimapPos.y <= 0.65)
+            if (minimapPos.x <= 1.2 && minimapPos.y <= 1.2)
             {
                 //print("main ScreenToViewportPoint: " + Camera.main.ScreenToViewportPoint(Input.mousePosition));
                 //print("minimap ScreenToViewportPoint: " + minimapCamera.ScreenToViewportPoint(Input.mousePosition));
@@ -39,6 +39,10 @@ public class PlayerInputController : MonoBehaviour
                 SelectGameObject();
             }
 
+        }
+        else if (Input.GetKeyDown("escape"))
+        {
+            Application.Quit();
         }
     }
 

@@ -1,12 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.VisualScripting;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using DelaunayTriangulation;
-using TreeEditor;
 
 public class TerrainMeshRenderer : MonoBehaviour
 {
@@ -141,8 +136,6 @@ public class TerrainMeshRenderer : MonoBehaviour
             }
             index++;
         }
-
-        print(vertices.Count);
 
         mesh = new Mesh();
         mesh.vertices = vertices.ToArray();

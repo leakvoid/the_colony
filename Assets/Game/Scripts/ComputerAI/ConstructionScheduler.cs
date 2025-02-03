@@ -11,8 +11,9 @@ public class ConstructionScheduler : MonoBehaviour
     BuildingManager bm;
     BuildingLocationModule blm;// TODO refactor
 
-    int[] pressure;
-    int[] buildingCount;
+    float[] pressure;
+    float consumptionPeriod;
+    float stepAdjustment;
 
     List<BuildingTag> buildingPriorityList;
 
@@ -28,9 +29,10 @@ public class ConstructionScheduler : MonoBehaviour
     public void Initialize()
     {
         int count = Enum.GetValues(typeof(BuildingTag)).Length;
+        consumptionPeriod = globals.NeedAmountReplenished * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
+        stepAdjustment = globals.EngineNeedCheckInterval / consumptionPeriod;
 
-        pressure = new int[count];
-        buildingCount = new int[count];
+        pressure = new float[count];
 
         buildingPriorityList = new List<BuildingTag>()
         {
@@ -65,12 +67,12 @@ public class ConstructionScheduler : MonoBehaviour
             IncreaseBuildingPressure(serviceTag);
     }
 
-    public void IncreaseBuildingPressure(BuildingTag buildingTag, int amount = 1)
+    public void IncreaseBuildingPressure(BuildingTag buildingTag, float amount = 1)
     {
         pressure[(int)buildingTag] += amount;
     }
 
-    public int GetBuildingPressure(BuildingTag buildingTag)
+    public float GetBuildingPressure(BuildingTag buildingTag)
     {
         return pressure[(int)buildingTag];
     }
@@ -96,7 +98,7 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.Forge:
                 ProductionBT bt = (ProductionBT)buildingTemplate;
                 float grace = (bt.ConstructionTime + 2 * walkingTime + 30) * bt.AmountProducedPerInterval;
-                pressure[(int)buildingTemplate.BuildingTag] -= (int)(grace / globals.EngineConstructionInterval);
+                pressure[(int)buildingTemplate.BuildingTag] -= grace / globals.EngineConstructionInterval;
                 break;
             // Raw
             case BuildingTag.IronMine:
@@ -106,43 +108,40 @@ public class ConstructionScheduler : MonoBehaviour
             case BuildingTag.Windmill:
                 bt = (ProductionBT)buildingTemplate;
                 grace = (bt.ConstructionTime + 2 * walkingTime + 30) * bt.AmountProducedPerInterval / bt.TimeInterval;
-                pressure[(int)buildingTemplate.BuildingTag] -= (int)grace;
+                pressure[(int)buildingTemplate.BuildingTag] -= grace;
                 break;
             // Consumption
             case BuildingTag.SaltMine:
             case BuildingTag.Clothier:
             case BuildingTag.Brewery:
                 bt = (ProductionBT)buildingTemplate;
-                float consumptionPeriod = globals.NeedAmountReplenished * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
-                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
-                pressure[(int)buildingTemplate.BuildingTag] -= (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
+                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) * bt.AmountProducedPerInterval / bt.TimeInterval;
+                pressure[(int)buildingTemplate.BuildingTag] -= grace * consumptionPeriod / globals.EngineNeedCheckInterval;
                 break;
             case BuildingTag.HuntersCabin:
             case BuildingTag.FishingHut:
             case BuildingTag.Bakery:
                 bt = (ProductionBT)buildingTemplate;
-                consumptionPeriod = globals.NeedAmountReplenished * globals.NeedConsumptionInterval / globals.NeedAmountDecrement;
-                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) / bt.TimeInterval * bt.AmountProducedPerInterval;
-                int reducedAmount = (int)(grace * consumptionPeriod / globals.EngineNeedCheckInterval);
+                grace = (bt.ConstructionTime + 2 * walkingTime + consumptionPeriod) * bt.AmountProducedPerInterval / bt.TimeInterval;
+                float reducedAmount = grace * consumptionPeriod / globals.EngineNeedCheckInterval;
                 pressure[(int)BuildingTag.HuntersCabin] -= reducedAmount;
                 pressure[(int)BuildingTag.FishingHut] -= reducedAmount;
                 pressure[(int)BuildingTag.Bakery] -= reducedAmount;
                 if (buildingTemplate.BuildingTag == BuildingTag.Bakery)
                 {
-                    IncreaseResourceBuildingPressure(BuildingTag.Windmill, 1);
-                    IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, 1);
+                    IncreaseResourcePressure(ResourceType.Flour, stepAdjustment);
                 }
                 break;
         }
     }
 
-    void IncreaseResourceBuildingPressure(BuildingTag buildingTag, int amount = 1)
+    void IncreaseResourceBuildingPressure(BuildingTag buildingTag, float amount = 1)
     {
-        if (pressure[(int)buildingTag] <= 0)
+        if (pressure[(int)buildingTag] < 1)
             pressure[(int)buildingTag] += amount;
     }
 
-    public void IncreaseResourcePressure(ResourceType resourceType, int amount = 1)
+    public void IncreaseResourcePressure(ResourceType resourceType, float amount = 1)
     {
         switch (resourceType)
         {
@@ -154,8 +153,19 @@ public class ConstructionScheduler : MonoBehaviour
                 IncreaseResourceBuildingPressure(BuildingTag.StoneMine, amount);
                 break;
             case ResourceType.Tools:
-                IncreaseResourceBuildingPressure(BuildingTag.Forge, amount);
-                IncreaseResourceBuildingPressure(BuildingTag.IronMine, amount);
+                if (globals.toolsAmount == 0 && globals.ironAmount == 0)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Forge, amount);
+                    IncreaseResourceBuildingPressure(BuildingTag.IronMine, amount / 2);
+                }
+                else if (globals.ironAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.IronMine, amount / 2);
+                }
+                else if (globals.toolsAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Forge, amount);
+                }
                 break;
             // Raw
             case ResourceType.Iron:
@@ -171,16 +181,38 @@ public class ConstructionScheduler : MonoBehaviour
                 IncreaseResourceBuildingPressure(BuildingTag.HopsFarm, amount);
                 break;
             case ResourceType.Flour:
-                IncreaseResourceBuildingPressure(BuildingTag.Windmill, amount);
-                IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, amount);
+                if (globals.flourAmount == 0 && globals.wheatAmount == 0)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, amount);
+                    IncreaseResourceBuildingPressure(BuildingTag.Windmill, amount);
+                }
+                else if (globals.wheatAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.WheatFarm, amount);
+                }
+                else if (globals.flourAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Windmill, amount);
+                }
                 break;
             // Consumption
             case ResourceType.Salt:
                 IncreaseResourceBuildingPressure(BuildingTag.SaltMine, amount);
                 break;
             case ResourceType.Cloth:
-                IncreaseResourceBuildingPressure(BuildingTag.Clothier, amount);
-                IncreaseResourceBuildingPressure(BuildingTag.CottonPlantation, amount);
+                if (globals.clothAmount == 0 && globals.cottonAmount == 0)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Clothier, amount);
+                    IncreaseResourceBuildingPressure(BuildingTag.CottonPlantation, amount * stepAdjustment);
+                }
+                else if (globals.cottonAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.CottonPlantation, amount * stepAdjustment);
+                }
+                else if (globals.clothAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Clothier, amount);
+                }
                 break;
             case ResourceType.Food:
                 IncreaseResourceBuildingPressure(BuildingTag.HuntersCabin, amount);
@@ -188,8 +220,19 @@ public class ConstructionScheduler : MonoBehaviour
                 IncreaseResourceBuildingPressure(BuildingTag.Bakery, amount);
                 break;
             case ResourceType.Beer:
-                IncreaseResourceBuildingPressure(BuildingTag.Brewery, amount);
-                IncreaseResourceBuildingPressure(BuildingTag.HopsFarm, amount);
+                if (globals.hopsAmount == 0 && globals.beerAmount == 0)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Brewery, amount);
+                    IncreaseResourceBuildingPressure(BuildingTag.HopsFarm, amount * stepAdjustment);
+                }
+                else if (globals.hopsAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.HopsFarm, amount * stepAdjustment);
+                }
+                else if (globals.beerAmount < 50)
+                {
+                    IncreaseResourceBuildingPressure(BuildingTag.Brewery, amount);
+                }
                 break;
             default:
                 throw new Exception("Resource " + resourceType.ToString() + " not handled");

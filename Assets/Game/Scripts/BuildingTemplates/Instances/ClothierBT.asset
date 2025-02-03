@@ -26,7 +26,7 @@ MonoBehaviour:
   <MaxNumberOfWorkers>k__BackingField: 2
   <Salary>k__BackingField: 10
   <TimeInterval>k__BackingField: 10
-  <AmountProducedPerInterval>k__BackingField: 10
+  <AmountProducedPerInterval>k__BackingField: 20
   <ProducedResource>k__BackingField: 9
-  <AmountConsumedPerInterval>k__BackingField: 10
+  <AmountConsumedPerInterval>k__BackingField: 20
   <ConsumedResource>k__BackingField: 4

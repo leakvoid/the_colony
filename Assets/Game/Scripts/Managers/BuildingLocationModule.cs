@@ -299,19 +299,24 @@ public class BuildingLocationModule : MonoBehaviour
         var availableForBuilding = GetAvailableBuildingSpots(bt);
 
         bool[,] uncoveredHouses;
+        BuildingData[,] alreadyCovered;
         switch (bt.BuildingTag)
         {
             case BuildingTag.Market:
                 uncoveredHouses = uncoveredByMarket;
+                alreadyCovered = marketCoverArea;
                 break;
             case BuildingTag.Church:
                 uncoveredHouses = uncoveredByChurch;
+                alreadyCovered = churchCoverArea;
                 break;
             case BuildingTag.Inn:
                 uncoveredHouses = uncoveredByInn;
+                alreadyCovered = innCoverArea;
                 break;
             case BuildingTag.Well:
                 uncoveredHouses = uncoveredByWell;
+                alreadyCovered = wellCoverArea;
                 break;
             default:
                 throw new Exception("Unknown service building " + bt.BuildingTag.ToString());
@@ -330,29 +335,49 @@ public class BuildingLocationModule : MonoBehaviour
                 int GetServiceCoverAreaValue(int x, int y)
                 {
                     int count;
-                    if (x > 0)
+                    int overlapFactor = 0;
+                    if (x > 0 && availableForBuilding[x - 1, y])
                     {
                         count = coverValueGrid[x - 1, y];
                         int leftEdge = x - 1 - bt.CoverArea;
                         int rightEdge = x + bt.CoverArea;
                         for (int j = Math.Max(y - bt.CoverArea, 0); j < Math.Min(y + bt.CoverArea, gridY); j++)
                         {
-                            if (leftEdge >= 0 && uncoveredHouses[leftEdge, j])
-                                count--;
+                            if (leftEdge >= 0)
+                            {
+                                if (uncoveredHouses[leftEdge, j])
+                                    count--;
+                                
+                                if (alreadyCovered[leftEdge, j] != null)
+                                    overlapFactor++;
+                            }
+                                
                             
-                            if (rightEdge < gridX && uncoveredHouses[rightEdge, j])
-                                count++;
+                            if (rightEdge < gridX)
+                            {
+                                if (uncoveredHouses[rightEdge, j])
+                                    count++;
+                                
+                                if (alreadyCovered[rightEdge, j] != null)
+                                    overlapFactor--;
+                            }
                         }
                     }
-                    else if (y > 0)
+                    else if (y > 0 && availableForBuilding[x, y - 1])
                     {
                         count = coverValueGrid[x, y - 1];
                         int bottomEdge = y - 1 - bt.CoverArea;
                         int topEdge = y + bt.CoverArea;
                         for (int i = Math.Max(x - bt.CoverArea, 0); i < Math.Min(x + bt.CoverArea, gridX); i++)
                         {
-                            if (bottomEdge >= 0 && uncoveredHouses[i, bottomEdge])
-                                count--;
+                            if (bottomEdge >= 0)
+                            {
+                                if (uncoveredHouses[i, bottomEdge])
+                                    count--;
+
+                                if (alreadyCovered[i, bottomEdge] != null)
+                                    overlapFactor++;
+                            }
                             
                             if (topEdge < gridY && uncoveredHouses[i, topEdge])
                                 count++;
@@ -374,6 +399,7 @@ public class BuildingLocationModule : MonoBehaviour
                 }
                 
                 int coverValue = GetServiceCoverAreaValue(i, j);
+                coverValueGrid[i, j] = coverValue;
                 if (coverValue > bestCoverValue)
                 {
                     bestCoverValue = coverValue;
@@ -383,7 +409,6 @@ public class BuildingLocationModule : MonoBehaviour
                 {
                     numberOfBestSpots++;
                 }
-                coverValueGrid[i, j] = coverValue;
             }
         }
 

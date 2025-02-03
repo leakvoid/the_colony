@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.UIElements;
 using UnityEngine;
 
 public class ColonistManager : MonoBehaviour
@@ -331,7 +329,7 @@ public class ColonistManager : MonoBehaviour
             }
         }
 
-        if (colonistData.worksAt != null)
+        if (colonistData.worksAt != null && colonistData.worksAt.isConstructed)
             yield return ConsumerMoveTo(colonistData, colonistData.worksAt);
         else
             yield return ConsumerMoveTo(colonistData, colonistData.livesAt);

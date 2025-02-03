@@ -283,8 +283,7 @@ public class BottomPanelController : MonoBehaviour
                     case BuildingTag.Market:
                         marketGroup.SetActive(true);
 
-                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                            "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+                        serviceResourceImage.sprite = Resources.Load<Sprite>("Icons/powder");
                         serviceResourceText.text = globals.SaltPrice.ToString();
                         serviceFoodText.text = globals.FoodPrice.ToString();
                         serviceClothText.text = globals.ClothPrice.ToString();
@@ -292,22 +291,19 @@ public class BottomPanelController : MonoBehaviour
                     case BuildingTag.Church:
                         marketGroup.SetActive(false);
 
-                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                            "Assets/StrategyGameResourceIcons/Icons/cross.png", typeof(Sprite));
+                        serviceResourceImage.sprite = Resources.Load<Sprite>("Icons/cross");
                         serviceResourceText.text = globals.ChurchDonation.ToString();
                         break;
                     case BuildingTag.Well:
                         marketGroup.SetActive(false);
 
-                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                            "Assets/StrategyGameResourceIcons/Icons/bucket.png", typeof(Sprite));
+                        serviceResourceImage.sprite = Resources.Load<Sprite>("Icons/bucket");
                         serviceResourceText.text = "0";
                         break;
                     case BuildingTag.Inn:
                         marketGroup.SetActive(false);
 
-                        serviceResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                            "Assets/StrategyGameResourceIcons/Icons/barrel.png", typeof(Sprite));
+                        serviceResourceImage.sprite = Resources.Load<Sprite>("Icons/barrel");
                         serviceResourceText.text = globals.BeerPrice.ToString();
                         break;
                     default:
@@ -332,34 +328,24 @@ public class BottomPanelController : MonoBehaviour
                     switch (bt.BuildingTag)
                     {
                         case BuildingTag.Bakery:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/sugar.png", typeof(Sprite));
-                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/Game/Art/Images/bread.png", typeof(Sprite));
+                            leftResourceImage.sprite = Resources.Load<Sprite>("Icons/sugar");
+                            rightResourceImage.sprite = Resources.Load<Sprite>("Icons/bread");
                             break;
                         case BuildingTag.Brewery:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/Game/Art/Images/hops.png", typeof(Sprite));
-                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/barrel.png", typeof(Sprite));
+                            leftResourceImage.sprite = Resources.Load<Sprite>("Icons/hops");
+                            rightResourceImage.sprite = Resources.Load<Sprite>("Icons/barrel");
                             break;
                         case BuildingTag.Clothier:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/cotton.png", typeof(Sprite));
-                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/coat.png", typeof(Sprite));
+                            leftResourceImage.sprite = Resources.Load<Sprite>("Icons/cotton");
+                            rightResourceImage.sprite = Resources.Load<Sprite>("Icons/coat");
                             break;
                         case BuildingTag.Forge:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
-                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/tools.png", typeof(Sprite));
+                            leftResourceImage.sprite = Resources.Load<Sprite>("Icons/stone");
+                            rightResourceImage.sprite = Resources.Load<Sprite>("Icons/tools");
                             break;
                         case BuildingTag.Windmill:
-                            leftResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/wheat.png", typeof(Sprite));
-                            rightResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/sugar.png", typeof(Sprite));
+                            leftResourceImage.sprite = Resources.Load<Sprite>("Icons/wheat");
+                            rightResourceImage.sprite = Resources.Load<Sprite>("Icons/sugar");
                             break;
                         default:
                             throw new Exception("Unknown processing building");
@@ -376,40 +362,31 @@ public class BottomPanelController : MonoBehaviour
                     switch (bt.BuildingTag)
                     {
                         case BuildingTag.CottonPlantation:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/cotton.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/cotton");
                             break;
                         case BuildingTag.HopsFarm:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/Game/Art/Images/hops.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/hops");
                             break;
                         case BuildingTag.WheatFarm:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/wheat.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/wheat");
                             break;
                         case BuildingTag.FishingHut:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/fish.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/fish");
                             break;
                         case BuildingTag.HuntersCabin:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/ham.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/ham");
                             break;
                         case BuildingTag.IronMine:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/stone");
                             break;
                         case BuildingTag.SaltMine:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/powder");
                             break;
                         case BuildingTag.Sawmill:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/logs.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/logs");
                             break;
                         case BuildingTag.StoneMine:
-                            centerResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                                "Assets/StrategyGameResourceIcons/Icons/stoneblock.png", typeof(Sprite));
+                            centerResourceImage.sprite = Resources.Load<Sprite>("Icons/stoneblock");
                             break;
                         default:
                             throw new Exception("Unknown production building");
@@ -427,20 +404,17 @@ public class BottomPanelController : MonoBehaviour
             if (resource == ResourceType.Stone)
             {
                 depositNameText.text = "Stone deposit";
-                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                    "Assets/StrategyGameResourceIcons/Icons/stoneblock.png", typeof(Sprite));
+                depositResourceImage.sprite = Resources.Load<Sprite>("Icons/stoneblock");
             }
             else if (resource == ResourceType.Iron)
             {
                 depositNameText.text = "Iron deposit";
-                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                    "Assets/StrategyGameResourceIcons/Icons/stone.png", typeof(Sprite));
+                depositResourceImage.sprite = Resources.Load<Sprite>("Icons/stone");
             }
             else
             {
                 depositNameText.text = "Salt deposit";
-                depositResourceImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(
-                    "Assets/StrategyGameResourceIcons/Icons/powder.png", typeof(Sprite));
+                depositResourceImage.sprite = Resources.Load<Sprite>("Icons/powder");
             }
         }
     }

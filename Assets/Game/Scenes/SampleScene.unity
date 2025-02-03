@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: 25812690}
   - component: {fileID: 25812693}
   - component: {fileID: 25812692}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -680,7 +680,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 47574303}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SelectedObjectBorder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5131,7 +5131,7 @@ GameObject:
   - component: {fileID: 739863378}
   - component: {fileID: 739863381}
   - component: {fileID: 739863380}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9238,7 +9238,7 @@ GameObject:
   - component: {fileID: 1382762763}
   - component: {fileID: 1382762766}
   - component: {fileID: 1382762765}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9944,7 +9944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464286222190e16e0b94e3e2a4211805, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 3000
+  goldAmount: 4000
   woodAmount: 20
   stoneAmount: 20
   toolsAmount: 0
@@ -13405,7 +13405,7 @@ GameObject:
   - component: {fileID: 2018598024}
   - component: {fileID: 2018598027}
   - component: {fileID: 2018598026}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

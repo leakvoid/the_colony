@@ -77,6 +77,9 @@ public class ObjectSelectionHandler : MonoBehaviour
     public void DisconnectBorder(GameObject model)
     {
         if (selectedObjectBorder.transform.parent && selectedObjectBorder.transform.parent.gameObject == model)
+        {
             selectedObjectBorder.transform.parent = null;
+            selectedObjectBorder.SetActive(false);
+        }
     }
 }

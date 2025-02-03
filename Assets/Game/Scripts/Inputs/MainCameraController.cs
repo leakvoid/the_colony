@@ -37,7 +37,7 @@ public class MainCameraController : MonoBehaviour
         currentPos = transform.position;
 
         float[] distances = new float[32];
-        distances[7] = 20;
+        distances[7] = 25;
         Camera.main.layerCullDistances = distances;
     }
 
@@ -191,8 +191,8 @@ public class MainCameraController : MonoBehaviour
 
     public void MoveCameraViaMinimap(Vector3 minimapPos)
     {
-        float shiftX = Mathf.InverseLerp(0, 65f, minimapPos.x);
-        float shiftY = Mathf.InverseLerp(0, 65f, minimapPos.z);
+        float shiftX = Mathf.InverseLerp(0, 120, minimapPos.x);
+        float shiftY = Mathf.InverseLerp(0, 120, minimapPos.z);
         transform.position = new Vector3(gridX * shiftX, transform.position.y, gridY * shiftY);
     }
 }
